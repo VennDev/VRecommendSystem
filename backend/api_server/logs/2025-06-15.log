@@ -1,0 +1,2 @@
+{"level":"info","time":"2025-06-15T23:41:57.540+0700","caller":"utils/logger.go:73","msg":"Logger initialized successfully","logFile":"logs\\2025-06-15.log","maxSize":10,"maxBackups":5,"maxAge":30,"compress":false}
+{"level":"info","time":"2025-06-15T23:41:57.572+0700","caller":"utils/logger.go:86","msg":"Successfully connected to database","type":"mysql"}

@@ -1,0 +1,6 @@
+{"level":"info","time":"2025-06-14T20:22:17.565+0700","caller":"utils/logger.go:66","msg":"Logger initialized successfully","logFile":"logs\\2025-06-14.log","maxSize":10,"maxBackups":5,"maxAge":30,"compress":false}
+{"level":"info","time":"2025-06-14T20:22:50.812+0700","caller":"utils/logger.go:79","msg":"Received ping request from 127.0.0.1"}
+{"level":"info","time":"2025-06-14T20:22:59.634+0700","caller":"utils/logger.go:66","msg":"Logger initialized successfully","logFile":"logs\\2025-06-14.log","maxSize":10,"maxBackups":5,"maxAge":30,"compress":false}
+{"level":"info","time":"2025-06-14T20:23:14.132+0700","caller":"utils/logger.go:79","msg":"Received ping request from 127.0.0.1"}
+{"level":"info","time":"2025-06-14T22:25:50.362+0700","caller":"utils/logger.go:73","msg":"Logger initialized successfully","logFile":"logs\\2025-06-14.log","maxSize":10,"maxBackups":5,"maxAge":30,"compress":false}
+{"level":"info","time":"2025-06-14T22:25:50.385+0700","caller":"utils/logger.go:86","msg":"Successfully connected to database","type":"mysql"}
