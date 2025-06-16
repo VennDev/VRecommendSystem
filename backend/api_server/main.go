@@ -17,9 +17,9 @@ import (
 
 func main() {
 	err := godotenv.Load()
-    if err != nil {
-        log.Fatal("Error loading .env file")
-    }
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	fiber_config := configs.FiberConfig()
 	server_config := configs.ServerConfig()
@@ -30,7 +30,7 @@ func main() {
 	defer loggerMngr.Close()
 
 	// Initialize App
-    app := fiber.New(fiber_config)
+	app := fiber.New(fiber_config)
 
 	// Set up global middlewares
 	app.Use(

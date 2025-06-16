@@ -11,16 +11,9 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func initializeLogger() *Logger {
-	logger := &Logger{}
-	logger.Init()
-	logger.Info("Logger initialized successfully")
-	return logger
-}
-
 type Logger struct {
-	logger       *zap.Logger
-	lumberJack   *lumberjack.Logger
+	logger     *zap.Logger
+	lumberJack *lumberjack.Logger
 }
 
 func (l *Logger) Init() error {
@@ -40,7 +33,7 @@ func (l *Logger) Init() error {
 
 	logFileName := DateTimeString() + ".log"
 	logFilePath := filepath.Join(logsDir, logFileName)
-	
+
 	l.lumberJack = &lumberjack.Logger{
 		Filename:   logFilePath,
 		MaxSize:    maxSize, // megabytes
@@ -70,7 +63,7 @@ func (l *Logger) Init() error {
 		return errors.New("failed to create logger")
 	}
 
-	l.logger.Info("Logger initialized successfully", 
+	l.logger.Info("Logger initialized successfully",
 		zap.String("logFile", logFilePath),
 		zap.Int("maxSize", l.lumberJack.MaxSize),
 		zap.Int("maxBackups", l.lumberJack.MaxBackups),
@@ -143,7 +136,7 @@ func (l *Logger) GetLogStats() map[string]interface{} {
 	if l.lumberJack == nil {
 		return nil
 	}
-	
+
 	return map[string]interface{}{
 		"filename":   l.lumberJack.Filename,
 		"maxSize":    l.lumberJack.MaxSize,
