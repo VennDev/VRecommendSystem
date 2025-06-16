@@ -23,4 +23,4 @@ if __name__ == "__main__":
 
     app.add_api_route("/", lambda: {"message": "Welcome to the AI Server!"})
 
-    uvicorn.run(app, host="0.0.0.0", port=8900)
+    uvicorn.run(app, host=sv_config.host, port=sv_config.port)
