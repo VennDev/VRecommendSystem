@@ -1,11 +1,20 @@
 import uvicorn
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .pkg.configs.middlewares_config import get_middleware_config
 from .pkg.configs.server_config import get_server_config
 from .pkg.routes import public_routes
+from .pkg.database.providers.sql import SQL
+from .pkg.utils.logger import logger_init 
 
 if __name__ == "__main__":
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Initialize logger
+    logger_init()
+    
     sv_config = get_server_config()
     mw_config = get_middleware_config() 
 
