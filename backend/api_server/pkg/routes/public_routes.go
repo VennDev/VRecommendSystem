@@ -11,7 +11,7 @@ type PublicRoutes struct {
 }
 
 func (l *PublicRoutes) Init(a *fiber.App) {
-	// Initialize all controllers here 
+	// Initialize all controllers here
 	pingController := &controllers.PingController{
 		Logger: l.Logger,
 	}

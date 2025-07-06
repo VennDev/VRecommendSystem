@@ -4,6 +4,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/venndev/vrecommendation/pkg/utils/connection"
 )
 
 type DatabaseConfigResult struct {
@@ -21,9 +23,9 @@ func DatabaseConfig() *DatabaseConfigResult {
 		dbType = "mysql"
 	}
 
-	url := os.Getenv("DATABASE_URL")
-	if url == "" {
-		url = "root:password@tcp(localhost:3306)/dbname"
+	url, err := connection.ConnectionURLBuilder(dbType)
+	if err != nil || url == "" {
+		panic("Failed to build database connection URL: " + err.Error())
 	}
 
 	maxOpenConns := 10
