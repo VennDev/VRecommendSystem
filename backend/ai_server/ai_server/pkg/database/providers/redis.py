@@ -6,7 +6,7 @@ from ...utils import connection_url_builder
 
 class Redis(IProvider):
 
-    def connect(self):
+    def connect(self) -> "redis.Redis":
         cfg = get_redis_config()
         redis_url = connection_url_builder.build_connection_url("redis")
         redis_client = redis.from_url(

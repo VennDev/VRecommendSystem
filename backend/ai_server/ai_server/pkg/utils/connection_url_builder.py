@@ -19,5 +19,13 @@ def build_connection_url(name: str) -> str:
         )
     elif name == "fastapi":
         return f"http://{os.getenv('SERVER_HOST')}:{os.getenv('SERVER_PORT')}"
+    elif name == "kafka":
+        bootstrap_servers = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+        topics = os.getenv("KAFKA_TOPICS", "topic1,topic2")
+        return f"kafka://{bootstrap_servers}?topics={topics}"
+    elif name == "spark":
+        master = os.getenv("SPARK_MASTER", "local[*]")
+        app_name = os.getenv("SPARK_APP_NAME", "MySparkApp")
+        return f"spark://{master}?appName={app_name}"
     else:
         raise ValueError(f"Connection name '{name}' is not supported.")

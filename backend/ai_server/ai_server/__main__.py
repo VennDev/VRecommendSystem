@@ -5,7 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from .pkg.configs.middlewares_config import get_middleware_config
 from .pkg.configs.server_config import get_server_config
 from .pkg.routes import public_routes
-from .pkg.database.providers.sql import SQL
 from .pkg.utils.logger import logger_init 
 
 if __name__ == "__main__":
