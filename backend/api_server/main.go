@@ -4,13 +4,13 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/venndev/vrecommendation/pkg/configs"
+	lg "github.com/venndev/vrecommendation/pkg/logger"
 	"github.com/venndev/vrecommendation/pkg/routes"
 	"github.com/venndev/vrecommendation/pkg/utils"
 )
@@ -25,7 +25,7 @@ func main() {
 	server_config := configs.ServerConfig()
 
 	// Initialize logger
-	loggerMngr := &utils.Logger{}
+	loggerMngr := &lg.Logger{}
 	loggerMngr.Init()
 	defer loggerMngr.Close()
 

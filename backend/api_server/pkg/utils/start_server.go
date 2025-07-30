@@ -9,10 +9,11 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/venndev/vrecommendation/pkg/configs"
+	"github.com/venndev/vrecommendation/pkg/logger"
 	"go.uber.org/zap"
 )
 
-func StartServer(app *fiber.App, cf configs.ServerConfigResult, logger *Logger) {
+func StartServer(app *fiber.App, cf configs.ServerConfigResult, logger *logger.Logger) {
 	address := cf.Host + ":" + cf.Port
 	if err := app.Listen(address); err != nil {
 		logger.Error("Failed to start server", err, zap.String("address", address))
@@ -20,7 +21,7 @@ func StartServer(app *fiber.App, cf configs.ServerConfigResult, logger *Logger) 
 	}
 }
 
-func StartServerWithGracefulShutdown(app *fiber.App, cf configs.ServerConfigResult, logger *Logger) {
+func StartServerWithGracefulShutdown(app *fiber.App, cf configs.ServerConfigResult, logger *logger.Logger) {
 	address := cf.Host + ":" + cf.Port
 
 	go func() {

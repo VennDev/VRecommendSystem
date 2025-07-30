@@ -40,6 +40,21 @@ func ConnectionURLBuilder(n string) (string, error) {
 			os.Getenv("SERVER_HOST"),
 			os.Getenv("SERVER_PORT"),
 		)
+	case "kafka":
+		url = fmt.Sprintf(
+			"%s:%s",
+			os.Getenv("KAFKA_HOST"),
+			os.Getenv("KAFKA_PORT"),
+		)
+	case "mongodb_interaction":
+		url = fmt.Sprintf(
+			"mongodb://%s:%s@%s:%s/%s",
+			os.Getenv("INTERACTIONS_DB_USER"),
+			os.Getenv("INTERACTIONS_DB_PASSWORD"),
+			os.Getenv("INTERACTIONS_DB_HOST"),
+			os.Getenv("INTERACTIONS_DB_PORT"),
+			os.Getenv("INTERACTIONS_DB_NAME"),
+		)
 	default:
 		return "", fmt.Errorf("connection name '%v' is not supported", n)
 	}
