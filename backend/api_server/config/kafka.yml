@@ -1,0 +1,187 @@
+---
+# ===========================================
+# KAFKA CONFIGURATION FOR RECOMMENDATION SYSTEM
+# ===========================================
+
+# Core Kafka Settings
+kafka:
+  brokers:
+    - localhost:9092
+    - localhost:9093
+    - localhost:9094
+  client_id: 'recommendation-service'
+  auto_offset_reset: 'earliest'
+
+# Topic Configuration - Auto-generated from event types
+topics:
+  prefix: 'user_interactions'
+  suffix: '_events'
+  # Topics will be: user_interactions_view_events, user_interactions_like_events, etc.
+
+# Consumer Groups - Separated by functionality
+consumer_groups:
+  realtime: 'realtime_recommendation_group'
+  batch: 'batch_processing_group'
+  analytics: 'analytics_group'
+
+# ===========================================
+# PRODUCER CONFIGURATION (High Reliability)
+# ===========================================
+
+producer:
+  # Durability & Reliability
+  acks: 'all'
+  retries: 3
+  retry_backoff_ms: 1000
+  enable_idempotence: true
+  max_in_flight_requests_per_connection: 5
+
+  # Performance Tuning
+  batch_size: 16384
+  linger_ms: 5
+  buffer_memory: 33554432
+  compression_type: 'snappy'
+  max_request_size: 1048576
+
+  # Timeout Settings
+  request_timeout_ms: 30000
+  delivery_timeout_ms: 120000
+
+# ===========================================
+# CONSUMER CONFIGURATION (Optimized for ML)
+# ===========================================
+
+consumer:
+  # Polling & Fetching
+  max_poll_records: 500
+  fetch_min_bytes: 1
+  fetch_max_bytes: 52428800
+  fetch_max_wait_ms: 500
+  max_partition_fetch_bytes: 1048576
+
+  # Session & Heartbeat
+  session_timeout_ms: 30000
+  heartbeat_interval_ms: 3000
+  max_poll_interval_ms: 300000
+
+  # Offset Management
+  enable_auto_commit: false
+  auto_commit_interval_ms: 5000
+
+# ===========================================
+# TOPIC AUTO-CREATION SETTINGS
+# ===========================================
+
+topic_defaults:
+  replication_factor: 3
+  partitions: 12
+  retention_ms: 604800000  # 7 days retention for real-time events
+
+# Topic-specific Retention (in milliseconds)
+topic_retention:
+  view_events: 86400000      # 1 day for view events (high volume)
+  like_events: 2592000000    # 30 days for engagement events
+  buy_events: 31536000000    # 1 year for purchase events (critical for recommendations)
+
+# ===========================================
+# PARTITIONING STRATEGY
+# ===========================================
+
+partitioning:
+  # Partition by user_id for maintaining user event order
+  partitioner_class: 'org.apache.kafka.clients.producer.internals.DefaultPartitioner'
+  partition_key_field: 'user_id'
+
+# ===========================================
+# SCHEMA REGISTRY (Optional but Recommended)
+# ===========================================
+
+schema_registry:
+  url: 'http://localhost:8081'
+  enabled: false
+
+# ===========================================
+# MONITORING & METRICS
+# ===========================================
+
+monitoring:
+  # JMX Metrics
+  jmx:
+    enabled: true
+    port: 9999
+
+  # Lag Monitoring Thresholds
+  consumer_lag:
+    max_lag: 10000
+    alert_threshold: 5000
+
+# ===========================================
+# SECURITY CONFIGURATION (Production)
+# ===========================================
+
+security:
+# Authentication (uncomment for production)
+# protocol: 'SASL_SSL'
+# sasl:
+#   mechanism: 'PLAIN'
+#   username: 'your_username'
+#   password: 'your_password'
+
+# SSL Configuration (if needed)
+# ssl:
+#   truststore:
+#     location: '/path/to/kafka.client.truststore.jks'
+#     password: 'your_truststore_password'
+#   keystore:
+#     location: '/path/to/kafka.client.keystore.jks'
+#     password: 'your_keystore_password'
+
+# ===========================================
+# ENVIRONMENT-SPECIFIC OVERRIDES
+# ===========================================
+
+environment:
+  env: 'development'
+  debug_enabled: true
+  log_level: 'DEBUG'
+
+  # Production overrides (uncomment when deploying)
+  # env: 'production'
+  # debug_enabled: false
+  # log_level: 'INFO'
+  # brokers:
+  #   - 'kafka1:9092'
+  #   - 'kafka2:9092'
+  #   - 'kafka3:9092'
+
+# ===========================================
+# RECOMMENDATION SYSTEM SPECIFIC
+# ===========================================
+
+recommendation:
+  # Real-time Processing
+  realtime:
+    window_size_ms: 60000  # 1-minute window for real-time recommendations
+
+  # Batch Processing
+  batch:
+    processing_interval_ms: 300000  # 5-minute interval for batch updates
+
+  # Event Weights (for recommendation scoring)
+  event_weights:
+    view: 1.0
+    like: 2.0
+    comment: 3.0
+    share: 4.0
+    bookmark: 3.5
+    add_to_cart: 5.0
+    add_to_favorites: 4.0
+    buy: 10.0
+
+# Topic Creation Template
+# Format: {topics.prefix}_{event_type_lowercase}{topics.suffix}
+# Examples:
+# - user_interactions_view_events
+# - user_interactions_like_events
+# - user_interactions_buy_events
+...

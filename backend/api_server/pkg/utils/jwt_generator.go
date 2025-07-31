@@ -4,12 +4,12 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"github.com/venndev/vrecommendation/global"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/venndev/vrecommendation/pkg/configs"
 )
 
 // Tokens struct to describe tokens object.
@@ -41,12 +41,12 @@ func GenerateNewTokens(id string, credentials []string) (*Tokens, error) {
 }
 
 func generateNewAccessToken(id string, credentials []string) (string, error) {
-	cfg := configs.JWTConfig()
+	cfg := global.Config.JWT
 	// Set secret key from .env file.
 	secret := cfg.SecretKey
 
 	// Set expires minutes count for secret key from .env file.
-	minutesCount := cfg.SecretKeyExpirationMinsCount
+	minutesCount := cfg.ExpireMinsCount
 
 	// Create a new claims.
 	claims := jwt.MapClaims{}
@@ -77,7 +77,7 @@ func generateNewAccessToken(id string, credentials []string) (string, error) {
 }
 
 func generateNewRefreshToken() (string, error) {
-	cfg := configs.JWTConfig()
+	cfg := global.Config.JWT
 
 	// Create a new SHA256 hash.
 	hash := sha256.New()
@@ -93,7 +93,7 @@ func generateNewRefreshToken() (string, error) {
 	}
 
 	// Set expires hours count for refresh key from .env file.
-	hoursCount := cfg.RefreshKeyExpirationHoursCount
+	hoursCount := cfg.RefreshExpireHoursCount
 
 	// Set expiration time.
 	expireTime := fmt.Sprint(time.Now().Add(time.Hour * time.Duration(hoursCount)).Unix())

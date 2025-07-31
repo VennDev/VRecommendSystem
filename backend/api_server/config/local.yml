@@ -1,0 +1,46 @@
+---
+# System configuration
+# Environment can be 'dev', 'test', 'prod'
+status_dev: 'dev'
+
+# Server configuration
+server:
+  host: 'localhost'
+  port: 8080
+  read_timeout: 60
+
+# Logger configuration
+logger:
+  max_size: 10
+  max_backups: 5
+  max_age: 30
+  compression: true
+  local_time: true
+
+# JWT configuration
+jwt:
+  secret_key: 'your_secret'
+  expire_mins_count: 15
+  refresh_key: 'refresh_secret'
+  refresh_expire_hours_count: 720
+
+# Redis configuration
+redis:
+  host: 'localhost'
+  port: 6379
+
+# Database configuration
+database:
+  # Database type can be 'mysql', 'postgres', 'mongodb'
+  type: 'mysql'
+  host: 'localhost'
+  port: 330
+  user: 'root'
+  password: 'password'
+  name: 'my_database'
+  ssl: false
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_lifetime: '30s'
+  conn_max_idle_time: '30s'
+...
