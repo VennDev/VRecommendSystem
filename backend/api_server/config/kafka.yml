@@ -29,7 +29,6 @@ consumer_groups:
 # ===========================================
 
 event_types:
-  # Định nghĩa danh sách các event types được hỗ trợ
   supported_events:
     - view
     - like
