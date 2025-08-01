@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go.uber.org/zap"
 	"maps"
 	"strconv"
 	"time"
+
+	"go.uber.org/zap"
 
 	"github.com/venndev/vrecommendation/global"
 	ev "github.com/venndev/vrecommendation/pkg/event"
@@ -74,7 +75,9 @@ func getTopicName(eventType int) string {
 }
 
 // SendEvent sends an interaction event to the appropriate topic synchronously
-func (rp *RecommendationProducer) SendEvent(eventType int, userID, itemID string, options ...EventOption) error {
+func (rp *RecommendationProducer) SendEvent(
+	eventType int, userID, itemID string, options ...EventOption,
+) error {
 	ctx, cancel := context.WithTimeout(context.Background(), rp.timeout)
 	defer cancel()
 
@@ -122,7 +125,9 @@ func (rp *RecommendationProducer) SendEvent(eventType int, userID, itemID string
 }
 
 // SendEventAsync sends an event asynchronously without waiting for confirmation
-func (rp *RecommendationProducer) SendEventAsync(eventType int, userID, itemID string, options ...EventOption) error {
+func (rp *RecommendationProducer) SendEventAsync(
+	eventType int, userID, itemID string, options ...EventOption,
+) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -444,7 +449,9 @@ func TrackUserPurchase(userID, itemID string, context map[string]any) error {
 }
 
 // TrackUserInteraction is a comprehensive function to track any interaction
-func TrackUserInteraction(eventType int, userID, itemID, sessionID string, duration time.Duration, context map[string]any) error {
+func TrackUserInteraction(
+	eventType int, userID, itemID, sessionID string, duration time.Duration, context map[string]any,
+) error {
 	options := []EventOption{}
 
 	if sessionID != "" {

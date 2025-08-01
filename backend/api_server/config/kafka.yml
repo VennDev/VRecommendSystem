@@ -14,7 +14,7 @@ kafka:
 
 # Topic Configuration - Auto-generated from event types
 topics:
-  prefix: 'user_interactions'
+  prefix: 'user_interactions_'
   suffix: '_events'
   # Topics will be: user_interactions_view_events, user_interactions_like_events, etc.
 
@@ -23,6 +23,107 @@ consumer_groups:
   realtime: 'realtime_recommendation_group'
   batch: 'batch_processing_group'
   analytics: 'analytics_group'
+
+# ===========================================
+# EVENT TYPES CONFIGURATION
+# ===========================================
+
+event_types:
+  # Định nghĩa danh sách các event types được hỗ trợ
+  supported_events:
+    - view
+    - like
+    - comment
+    - share
+    - bookmark
+    - add_to_cart
+    - add_to_favorites
+    - buy
+    - click
+    - scroll
+    - download
+    - search
+    - rate
+    - follow
+    - unfollow
+    
+  # Mapping event types to their configurations
+  event_config:
+    view:
+      weight: 1.0
+      retention_ms: 86400000      # 1 day
+      partitions: 12
+      enabled: true
+    like:
+      weight: 2.0
+      retention_ms: 2592000000    # 30 days
+      partitions: 8
+      enabled: true
+    comment:
+      weight: 3.0
+      retention_ms: 2592000000    # 30 days
+      partitions: 6
+      enabled: true
+    share:
+      weight: 4.0
+      retention_ms: 2592000000    # 30 days
+      partitions: 6
+      enabled: true
+    bookmark:
+      weight: 3.5
+      retention_ms: 7776000000    # 90 days
+      partitions: 4
+      enabled: true
+    add_to_cart:
+      weight: 5.0
+      retention_ms: 7776000000    # 90 days
+      partitions: 6
+      enabled: true
+    add_to_favorites:
+      weight: 4.0
+      retention_ms: 7776000000    # 90 days
+      partitions: 4
+      enabled: true
+    buy:
+      weight: 10.0
+      retention_ms: 31536000000   # 1 year
+      partitions: 8
+      enabled: true
+    click:
+      weight: 0.5
+      retention_ms: 86400000      # 1 day
+      partitions: 12
+      enabled: true
+    scroll:
+      weight: 0.2
+      retention_ms: 86400000      # 1 day
+      partitions: 8
+      enabled: false              # Disabled by default due to high volume
+    download:
+      weight: 6.0
+      retention_ms: 31536000000   # 1 year
+      partitions: 4
+      enabled: true
+    search:
+      weight: 1.5
+      retention_ms: 604800000     # 7 days
+      partitions: 6
+      enabled: true
+    rate:
+      weight: 5.0
+      retention_ms: 31536000000   # 1 year
+      partitions: 4
+      enabled: true
+    follow:
+      weight: 7.0
+      retention_ms: 31536000000   # 1 year
+      partitions: 3
+      enabled: true
+    unfollow:
+      weight: -2.0                # Negative weight
+      retention_ms: 31536000000   # 1 year
+      partitions: 3
+      enabled: true
 
 # ===========================================
 # PRODUCER CONFIGURATION (High Reliability)
@@ -74,14 +175,8 @@ consumer:
 
 topic_defaults:
   replication_factor: 3
-  partitions: 12
+  partitions: 8
   retention_ms: 604800000  # 7 days retention for real-time events
-
-# Topic-specific Retention (in milliseconds)
-topic_retention:
-  view_events: 86400000      # 1 day for view events (high volume)
-  like_events: 2592000000    # 30 days for engagement events
-  buy_events: 31536000000    # 1 year for purchase events (critical for recommendations)
 
 # ===========================================
 # PARTITIONING STRATEGY
@@ -167,19 +262,8 @@ recommendation:
   batch:
     processing_interval_ms: 300000  # 5-minute interval for batch updates
 
-  # Event Weights (for recommendation scoring)
-  event_weights:
-    view: 1.0
-    like: 2.0
-    comment: 3.0
-    share: 4.0
-    bookmark: 3.5
-    add_to_cart: 5.0
-    add_to_favorites: 4.0
-    buy: 10.0
-
 # Topic Creation Template
-# Format: {topics.prefix}_{event_type_lowercase}{topics.suffix}
+# Format: {topics.prefix}{event_type_lowercase}{topics.suffix}
 # Examples:
 # - user_interactions_view_events
 # - user_interactions_like_events

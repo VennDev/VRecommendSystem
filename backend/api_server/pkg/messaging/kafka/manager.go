@@ -3,10 +3,11 @@ package kafka
 import (
 	"context"
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"go.uber.org/zap"
 	"strings"
 	"sync"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"go.uber.org/zap"
 
 	"github.com/venndev/vrecommendation/global"
 	"github.com/venndev/vrecommendation/pkg/messaging"
@@ -95,12 +96,20 @@ func (m *Manager) CreateTopic(ctx context.Context, topic string, partitions int,
 
 	fullTopicName := m.buildTopicName(topic)
 
+	// Get retention from event type configuration if applicable
+	retentionMs := int64(m.config.TopicDefaults.RetentionMs)
+	if eventType, err := m.extractEventTypeFromTopic(topic); err == nil {
+		if eventRetention := m.config.EventTypes.GetEventRetention(eventType); eventRetention > 0 {
+			retentionMs = eventRetention
+		}
+	}
+
 	topicSpec := kafka.TopicSpecification{
 		Topic:             fullTopicName,
 		NumPartitions:     partitions,
 		ReplicationFactor: replicationFactor,
 		Config: map[string]string{
-			"retention.ms": fmt.Sprintf("%d", m.config.TopicDefaults.RetentionMs),
+			"retention.ms": fmt.Sprintf("%d", retentionMs),
 		},
 	}
 
@@ -116,6 +125,17 @@ func (m *Manager) CreateTopic(ctx context.Context, topic string, partitions int,
 	}
 
 	return nil
+}
+
+func (m *Manager) CreateEventTopic(ctx context.Context, eventType string) error {
+	if !m.config.EventTypes.IsEventEnabled(eventType) {
+		return fmt.Errorf("event type %s is not enabled", eventType)
+	}
+
+	topicName := m.buildEventTopicName(eventType)
+	partitions := m.config.EventTypes.GetEventPartitions(eventType)
+
+	return m.CreateTopic(ctx, topicName, partitions, m.config.TopicDefaults.ReplicationFactor)
 }
 
 func (m *Manager) DeleteTopic(ctx context.Context, topic string) error {
@@ -217,6 +237,23 @@ func (m *Manager) HealthCheck(ctx context.Context) error {
 	return nil
 }
 
+// Event-related helper methods
+func (m *Manager) GetEnabledEventTypes() []string {
+	return m.config.EventTypes.GetEnabledEvents()
+}
+
+func (m *Manager) GetEventWeight(eventType string) float64 {
+	return m.config.EventTypes.GetEventWeight(eventType)
+}
+
+func (m *Manager) IsEventTypeEnabled(eventType string) bool {
+	return m.config.EventTypes.IsEventEnabled(eventType)
+}
+
+func (m *Manager) GetEventTopicName(eventType string) string {
+	return m.buildEventTopicName(eventType)
+}
+
 // Helper methods
 func (m *Manager) buildTopicName(topic string) string {
 	fullName := topic
@@ -227,6 +264,28 @@ func (m *Manager) buildTopicName(topic string) string {
 		fullName = fullName + m.config.Topics.Suffix
 	}
 	return fullName
+}
+
+func (m *Manager) buildEventTopicName(eventType string) string {
+	return m.buildTopicName(eventType)
+}
+
+func (m *Manager) extractEventTypeFromTopic(topic string) (string, error) {
+	// Remove prefix and suffix to get event type
+	eventType := topic
+	if m.config.Topics.Prefix != "" {
+		eventType = strings.TrimPrefix(eventType, m.config.Topics.Prefix)
+	}
+	if m.config.Topics.Suffix != "" {
+		eventType = strings.TrimSuffix(eventType, m.config.Topics.Suffix)
+	}
+
+	// Validate if it's a known event type
+	if !m.config.EventTypes.IsEventEnabled(eventType) {
+		return "", fmt.Errorf("unknown or disabled event type: %s", eventType)
+	}
+
+	return eventType, nil
 }
 
 func (m *Manager) buildAdminConfig() kafka.ConfigMap {
@@ -325,3 +384,4 @@ func (m *Manager) addSecurityConfig(config *kafka.ConfigMap) {
 		}
 	}
 }
+

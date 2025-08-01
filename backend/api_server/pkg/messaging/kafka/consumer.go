@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"time"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 
 	"github.com/venndev/vrecommendation/pkg/messaging"
 	"github.com/venndev/vrecommendation/pkg/setting"
@@ -57,7 +58,8 @@ func (c *Consumer) Consume(ctx context.Context) (<-chan messaging.Message, <-cha
 			case <-ctx.Done():
 				return
 			default:
-				msg, err := c.consumer.ReadMessage(time.Duration(c.config.Consumer.FetchMaxWaitMs) * time.Millisecond)
+				duration := time.Duration(c.config.Consumer.FetchMaxWaitMs) * time.Millisecond
+				msg, err := c.consumer.ReadMessage(duration)
 				if err != nil {
 					var kafkaErr kafka.Error
 					if errors.As(err, &kafkaErr) {

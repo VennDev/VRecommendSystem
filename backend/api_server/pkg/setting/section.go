@@ -18,7 +18,7 @@ type Config struct {
 	Producer       Producer       `yaml:"producer" mapstructure:"producer"`
 	Consumer       Consumer       `yaml:"consumer" mapstructure:"consumer"`
 	TopicDefaults  TopicDefaults  `yaml:"topic_defaults" mapstructure:"topic_defaults"`
-	TopicRetention TopicRetention `yaml:"topic_retention" mapstructure:"topic_retention"`
+	EventTypes     EventTypes     `yaml:"event_types" mapstructure:"event_types"`
 	Partitioning   Partitioning   `yaml:"partitioning" mapstructure:"partitioning"`
 	SchemaRegistry SchemaRegistry `yaml:"schema_registry" mapstructure:"schema_registry"`
 	Monitoring     Monitoring     `yaml:"monitoring" mapstructure:"monitoring"`
@@ -118,10 +118,17 @@ type TopicDefaults struct {
 	RetentionMs       int `yaml:"retention_ms" mapstructure:"retention_ms"`
 }
 
-type TopicRetention struct {
-	ViewEvents int64 `yaml:"view_events" mapstructure:"view_events"`
-	LikeEvents int64 `yaml:"like_events" mapstructure:"like_events"`
-	BuyEvents  int64 `yaml:"buy_events" mapstructure:"buy_events"`
+// New EventTypes configuration
+type EventTypes struct {
+	SupportedEvents []string                   `yaml:"supported_events" mapstructure:"supported_events"`
+	EventConfig     map[string]EventTypeConfig `yaml:"event_config" mapstructure:"event_config"`
+}
+
+type EventTypeConfig struct {
+	Weight      float64 `yaml:"weight" mapstructure:"weight"`
+	RetentionMs int64   `yaml:"retention_ms" mapstructure:"retention_ms"`
+	Partitions  int     `yaml:"partitions" mapstructure:"partitions"`
+	Enabled     bool    `yaml:"enabled" mapstructure:"enabled"`
 }
 
 type Partitioning struct {
@@ -179,9 +186,8 @@ type Environment struct {
 }
 
 type Recommendation struct {
-	Realtime     RealtimeConfig `yaml:"realtime" mapstructure:"realtime"`
-	Batch        BatchConfig    `yaml:"batch" mapstructure:"batch"`
-	EventWeights EventWeights   `yaml:"event_weights" mapstructure:"event_weights"`
+	Realtime RealtimeConfig `yaml:"realtime" mapstructure:"realtime"`
+	Batch    BatchConfig    `yaml:"batch" mapstructure:"batch"`
 }
 
 type RealtimeConfig struct {
@@ -192,13 +198,41 @@ type BatchConfig struct {
 	ProcessingIntervalMs int `yaml:"processing_interval_ms" mapstructure:"processing_interval_ms"`
 }
 
-type EventWeights struct {
-	View           float64 `yaml:"view" mapstructure:"view"`
-	Like           float64 `yaml:"like" mapstructure:"like"`
-	Comment        float64 `yaml:"comment" mapstructure:"comment"`
-	Share          float64 `yaml:"share" mapstructure:"share"`
-	Bookmark       float64 `yaml:"bookmark" mapstructure:"bookmark"`
-	AddToCart      float64 `yaml:"add_to_cart" mapstructure:"add_to_cart"`
-	AddToFavorites float64 `yaml:"add_to_favorites" mapstructure:"add_to_favorites"`
-	Buy            float64 `yaml:"buy" mapstructure:"buy"`
+// Helper methods for EventTypes
+func (et *EventTypes) GetEnabledEvents() []string {
+	var enabled []string
+	for _, eventType := range et.SupportedEvents {
+		if config, exists := et.EventConfig[eventType]; exists && config.Enabled {
+			enabled = append(enabled, eventType)
+		}
+	}
+	return enabled
+}
+
+func (et *EventTypes) GetEventWeight(eventType string) float64 {
+	if config, exists := et.EventConfig[eventType]; exists {
+		return config.Weight
+	}
+	return 1.0 // Default weight
+}
+
+func (et *EventTypes) GetEventRetention(eventType string) int64 {
+	if config, exists := et.EventConfig[eventType]; exists {
+		return config.RetentionMs
+	}
+	return 604800000 // Default 7 days
+}
+
+func (et *EventTypes) GetEventPartitions(eventType string) int {
+	if config, exists := et.EventConfig[eventType]; exists && config.Partitions > 0 {
+		return config.Partitions
+	}
+	return 8 // Default partitions
+}
+
+func (et *EventTypes) IsEventEnabled(eventType string) bool {
+	if config, exists := et.EventConfig[eventType]; exists {
+		return config.Enabled
+	}
+	return false
 }
