@@ -2,13 +2,18 @@ package initialize
 
 import (
 	"github.com/venndev/vrecommendation/global"
+	"github.com/venndev/vrecommendation/pkg/logger"
 	"log"
 )
 
-func InitLogger() {
+func InitLogger() *logger.Logger {
+	lgr := logger.Logger{}
+	global.Logger = &lgr
+
 	err := global.Logger.Init()
 	if err != nil {
 		log.Fatal("Failed to initialize logger", err)
 	}
-	defer global.Logger.Close()
+
+	return global.Logger
 }

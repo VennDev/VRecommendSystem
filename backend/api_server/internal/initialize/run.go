@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"github.com/venndev/vrecommendation/global"
+	kfcore "github.com/venndev/vrecommendation/pkg/messaging/core"
 	"github.com/venndev/vrecommendation/pkg/utils"
 )
 
@@ -10,11 +11,19 @@ func Run() {
 	LoadConfig()
 
 	// Initialize Logger
-	InitLogger()
+	logger := InitLogger()
+	defer logger.Close()
 
 	// Initialize Kafka
-	kafka := InitKafka()
-	defer kafka.Close()
+	manager, _ := InitKafka()
+	defer func(manager kfcore.KafkaManager) {
+		err := manager.Close()
+		if err != nil {
+			global.Logger.Error("Failed to close Kafka manager", err)
+		} else {
+			global.Logger.Info("Kafka manager closed successfully")
+		}
+	}(manager)
 
 	// Initialize App
 	app := InitApp()

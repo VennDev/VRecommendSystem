@@ -1,38 +1,51 @@
 package initialize
 
 import (
+	"context"
 	"github.com/venndev/vrecommendation/global"
-	"github.com/venndev/vrecommendation/pkg/provider"
+	"github.com/venndev/vrecommendation/internal/services"
+	svcore "github.com/venndev/vrecommendation/internal/services/core"
+	kfcore "github.com/venndev/vrecommendation/pkg/messaging/core"
+	"github.com/venndev/vrecommendation/pkg/messaging/kafka"
 	"go.uber.org/zap"
+	"time"
 )
 
-func InitKafka() *provider.KafkaManager {
-	err := global.Kafka.Initialize()
+func InitKafka() (kfcore.KafkaManager, svcore.EventService) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	manager, err := kafka.NewManager()
 	if err != nil {
-		global.Logger.Fatal("Failed to initialize Kafka", zap.Error(err))
-	} else {
-		global.Logger.Info("Kafka initialized successfully")
+		global.Logger.Fatal("Failed to create Kafka manager", zap.Error(err))
 	}
 
-	if err := global.Kafka.ValidateConfig(); err != nil {
-		global.Logger.Fatal("Kafka configuration validation failed", zap.Error(err))
-	} else {
-		global.Logger.Info("Kafka configuration validated successfully")
-	}
-
-	// Ensure initialized before creating topics
-	if err := global.Kafka.Initialize(); err != nil {
-		global.Logger.Fatal("Failed to initialize Kafka manager", zap.Error(err))
-	} else {
-		global.Logger.Info("Kafka manager initialized successfully")
-	}
-
-	err = global.Kafka.CreateAllTopics()
+	err = manager.HealthCheck(ctx)
 	if err != nil {
-		global.Logger.Fatal("Failed to create Kafka topics", zap.Error(err))
-	} else {
-		global.Logger.Info("Kafka topics created successfully")
+		global.Logger.Fatal("Kafka health check failed", zap.Error(err))
 	}
 
-	return global.Kafka
+	service := services.NewEventService(manager)
+	topicManager := kafka.NewTopicManager(manager)
+
+	err = topicManager.ValidateEventTypes()
+	if err != nil {
+		global.Logger.Fatal("Event types validation failed", zap.Error(err))
+	}
+
+	err = service.CreateEventTopics(ctx)
+	if err != nil {
+		global.Logger.Warn("Failed to create event topics", zap.Error(err))
+	}
+
+	enabledEvents := service.GetEnabledEventTypes()
+	global.Logger.Info("Kafka initialization completed",
+		zap.Strings("enabled_events", enabledEvents),
+		zap.Int("total_event_types", len(enabledEvents)),
+	)
+
+	global.KafkaManager = manager
+	global.EventService = service
+
+	return global.KafkaManager, global.EventService
 }

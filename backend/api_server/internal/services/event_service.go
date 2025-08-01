@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/venndev/vrecommendation/internal/event"
 	"time"
 
 	"github.com/venndev/vrecommendation/global"
@@ -17,16 +18,7 @@ type EventService struct {
 	topicManager *kafka.TopicManager
 }
 
-// EventMessage represents a standardized event message
-type EventMessage struct {
-	UserID    string                 `json:"user_id"`
-	ItemID    string                 `json:"item_id,omitempty"`
-	EventType string                 `json:"event_type"`
-	Timestamp int64                  `json:"timestamp"`
-	SessionID string                 `json:"session_id,omitempty"`
-	DeviceID  string                 `json:"device_id,omitempty"`
-	Metadata  map[string]interface{} `json:"metadata,omitempty"`
-}
+// event.Message represents a standardized event message
 
 func NewEventService(manager *kafka.Manager) *EventService {
 	return &EventService{
@@ -36,7 +28,7 @@ func NewEventService(manager *kafka.Manager) *EventService {
 }
 
 // SendEvent sends an event message to the appropriate topic
-func (es *EventService) SendEvent(ctx context.Context, event EventMessage) error {
+func (es *EventService) SendEvent(ctx context.Context, event event.Message) error {
 	// Validate event type
 	if !global.Config.EventTypes.IsEventEnabled(event.EventType) {
 		return fmt.Errorf("event type %s is not enabled", event.EventType)
@@ -59,7 +51,7 @@ func (es *EventService) SendEvent(ctx context.Context, event EventMessage) error
 		return fmt.Errorf("failed to get producer")
 	}
 
-	// Send to topic
+	// Send it to a topic
 	topicName := es.manager.GetEventTopicName(event.EventType)
 	key := []byte(event.UserID) // Partition by user_id
 
@@ -98,7 +90,7 @@ func (es *EventService) SendEvent(ctx context.Context, event EventMessage) error
 }
 
 // SendBatchEvents sends multiple events in batch
-func (es *EventService) SendBatchEvents(ctx context.Context, events []EventMessage) error {
+func (es *EventService) SendBatchEvents(ctx context.Context, events []event.Message) error {
 	if len(events) == 0 {
 		return nil
 	}
@@ -111,10 +103,10 @@ func (es *EventService) SendBatchEvents(ctx context.Context, events []EventMessa
 	var errors []error
 	successCount := 0
 
-	for _, event := range events {
-		if err := es.SendEvent(ctx, event); err != nil {
+	for _, ev := range events {
+		if err := es.SendEvent(ctx, ev); err != nil {
 			errors = append(errors, fmt.Errorf("failed to send event %s for user %s: %w",
-				event.EventType, event.UserID, err))
+				ev.EventType, ev.UserID, err))
 		} else {
 			successCount++
 		}
@@ -134,8 +126,8 @@ func (es *EventService) SendBatchEvents(ctx context.Context, events []EventMessa
 }
 
 // ConsumeEvents consumes events from specified event types
-func (es *EventService) ConsumeEvents(ctx context.Context, eventTypes []string, groupID string) (<-chan EventMessage, <-chan error) {
-	eventChan := make(chan EventMessage, 100)
+func (es *EventService) ConsumeEvents(ctx context.Context, eventTypes []string, groupID string) (<-chan event.Message, <-chan error) {
+	eventChan := make(chan event.Message, 100)
 	errorChan := make(chan error, 10)
 
 	// Validate event types
@@ -192,14 +184,14 @@ func (es *EventService) ConsumeEvents(ctx context.Context, eventTypes []string, 
 					continue
 				}
 
-				var event EventMessage
-				if err := json.Unmarshal(msg.Value, &event); err != nil {
+				var ev event.Message
+				if err := json.Unmarshal(msg.Value, &ev); err != nil {
 					errorChan <- fmt.Errorf("failed to unmarshal event: %w", err)
 					continue
 				}
 
 				select {
-				case eventChan <- event:
+				case eventChan <- ev:
 				case <-ctx.Done():
 					return
 				}
@@ -216,11 +208,11 @@ func (es *EventService) ConsumeEvents(ctx context.Context, eventTypes []string, 
 }
 
 // GetEventStats returns statistics for all event types
-func (es *EventService) GetEventStats() map[string]EventTypeStats {
-	stats := make(map[string]EventTypeStats)
+func (es *EventService) GetEventStats() map[string]event.TypeStats {
+	stats := make(map[string]event.TypeStats)
 
 	for eventType, config := range global.Config.EventTypes.EventConfig {
-		stats[eventType] = EventTypeStats{
+		stats[eventType] = event.TypeStats{
 			EventType:   eventType,
 			Weight:      config.Weight,
 			RetentionMs: config.RetentionMs,
@@ -233,18 +225,8 @@ func (es *EventService) GetEventStats() map[string]EventTypeStats {
 	return stats
 }
 
-// EventTypeStats represents statistics for an event type
-type EventTypeStats struct {
-	EventType   string  `json:"event_type"`
-	Weight      float64 `json:"weight"`
-	RetentionMs int64   `json:"retention_ms"`
-	Partitions  int     `json:"partitions"`
-	Enabled     bool    `json:"enabled"`
-	TopicName   string  `json:"topic_name"`
-}
-
 // ValidateEvent validates an event message
-func (es *EventService) ValidateEvent(event EventMessage) error {
+func (es *EventService) ValidateEvent(event event.Message) error {
 	if event.UserID == "" {
 		return fmt.Errorf("user_id is required")
 	}
