@@ -45,7 +45,7 @@ func generateNewAccessToken(id string, credentials []string) (string, error) {
 	// Set secret key from .env file.
 	secret := cfg.SecretKey
 
-	// Set expires minutes count for secret key from .env file.
+	// Set expires minute count for a secret key from .env file.
 	minutesCount := cfg.ExpireMinsCount
 
 	// Create a new claims.
@@ -92,7 +92,7 @@ func generateNewRefreshToken() (string, error) {
 		return "", err
 	}
 
-	// Set expires hours count for refresh key from .env file.
+	// Set expires hours count for a refresh key from .env file.
 	hoursCount := cfg.RefreshExpireHoursCount
 
 	// Set expiration time.

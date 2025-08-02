@@ -118,7 +118,7 @@ type TopicDefaults struct {
 	RetentionMs       int `yaml:"retention_ms" mapstructure:"retention_ms"`
 }
 
-// New EventTypes configuration
+// EventTypes New EventTypes configuration
 type EventTypes struct {
 	SupportedEvents []string                   `yaml:"supported_events" mapstructure:"supported_events"`
 	EventConfig     map[string]EventTypeConfig `yaml:"event_config" mapstructure:"event_config"`

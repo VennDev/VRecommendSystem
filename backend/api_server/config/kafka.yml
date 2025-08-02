@@ -6,9 +6,7 @@
 # Core Kafka Settings
 kafka:
   brokers:
-    - localhost:9092
-    - localhost:9093
-    - localhost:9094
+    - kafka:9092
   client_id: 'recommendation-service'
   auto_offset_reset: 'earliest'
 

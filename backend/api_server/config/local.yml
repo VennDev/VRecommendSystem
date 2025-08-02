@@ -5,8 +5,8 @@ status_dev: 'dev'
 
 # Server configuration
 server:
-  host: 'localhost'
-  port: 8080
+  host: '0.0.0.0'
+  port: 2030
   read_timeout: 60
 
 # Logger configuration
@@ -34,10 +34,10 @@ database:
   # Database type can be 'mysql', 'postgres', 'mongodb'
   type: 'mysql'
   host: 'localhost'
-  port: 330
+  port: 3306
   user: 'root'
   password: 'password'
-  name: 'my_database'
+  name: 'shop'
   ssl: false
   max_idle_conns: 10
   max_open_conns: 100

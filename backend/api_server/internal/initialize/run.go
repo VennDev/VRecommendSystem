@@ -8,7 +8,10 @@ import (
 
 func Run() {
 	// Load Config
-	LoadConfig()
+	err := LoadConfig()
+	if err != nil {
+		panic(err)
+	}
 
 	// Initialize Logger
 	logger := InitLogger()

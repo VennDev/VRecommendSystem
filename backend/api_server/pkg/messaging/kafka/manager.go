@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"go.uber.org/zap"
 
 	"github.com/venndev/vrecommendation/global"
@@ -237,7 +237,7 @@ func (m *Manager) HealthCheck(ctx context.Context) error {
 	return nil
 }
 
-// Event-related helper methods
+// GetEnabledEventTypes Event-related helper methods
 func (m *Manager) GetEnabledEventTypes() []string {
 	return m.config.EventTypes.GetEnabledEvents()
 }
@@ -271,7 +271,7 @@ func (m *Manager) buildEventTopicName(eventType string) string {
 }
 
 func (m *Manager) extractEventTypeFromTopic(topic string) (string, error) {
-	// Remove prefix and suffix to get event type
+	// Remove prefix and suffix to get an event type
 	eventType := topic
 	if m.config.Topics.Prefix != "" {
 		eventType = strings.TrimPrefix(eventType, m.config.Topics.Prefix)
@@ -329,11 +329,11 @@ func (m *Manager) buildProducerConfig() kafka.ConfigMap {
 		"max.in.flight.requests.per.connection": m.config.Producer.MaxInFlightRequestsPerConnection,
 		"batch.size":                            m.config.Producer.BatchSize,
 		"linger.ms":                             m.config.Producer.LingerMs,
-		"buffer.memory":                         m.config.Producer.BufferMemory,
-		"compression.type":                      m.config.Producer.CompressionType,
-		"message.max.bytes":                     m.config.Producer.MaxRequestSize,
-		"request.timeout.ms":                    m.config.Producer.RequestTimeoutMs,
-		"delivery.timeout.ms":                   m.config.Producer.DeliveryTimeoutMs,
+		// "buffer.memory":                         m.config.Producer.BufferMemory,
+		"compression.type":    m.config.Producer.CompressionType,
+		"message.max.bytes":   m.config.Producer.MaxRequestSize,
+		"request.timeout.ms":  m.config.Producer.RequestTimeoutMs,
+		"delivery.timeout.ms": m.config.Producer.DeliveryTimeoutMs,
 	}
 
 	// Add security config
@@ -384,4 +384,3 @@ func (m *Manager) addSecurityConfig(config *kafka.ConfigMap) {
 		}
 	}
 }
-
