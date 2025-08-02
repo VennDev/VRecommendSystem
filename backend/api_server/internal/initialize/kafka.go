@@ -4,14 +4,14 @@ import (
 	"context"
 	"github.com/venndev/vrecommendation/global"
 	"github.com/venndev/vrecommendation/internal/services"
-	svcore "github.com/venndev/vrecommendation/internal/services/types"
+	svtype "github.com/venndev/vrecommendation/internal/services/types"
 	"github.com/venndev/vrecommendation/pkg/messaging/kafka"
-	kfcore "github.com/venndev/vrecommendation/pkg/messaging/types"
+	kftype "github.com/venndev/vrecommendation/pkg/messaging/types"
 	"go.uber.org/zap"
 	"time"
 )
 
-func InitKafka() (kfcore.KafkaManager, svcore.EventService) {
+func InitKafka() (kftype.KafkaManager, svtype.EventService) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
