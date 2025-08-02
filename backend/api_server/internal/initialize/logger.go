@@ -3,11 +3,11 @@ package initialize
 import (
 	"github.com/venndev/vrecommendation/global"
 	"github.com/venndev/vrecommendation/pkg/logger"
-	"github.com/venndev/vrecommendation/pkg/logger/core"
+	"github.com/venndev/vrecommendation/pkg/logger/types"
 	"log"
 )
 
-func InitLogger() core.Logger {
+func InitLogger() types.Logger {
 	lgr := logger.Logger{}
 	global.Logger = &lgr
 

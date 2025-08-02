@@ -1,9 +1,9 @@
 package global
 
 import (
-	svccore "github.com/venndev/vrecommendation/internal/services/core"
-	lgcore "github.com/venndev/vrecommendation/pkg/logger/core"
-	kfcore "github.com/venndev/vrecommendation/pkg/messaging/core"
+	svccore "github.com/venndev/vrecommendation/internal/services/types"
+	lgcore "github.com/venndev/vrecommendation/pkg/logger/types"
+	kfcore "github.com/venndev/vrecommendation/pkg/messaging/types"
 	"github.com/venndev/vrecommendation/pkg/setting"
 )
 

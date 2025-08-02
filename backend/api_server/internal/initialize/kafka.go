@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/venndev/vrecommendation/global"
 	"github.com/venndev/vrecommendation/internal/services"
-	svcore "github.com/venndev/vrecommendation/internal/services/core"
-	kfcore "github.com/venndev/vrecommendation/pkg/messaging/core"
+	svcore "github.com/venndev/vrecommendation/internal/services/types"
 	"github.com/venndev/vrecommendation/pkg/messaging/kafka"
+	kfcore "github.com/venndev/vrecommendation/pkg/messaging/types"
 	"go.uber.org/zap"
 	"time"
 )

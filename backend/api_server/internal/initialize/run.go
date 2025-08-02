@@ -2,7 +2,7 @@ package initialize
 
 import (
 	"github.com/venndev/vrecommendation/global"
-	kfcore "github.com/venndev/vrecommendation/pkg/messaging/core"
+	kfcore "github.com/venndev/vrecommendation/pkg/messaging/types"
 	"github.com/venndev/vrecommendation/pkg/utils"
 )
 
