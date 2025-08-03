@@ -2,15 +2,14 @@ package initialize
 
 import (
 	"github.com/venndev/vrecommendation/global"
-	"github.com/venndev/vrecommendation/pkg/messaging/types"
 	"github.com/venndev/vrecommendation/pkg/utils"
 )
 
-func Run() {
+func InitDataHandler() error {
 	// Load Config
 	err := LoadConfig()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// Initialize Logger
@@ -18,15 +17,35 @@ func Run() {
 	defer logger.Close()
 
 	// Initialize Kafka
-	manager, _ := InitKafka()
-	defer func(manager types.KafkaManager) {
-		err := manager.Close()
+	_, _, err = InitKafka()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Run() {
+	// Initialize Data Handler
+	err := InitDataHandler()
+	if err != nil {
+		panic("Failed to initialize data handler: " + err.Error())
+		return
+	}
+
+	// Ensure Kafka manager is closed on exit
+	defer func() {
+		if global.KafkaManager == nil {
+			global.Logger.Error("Kafka manager is nil, cannot close", nil)
+			return
+		}
+		err := global.KafkaManager.Close()
 		if err != nil {
 			global.Logger.Error("Failed to close Kafka manager", err)
 		} else {
 			global.Logger.Info("Kafka manager closed successfully")
 		}
-	}(manager)
+	}()
 
 	// Initialize App
 	app := InitApp()

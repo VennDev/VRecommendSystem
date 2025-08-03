@@ -13,4 +13,7 @@ func PublicRouters(a *fiber.App) {
 
 	// This route is used to create a new interaction
 	route.Post("/new_interaction", handlers.NewInteraction)
+
+	// This route is used to get recommendations based on user interactions
+	route.Get("/recommend", handlers.Recommend)
 }

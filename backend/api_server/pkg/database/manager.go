@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+
 	"github.com/venndev/vrecommendation/global"
 )
 
@@ -102,8 +103,10 @@ func (dm *DatabaseManager) IsConnected() bool {
 	if dm.sql != nil && dm.sql.IsConnected() {
 		return true
 	}
+
 	if dm.nosql != nil && dm.nosql.IsConnected() {
 		return true
 	}
+
 	return false
 }

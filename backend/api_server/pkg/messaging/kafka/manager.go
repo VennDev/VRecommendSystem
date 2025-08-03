@@ -358,8 +358,8 @@ func (m *Manager) buildConsumerConfig(groupID string) kafka.ConfigMap {
 		"auto.commit.interval.ms":   m.config.Consumer.AutoCommitIntervalMs,
 	}
 
-	// Add security config
 	m.addSecurityConfig(&config)
+
 	return config
 }
 

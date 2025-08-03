@@ -11,18 +11,20 @@ import (
 	"time"
 )
 
-func InitKafka() (kftype.KafkaManager, svtype.EventService) {
+func InitKafka() (kftype.KafkaManager, svtype.EventService, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	manager, err := kafka.NewManager()
 	if err != nil {
 		global.Logger.Fatal("Failed to create Kafka manager", zap.Error(err))
+		return nil, nil, err
 	}
 
 	err = manager.HealthCheck(ctx)
 	if err != nil {
 		global.Logger.Fatal("Kafka health check failed", zap.Error(err))
+		return nil, nil, err
 	}
 
 	service := services.NewEventService(manager)
@@ -31,6 +33,7 @@ func InitKafka() (kftype.KafkaManager, svtype.EventService) {
 	err = topicManager.ValidateEventTypes()
 	if err != nil {
 		global.Logger.Fatal("Event types validation failed", zap.Error(err))
+		return nil, nil, err
 	}
 
 	err = service.CreateEventTopics(ctx)
@@ -47,5 +50,5 @@ func InitKafka() (kftype.KafkaManager, svtype.EventService) {
 	global.KafkaManager = manager
 	global.EventService = service
 
-	return global.KafkaManager, global.EventService
+	return global.KafkaManager, global.EventService, nil
 }
