@@ -1,0 +1,9 @@
+---
+# Logger configuration
+logger:
+  max_size: 10 # Maximum size of the log file in MB
+  max_backups: 5 # Maximum number of backup log files to keep
+  max_age: 30 # Maximum age of a log file in days
+  compression: true # Whether to compress old log files
+  local_time: true # Use local time for timestamps in logs
+...
