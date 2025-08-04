@@ -176,38 +176,6 @@ topic_defaults:
   retention_ms: 604800000  # 7 days retention for real-time events
 
 # ===========================================
-# PARTITIONING STRATEGY
-# ===========================================
-
-partitioning:
-  # Partition by user_id for maintaining user event order
-  partitioner_class: 'org.apache.kafka.clients.producer.internals.DefaultPartitioner'
-  partition_key_field: 'user_id'
-
-# ===========================================
-# SCHEMA REGISTRY (Optional but Recommended)
-# ===========================================
-
-schema_registry:
-  url: 'http://localhost:8081'
-  enabled: false
-
-# ===========================================
-# MONITORING & METRICS
-# ===========================================
-
-monitoring:
-  # JMX Metrics
-  jmx:
-    enabled: true
-    port: 9999
-
-  # Lag Monitoring Thresholds
-  consumer_lag:
-    max_lag: 10000
-    alert_threshold: 5000
-
-# ===========================================
 # SECURITY CONFIGURATION (Production)
 # ===========================================
 
@@ -245,24 +213,4 @@ environment:
   #   - 'kafka1:9092'
   #   - 'kafka2:9092'
   #   - 'kafka3:9092'
-
-# ===========================================
-# RECOMMENDATION SYSTEM SPECIFIC
-# ===========================================
-
-recommendation:
-  # Real-time Processing
-  realtime:
-    window_size_ms: 60000  # 1-minute window for real-time recommendations
-
-  # Batch Processing
-  batch:
-    processing_interval_ms: 300000  # 5-minute interval for batch updates
-
-# Topic Creation Template
-# Format: {topics.prefix}{event_type_lowercase}{topics.suffix}
-# Examples:
-# - user_interactions_view_events
-# - user_interactions_like_events
-# - user_interactions_buy_events
 ...

@@ -37,6 +37,6 @@ type MessageBroker interface {
 	CreateTopic(ctx context.Context, topic string, partitions int, replicationFactor int) error
 	DeleteTopic(ctx context.Context, topic string) error
 	ListTopics(ctx context.Context) ([]string, error)
-	Close() error
 	HealthCheck(ctx context.Context) error
+	Close() error
 }

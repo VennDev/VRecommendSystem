@@ -288,3 +288,10 @@ func (es *EventService) GetHighValueEvents(threshold float64) []string {
 func (es *EventService) IsEventEnabled(eventType string) bool {
 	return global.Config.EventTypes.IsEventEnabled(eventType)
 }
+
+func (es *EventService) Close() error {
+	if es.manager != nil {
+		return es.manager.Close()
+	}
+	return nil
+}

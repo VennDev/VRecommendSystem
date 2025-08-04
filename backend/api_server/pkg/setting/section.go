@@ -17,12 +17,8 @@ type Config struct {
 	Consumer       Consumer       `yaml:"consumer" mapstructure:"consumer"`
 	TopicDefaults  TopicDefaults  `yaml:"topic_defaults" mapstructure:"topic_defaults"`
 	EventTypes     EventTypes     `yaml:"event_types" mapstructure:"event_types"`
-	Partitioning   Partitioning   `yaml:"partitioning" mapstructure:"partitioning"`
-	SchemaRegistry SchemaRegistry `yaml:"schema_registry" mapstructure:"schema_registry"`
-	Monitoring     Monitoring     `yaml:"monitoring" mapstructure:"monitoring"`
 	Security       Security       `yaml:"security" mapstructure:"security"`
 	Environment    Environment    `yaml:"environment" mapstructure:"environment"`
-	Recommendation Recommendation `yaml:"recommendation" mapstructure:"recommendation"`
 }
 
 type Logger struct {
@@ -123,21 +119,6 @@ type EventTypeConfig struct {
 	Enabled     bool    `yaml:"enabled" mapstructure:"enabled"`
 }
 
-type Partitioning struct {
-	PartitionerClass  string `yaml:"partitioner_class" mapstructure:"partitioner_class"`
-	PartitionKeyField string `yaml:"partition_key_field" mapstructure:"partition_key_field"`
-}
-
-type SchemaRegistry struct {
-	URL     string `yaml:"url" mapstructure:"url"`
-	Enabled bool   `yaml:"enabled" mapstructure:"enabled"`
-}
-
-type Monitoring struct {
-	JMX         JMX         `yaml:"jmx" mapstructure:"jmx"`
-	ConsumerLag ConsumerLag `yaml:"consumer_lag" mapstructure:"consumer_lag"`
-}
-
 type JMX struct {
 	Enabled bool `yaml:"enabled" mapstructure:"enabled"`
 	Port    int  `yaml:"port" mapstructure:"port"`
@@ -177,20 +158,7 @@ type Environment struct {
 	Brokers      []string `yaml:"brokers" mapstructure:"brokers"`
 }
 
-type Recommendation struct {
-	Realtime RealtimeConfig `yaml:"realtime" mapstructure:"realtime"`
-	Batch    BatchConfig    `yaml:"batch" mapstructure:"batch"`
-}
-
-type RealtimeConfig struct {
-	WindowSizeMs int `yaml:"window_size_ms" mapstructure:"window_size_ms"`
-}
-
-type BatchConfig struct {
-	ProcessingIntervalMs int `yaml:"processing_interval_ms" mapstructure:"processing_interval_ms"`
-}
-
-// Helper methods for EventTypes
+// GetEnabledEvents Helper methods for EventTypes
 func (et *EventTypes) GetEnabledEvents() []string {
 	var enabled []string
 	for _, eventType := range et.SupportedEvents {
