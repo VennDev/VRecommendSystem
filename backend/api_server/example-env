@@ -1,0 +1,5 @@
+# Environment can be set to 'dev', 'test' or 'prod'
+STATUS_DEV=dev
+HOST_ADDRESS=0.0.0.0
+HOST_PORT=2030
+HOST_READ_TIMEOUT=60
