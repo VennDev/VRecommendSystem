@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/venndev/vrecommendation/internal/event"
+	"sync"
 	"time"
 
 	"github.com/venndev/vrecommendation/global"
@@ -12,13 +13,30 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	eventServiceInstance *EventService
+	eventServiceOnce     sync.Once
+)
+
+func GetEventService() *EventService {
+	eventServiceOnce.Do(func() {
+		manager, err := kafka.NewManager()
+		if err != nil {
+			global.Logger.Fatal("Failed to create Kafka manager", zap.Error(err))
+		}
+		eventServiceInstance = &EventService{
+			manager:      manager,
+			topicManager: kafka.NewTopicManager(manager),
+		}
+	})
+	return eventServiceInstance
+}
+
 // EventService handles event-specific operations
 type EventService struct {
 	manager      *kafka.Manager
 	topicManager *kafka.TopicManager
 }
-
-// event.Message represents a standardized event message
 
 func NewEventService(manager *kafka.Manager) *EventService {
 	return &EventService{

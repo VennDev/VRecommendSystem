@@ -13,11 +13,11 @@ import (
 
 type Producer struct {
 	producer *kafka.Producer
-	config   setting.Config
+	config   *setting.Config
 	manager  *Manager
 }
 
-func NewProducer(config setting.Config) (*Producer, error) {
+func NewProducer(config *setting.Config) (*Producer, error) {
 	manager := &Manager{config: config}
 	kafkaConfig := manager.buildProducerConfig()
 

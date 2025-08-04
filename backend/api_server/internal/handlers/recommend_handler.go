@@ -7,7 +7,7 @@ func Recommend(c fiber.Ctx) error {
 	// This function will handle the recommendation requests
 	// and return the recommended items based on user interactions.
 
-	// For now, we will just return a dummy response.
+	// For now, we will just return a fake response.
 	return c.JSON(fiber.Map{
 		"message": "Recommendation endpoint is under construction",
 	})

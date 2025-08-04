@@ -5,7 +5,6 @@ import (
 	"github.com/venndev/vrecommendation/global"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
@@ -13,11 +12,22 @@ import (
 	"go.uber.org/zap"
 )
 
+func buildStringConnection() string {
+	host := os.Getenv("HOST_ADDRESS")
+	if host == "" {
+		host = "localhost"
+	}
+
+	port := os.Getenv("HOST_PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	return host + ":" + port
+}
+
 func StartServer(app *fiber.App) {
-	cfg := &global.Config.Server
-	host := cfg.Host
-	port := strconv.Itoa(cfg.Port)
-	address := host + ":" + port
+	address := buildStringConnection()
 
 	if err := app.Listen(address); err != nil {
 		global.Logger.Error("Failed to start server", err, zap.String("address", address))
@@ -26,11 +36,7 @@ func StartServer(app *fiber.App) {
 }
 
 func StartServerWithGracefulShutdown(app *fiber.App) {
-	cf := &global.Config.Server
-	host := cf.Host
-	port := strconv.Itoa(cf.Port)
-	address := host + ":" + port
-
+	address := buildStringConnection()
 	go func() {
 		if err := app.Listen(address); err != nil {
 			global.Logger.Fatal("Server exited with error", zap.String("error", err.Error()))

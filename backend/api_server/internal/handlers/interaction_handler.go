@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/venndev/vrecommendation/global"
 	"github.com/venndev/vrecommendation/internal/event"
+	"github.com/venndev/vrecommendation/internal/services"
 )
 
 func NewInteraction(c fiber.Ctx) error {
@@ -15,7 +16,8 @@ func NewInteraction(c fiber.Ctx) error {
 		})
 	}
 
-	err := global.EventService.SendEvent(c.Context(), event.Message{
+	service := services.GetEventService()
+	err := service.SendEvent(c.Context(), event.Message{
 		EventType: bodyData.EventType,
 		UserID:    bodyData.UserID,
 		ItemID:    bodyData.ItemID,

@@ -14,12 +14,12 @@ import (
 
 type Consumer struct {
 	consumer *kafka.Consumer
-	config   setting.Config
+	config   *setting.Config
 	groupID  string
 	manager  *Manager
 }
 
-func NewConsumer(config setting.Config, groupID string) (*Consumer, error) {
+func NewConsumer(config *setting.Config, groupID string) (*Consumer, error) {
 	manager := &Manager{config: config}
 	kafkaConfig := manager.buildConsumerConfig(groupID)
 

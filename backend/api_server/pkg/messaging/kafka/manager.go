@@ -15,7 +15,7 @@ import (
 )
 
 type Manager struct {
-	config    setting.Config
+	config    *setting.Config
 	producers map[string]*Producer
 	consumers map[string]*Consumer
 	mu        sync.RWMutex
@@ -28,7 +28,7 @@ func NewManager() (*Manager, error) {
 	}
 
 	return &Manager{
-		config:    global.Config,
+		config:    &global.Config,
 		producers: make(map[string]*Producer),
 		consumers: make(map[string]*Consumer),
 	}, nil

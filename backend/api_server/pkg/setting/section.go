@@ -4,12 +4,10 @@ import "time"
 
 type Config struct {
 	// From local.yml
-	StatusDev string   `yaml:"status_dev" mapstructure:"status_dev"`
-	Server    Server   `yaml:"server" mapstructure:"server"`
-	Logger    Logger   `yaml:"logger" mapstructure:"logger"`
-	JWT       JWT      `yaml:"jwt" mapstructure:"jwt"`
-	Redis     Redis    `yaml:"redis" mapstructure:"redis"`
-	Database  Database `yaml:"database" mapstructure:"database"`
+	Logger   Logger   `yaml:"logger" mapstructure:"logger"`
+	JWT      JWT      `yaml:"jwt" mapstructure:"jwt"`
+	Redis    Redis    `yaml:"redis" mapstructure:"redis"`
+	Database Database `yaml:"database" mapstructure:"database"`
 
 	// From kafka.yml
 	Kafka          Kafka          `yaml:"kafka" mapstructure:"kafka"`
@@ -25,12 +23,6 @@ type Config struct {
 	Security       Security       `yaml:"security" mapstructure:"security"`
 	Environment    Environment    `yaml:"environment" mapstructure:"environment"`
 	Recommendation Recommendation `yaml:"recommendation" mapstructure:"recommendation"`
-}
-
-type Server struct {
-	Host        string `yaml:"host" mapstructure:"host"`
-	Port        int    `yaml:"port" mapstructure:"port"`
-	ReadTimeout int    `yaml:"read_timeout" mapstructure:"read_timeout"`
 }
 
 type Logger struct {
