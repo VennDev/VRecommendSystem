@@ -6,4 +6,19 @@ logger:
   max_age: 30 # Maximum age of a log file in days
   compression: true # Whether to compress old log files
   local_time: true # Use local time for timestamps in logs
+
+# Database configuration
+database:
+  # Database type can be 'mysql', 'postgres', 'mongodb'
+  type: 'mysql'
+  host: '0.0.0.0'
+  port: 3306
+  user: 'root'
+  password: 'password'
+  name: 'shop'
+  ssl: false
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_lifetime: '30s'
+  conn_max_idle_time: '30s'
 ...

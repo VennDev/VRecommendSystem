@@ -5,27 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/ai_server.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/config/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/config/local.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/initialize/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/initialize/logger.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/models/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/models/base/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/models/base/base_model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/models/base/imodel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api_server/app/models/interaction_model.go" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/handlers/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/middlewares/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/models/base_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/models/collaborative/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/models/content/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/models/utils/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/routers/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/services/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/config/local.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/config/local.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/models/base/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/database/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/models/base/base_model.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/models/base/imodel.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,38 +43,44 @@
       </map>
     </option>
   </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="30phQhwBxu368Pd5V5UmiLTSRsZ" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "terminal",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.general&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\VennDev\OneDrive\Desktop\VRecommendation\backend\ai_server\src\ai_server\models\collaborative_filtering" />
+      <recent name="C:\Users\VennDev\OneDrive\Desktop\VRecommendation\backend\ai_server\src\ai_server\models\factory" />
       <recent name="C:\Users\VennDev\OneDrive\Desktop\VRecommendation\backend\ai_server\src\ai_server" />
       <recent name="C:\Users\VennDev\OneDrive\Desktop\VRecommendation\backend\ai_server" />
     </key>
@@ -101,7 +100,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1754330410341</updated>
-      <workItem from="1754330411380" duration="3866000" />
+      <workItem from="1754330411380" duration="4754000" />
+      <workItem from="1754409747045" duration="339000" />
+      <workItem from="1754415540729" duration="2304000" />
+      <workItem from="1754418524900" duration="3179000" />
+      <workItem from="1754500250637" duration="147000" />
+      <workItem from="1754500452405" duration="8495000" />
     </task>
     <servers />
   </component>
