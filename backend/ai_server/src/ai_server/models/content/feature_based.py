@@ -51,11 +51,11 @@ class FeatureBasedRecommender(BaseRecommender):
         self.similarity_metric = similarity_metric
         self.normalize_features = normalize_features
 
-        self.feature_matrix = None
-        self.item_similarity_matrix = None
-        self.user_profiles = None
-        self.scalers = {}
-        self.encoders = {}
+        self.feature_matrix: Optional[np.ndarray] = None
+        self.item_similarity_matrix: Optional[np.ndarray] = None
+        self.user_profiles: Optional[Dict[int, np.ndarray]] = None
+        self.scalers: Dict[str, StandardScaler] = {}
+        self.encoders: Dict[str, LabelEncoder] = {}
 
     def fit(self, interaction_data: pd.DataFrame,
             user_features: Optional[pd.DataFrame] = None,
@@ -71,6 +71,8 @@ class FeatureBasedRecommender(BaseRecommender):
         Returns:
             Self for method chaining
         """
+        # Note: user_features parameter is kept for API consistency but not used
+        _ = user_features  # Explicitly mark as unused to avoid linting warnings
         self._validate_input(interaction_data)
 
         if item_features is None:
@@ -143,9 +145,14 @@ class FeatureBasedRecommender(BaseRecommender):
             item_features['item_idx'] = self.item_encoder.fit_transform(item_features['item_id'])
         else:
             # Filter to only known items
-            known_items = set(self.item_encoder.classes_)
-            item_features = item_features[item_features['item_id'].isin(known_items)]
-            item_features['item_idx'] = self.item_encoder.transform(item_features['item_id'])
+            known_items_array = self.item_encoder.classes_
+            if known_items_array is not None:
+                known_items = list(known_items_array)
+                filtered_mask = item_features['item_id'].isin(known_items)
+                item_features_filtered = item_features[filtered_mask].copy()
+                if isinstance(item_features_filtered, pd.DataFrame):
+                    item_features = item_features_filtered
+                    item_features['item_idx'] = self.item_encoder.transform(item_features['item_id'])
 
         # Sort by item_idx to ensure proper alignment
         item_features = item_features.sort_values('item_idx').reset_index(drop=True)
@@ -169,16 +176,20 @@ class FeatureBasedRecommender(BaseRecommender):
                 encoded_values = self.encoders[feature].transform(item_features[feature].fillna('unknown'))
 
             # Convert to one-hot
-            n_categories = len(self.encoders[feature].classes_)
-            one_hot = np.eye(n_categories)[encoded_values]
-            feature_vectors.append(one_hot)
+            encoder_classes = self.encoders[feature].classes_
+            if encoder_classes is not None:
+                n_categories = len(encoder_classes)
+                one_hot = np.eye(n_categories)[encoded_values]
+                feature_vectors.append(one_hot)
 
         # Process numerical features
         for feature in self.numerical_features:
             if feature not in item_features.columns:
                 continue
 
-            values = item_features[feature].fillna(0).values.reshape(-1, 1)
+            values = item_features[feature].fillna(0).values
+            # Ensure values is numpy array and reshape properly
+            values = np.array(values).reshape(-1, 1)
 
             if self.normalize_features:
                 if feature not in self.scalers:
@@ -200,20 +211,23 @@ class FeatureBasedRecommender(BaseRecommender):
 
         # Apply feature weights if specified
         if self.feature_weights:
-            weighted_matrix = self._apply_feature_weights(feature_matrix, item_features)
+            weighted_matrix = self._apply_feature_weights(feature_matrix)
             return weighted_matrix
 
         return feature_matrix
 
-    def _apply_feature_weights(self, feature_matrix: np.ndarray,
-                               item_features: pd.DataFrame) -> np.ndarray:
+    def _apply_feature_weights(self, feature_matrix: np.ndarray) -> np.ndarray:
         """Apply feature weights to the feature matrix."""
         # This is a simplified implementation
         # In practice, you'd want to track which columns correspond to which features
+        # Note: item_features parameter removed as it's not used in this simple implementation
         return feature_matrix
 
     def _compute_similarity_matrix(self) -> np.ndarray:
         """Compute item-item similarity matrix."""
+        if self.feature_matrix is None:
+            raise ValueError("Feature matrix not built yet")
+            
         if self.similarity_metric == 'cosine':
             return cosine_similarity(self.feature_matrix)
         elif self.similarity_metric == 'euclidean':
@@ -227,14 +241,18 @@ class FeatureBasedRecommender(BaseRecommender):
     def _build_user_profiles(self, interaction_data: pd.DataFrame,
                              item_features: pd.DataFrame) -> Dict[int, np.ndarray]:
         """Build user profiles based on item features."""
+        if self.feature_matrix is None:
+            raise ValueError("Feature matrix not built yet")
+            
         user_profiles = {}
 
         # Create mapping from item_idx to row in feature matrix
-        item_idx_to_row = {item_features.iloc[i]['item_idx']: i
+        item_idx_to_row = {int(item_features.iloc[i]['item_idx']): i
                            for i in range(len(item_features))}
 
         # Group interactions by user
-        user_interactions = interaction_data.groupby('user_idx')['item_idx'].apply(list).to_dict()
+        user_interactions_series = interaction_data.groupby('user_idx')['item_idx'].apply(list)
+        user_interactions = user_interactions_series.to_dict()
 
         for user_idx, item_indices in user_interactions.items():
             # Get feature vectors for user's items
@@ -248,14 +266,19 @@ class FeatureBasedRecommender(BaseRecommender):
             if user_item_features:
                 # Average the feature vectors (weighted by rating if available)
                 if 'rating' in interaction_data.columns:
-                    user_ratings = interaction_data[
-                        interaction_data['user_idx'] == user_idx
-                        ]['rating'].values
-                    weights = user_ratings / user_ratings.sum()
-
-                    user_profile = np.zeros(self.feature_matrix.shape[1])
-                    for features, weight in zip(user_item_features, weights):
-                        user_profile += weight * features
+                    user_data = interaction_data[interaction_data['user_idx'] == user_idx]
+                    rating_series = user_data['rating']
+                    # Convert pandas Series to numpy array
+                    user_ratings = np.array(rating_series)
+                    user_ratings_sum = float(np.sum(user_ratings))
+                    
+                    if user_ratings_sum > 0:
+                        weights = user_ratings / user_ratings_sum
+                        user_profile = np.zeros(self.feature_matrix.shape[1])
+                        for features, weight in zip(user_item_features, weights):
+                            user_profile += weight * features
+                    else:
+                        user_profile = np.mean(user_item_features, axis=0)
                 else:
                     # Simple average
                     user_profile = np.mean(user_item_features, axis=0)
@@ -276,7 +299,7 @@ class FeatureBasedRecommender(BaseRecommender):
         Returns:
             DataFrame with columns ['user_id', 'item_id', 'score']
         """
-        if not self.is_fitted:
+        if not self.is_fitted or self.feature_matrix is None or self.user_profiles is None:
             raise ValueError("Model must be fitted before making predictions")
 
         if isinstance(user_ids, str):
@@ -285,6 +308,9 @@ class FeatureBasedRecommender(BaseRecommender):
         recommendations = []
 
         for user_id in user_ids:
+            if self.user_encoder is None:
+                continue
+                
             try:
                 user_idx = self.user_encoder.transform([user_id])[0]
             except ValueError:
@@ -299,26 +325,30 @@ class FeatureBasedRecommender(BaseRecommender):
             user_profile = self.user_profiles[user_idx]
 
             # Calculate similarity scores with all items
+            scores: np.ndarray
             if self.similarity_metric == 'cosine':
                 scores = cosine_similarity([user_profile], self.feature_matrix).flatten()
             elif self.similarity_metric == 'euclidean':
                 from sklearn.metrics.pairwise import euclidean_distances
                 distances = euclidean_distances([user_profile], self.feature_matrix).flatten()
                 scores = 1 / (1 + distances)
+            else:
+                continue
 
             # Get top N items
             top_items = np.argsort(scores)[::-1][:n_recommendations]
             top_scores = scores[top_items]
 
             # Convert back to original item IDs
-            item_ids = self.item_encoder.inverse_transform(top_items)
+            if self.item_encoder is not None:
+                item_ids = self.item_encoder.inverse_transform(top_items)
 
-            for item_id, score in zip(item_ids, top_scores):
-                recommendations.append({
-                    'user_id': user_id,
-                    'item_id': item_id,
-                    'score': float(score)
-                })
+                for item_id, score in zip(item_ids, top_scores):
+                    recommendations.append({
+                        'user_id': user_id,
+                        'item_id': item_id,
+                        'score': float(score)
+                    })
 
         return pd.DataFrame(recommendations)
 
@@ -334,7 +364,7 @@ class FeatureBasedRecommender(BaseRecommender):
         Returns:
             Array of predicted scores
         """
-        if not self.is_fitted:
+        if not self.is_fitted or self.feature_matrix is None or self.user_profiles is None:
             raise ValueError("Model must be fitted before making predictions")
 
         if isinstance(user_ids, str):
@@ -345,6 +375,10 @@ class FeatureBasedRecommender(BaseRecommender):
         scores = []
 
         for user_id, item_id in zip(user_ids, item_ids):
+            if self.user_encoder is None or self.item_encoder is None:
+                scores.append(0.0)
+                continue
+                
             try:
                 user_idx = self.user_encoder.transform([user_id])[0]
                 item_idx = self.item_encoder.transform([item_id])[0]
@@ -353,12 +387,15 @@ class FeatureBasedRecommender(BaseRecommender):
                     user_profile = self.user_profiles[user_idx]
                     item_features = self.feature_matrix[item_idx]
 
+                    score: float
                     if self.similarity_metric == 'cosine':
                         score = cosine_similarity([user_profile], [item_features])[0, 0]
                     elif self.similarity_metric == 'euclidean':
                         from sklearn.metrics.pairwise import euclidean_distances
                         distance = euclidean_distances([user_profile], [item_features])[0, 0]
                         score = 1 / (1 + distance)
+                    else:
+                        score = 0.0
 
                     scores.append(float(score))
                 else:

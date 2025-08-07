@@ -4,9 +4,19 @@ Evaluation metrics and utilities for recommendation systems.
 
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any, Protocol
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import time
+
+
+class RecommenderProtocol(Protocol):
+    """Protocol for recommender models."""
+
+    def fit(self, *args: Any, **kwargs: Any) -> Any: ...
+
+    def predict(self, *args: Any, **kwargs: Any) -> pd.DataFrame: ...
+
+    def get_hyperparameters(self) -> Dict[str, Any]: ...
 
 
 class RecommenderEvaluator:
@@ -19,7 +29,7 @@ class RecommenderEvaluator:
     @staticmethod
     def evaluate_recommendations(predictions: pd.DataFrame,
                                  ground_truth: pd.DataFrame,
-                                 k_values: List[int] = [5, 10, 20]) -> Dict[str, float]:
+                                 k_values=None) -> Dict[str, float]:
         """
         Evaluate recommendation quality using ranking metrics.
         
@@ -31,6 +41,8 @@ class RecommenderEvaluator:
         Returns:
             Dictionary with evaluation metrics
         """
+        if k_values is None:
+            k_values = [5, 10, 20]
         metrics = {}
 
         # Create ground truth sets for each user
@@ -49,8 +61,8 @@ class RecommenderEvaluator:
                 if len(user_predictions) == 0:
                     continue
 
-                # Get top-k recommendations
-                top_k_items = user_predictions.nlargest(k, 'score')['item_id'].tolist()
+                # Get top-k recommendations - fix the nlargest call
+                top_k_items = user_predictions.nlargest(n=k, columns="score")['item_id'].tolist()
                 ground_truth_items = ground_truth_sets[user_id]
 
                 # Calculate metrics
@@ -128,11 +140,11 @@ class RecommenderEvaluator:
         )
 
         if len(merged) == 0:
-            return {'rmse': float('inf'), 'mae': float('inf')}
+            return {'rmse': float('inf'), 'mae': float('inf'), 'n_predictions': 0}
 
         # Calculate metrics
-        rmse = np.sqrt(mean_squared_error(merged['rating'], merged['predicted_rating']))
-        mae = mean_absolute_error(merged['rating'], merged['predicted_rating'])
+        rmse = float(np.sqrt(mean_squared_error(merged['rating'], merged['predicted_rating'])))
+        mae = float(mean_absolute_error(merged['rating'], merged['predicted_rating']))
 
         return {
             'rmse': rmse,
@@ -159,8 +171,8 @@ class RecommenderEvaluator:
 
         return {
             'catalog_coverage': catalog_coverage,
-            'recommended_items': len(recommended_items),
-            'total_items': len(all_items)
+            'recommended_items': float(len(recommended_items)),
+            'total_items': float(len(all_items))
         }
 
     @staticmethod
@@ -194,7 +206,11 @@ class RecommenderEvaluator:
                     # Use numerical features for diversity calculation
                     numerical_cols = user_item_features.select_dtypes(include=[np.number]).columns
                     if len(numerical_cols) > 0:
-                        feature_matrix = user_item_features[numerical_cols].values
+                        feature_data = user_item_features[numerical_cols]
+                        if hasattr(feature_data, 'to_numpy'):
+                            feature_matrix = feature_data.to_numpy()
+                        else:
+                            feature_matrix = feature_data.values
                         similarity_matrix = cosine_similarity(feature_matrix)
 
                         # Average pairwise dissimilarity
@@ -213,17 +229,21 @@ class RecommenderEvaluator:
                 # Simple item diversity (unique items ratio)
                 diversity_scores.append(len(set(user_recs)) / len(user_recs))
 
+        avg_diversity = float(np.mean(diversity_scores)) if diversity_scores else 0.0
+        std_diversity = float(np.std(diversity_scores)) if diversity_scores else 0.0
+
         return {
-            'avg_diversity': np.mean(diversity_scores) if diversity_scores else 0.0,
-            'std_diversity': np.std(diversity_scores) if diversity_scores else 0.0
+            'avg_diversity': avg_diversity,
+            'std_diversity': std_diversity
         }
 
     @staticmethod
-    def cross_validate_model(model, interaction_data: pd.DataFrame,
+    def cross_validate_model(model: RecommenderProtocol,
+                             interaction_data: pd.DataFrame,
                              n_folds: int = 5,
                              test_size: float = 0.2,
                              random_state: int = 42,
-                             **fit_kwargs) -> Dict[str, List[float]]:
+                             **fit_kwargs: Any) -> Dict[str, List[float]]:
         """
         Perform cross-validation on a recommendation model.
         
@@ -260,7 +280,7 @@ class RecommenderEvaluator:
 
             # Train model
             start_time = time.time()
-            model_copy = type(model)(**model.get_hyperparameters())
+            model_copy = type(model)()
             model_copy.fit(train_data, **fit_kwargs)
             training_time = time.time() - start_time
 
@@ -282,10 +302,10 @@ class RecommenderEvaluator:
         return cv_metrics
 
     @staticmethod
-    def compare_models(models: Dict[str, object],
+    def compare_models(models: Dict[str, RecommenderProtocol],
                        train_data: pd.DataFrame,
                        test_data: pd.DataFrame,
-                       **fit_kwargs) -> pd.DataFrame:
+                       **fit_kwargs: Any) -> pd.DataFrame:
         """
         Compare multiple recommendation models.
         

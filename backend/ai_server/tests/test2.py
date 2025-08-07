@@ -14,14 +14,14 @@ if __name__ == "__main__":
     })
 
     result = service.train_model_from_data(
-        model_id='als_example',
-        algorithm='als',
+        model_id='ncf_example',
+        algorithm='ncf',
         interaction_data=interaction_data,
         hyperparameters={'factors': 50, 'iterations': 10}
     )
 
     predict = service.predict_with_model(
-        model_id='als_example',
+        model_id='ncf_example',
         user_id='u1',
         top_k=5
     )

@@ -4,16 +4,20 @@ Neural Collaborative Filtering (NCF) Implementation
 
 import pandas as pd
 import numpy as np
-from typing import Optional, Union, List, Tuple
+from typing import Optional, Union, List, Dict, Any
+from sklearn.preprocessing import LabelEncoder
 import time
 
 try:
     import tensorflow as tf
-    from tensorflow import keras
-    from tensorflow.keras import layers
-
+    # Import keras directly from tensorflow
+    keras = tf.keras
+    layers = tf.keras.layers
     HAS_TENSORFLOW = True
 except ImportError:
+    tf = None
+    keras = None
+    layers = None
     HAS_TENSORFLOW = False
 
 from ..base_model import BaseRecommender
@@ -46,13 +50,16 @@ class NCFRecommender(BaseRecommender):
         Random seed for reproducibility
     """
 
-    def __init__(self, embedding_size: int = 50, hidden_units: List[int] = [128, 64],
+    def __init__(self, embedding_size: int = 50, hidden_units: Optional[List[int]] = None,
                  dropout_rate: float = 0.2, learning_rate: float = 0.001,
                  epochs: int = 50, batch_size: int = 256, negative_sampling: int = 4,
                  random_state: int = 42, **kwargs):
 
         if not HAS_TENSORFLOW:
             raise ImportError("TensorFlow is required for NCF model. Please install tensorflow>=2.0")
+
+        if hidden_units is None:
+            hidden_units = [128, 64]
 
         super().__init__(embedding_size=embedding_size, hidden_units=hidden_units,
                          dropout_rate=dropout_rate, learning_rate=learning_rate,
@@ -69,9 +76,17 @@ class NCFRecommender(BaseRecommender):
         self.negative_sampling = negative_sampling
         self.random_state = random_state
 
+        # Initialize attributes
+        self.model: Optional[Any] = None  # keras.Model
+        self.user_encoder: Optional[LabelEncoder] = None
+        self.item_encoder: Optional[LabelEncoder] = None
+        self.n_users: int = 0
+        self.n_items: int = 0
+
         # Set random seeds
         np.random.seed(random_state)
-        tf.random.set_seed(random_state)
+        if tf is not None:
+            tf.random.set_seed(random_state)
 
     def fit(self, interaction_data: pd.DataFrame,
             user_features: Optional[pd.DataFrame] = None,
@@ -87,6 +102,9 @@ class NCFRecommender(BaseRecommender):
         Returns:
             Self for method chaining
         """
+        if not HAS_TENSORFLOW:
+            raise ImportError("TensorFlow is required for NCF model")
+
         self._validate_input(interaction_data)
 
         print(f"Training NCF model with {len(interaction_data)} interactions...")
@@ -95,14 +113,22 @@ class NCFRecommender(BaseRecommender):
         # Encode users and items
         data = self._encode_users_items(interaction_data.copy())
 
-        self.n_users = len(self.user_encoder.classes_)
-        self.n_items = len(self.item_encoder.classes_)
+        # Ensure encoders are not None after encoding
+        assert self.user_encoder is not None, "User encoder should be initialized"
+        assert self.item_encoder is not None, "Item encoder should be initialized"
+
+        # Get number of users and items from the encoded data
+        self.n_users = int(data['user_idx'].max() + 1)
+        self.n_items = int(data['item_idx'].max() + 1)
 
         # Prepare training data with negative sampling
         train_data = self._prepare_training_data(data)
 
         # Build model
         self.model = self._build_model()
+
+        # Ensure model is created successfully
+        assert self.model is not None, "Model should be created"
 
         # Compile model
         self.model.compile(
@@ -142,8 +168,12 @@ class NCFRecommender(BaseRecommender):
 
         return self
 
-    def _build_model(self) -> keras.Model:
+    def _build_model(self) -> Any:  # keras.Model
         """Build the NCF neural network architecture."""
+        # Ensure keras and layers are available
+        assert keras is not None, "Keras should be available"
+        assert layers is not None, "Keras layers should be available"
+
         # Input layers
         user_input = keras.Input(shape=(), name='user_id')
         item_input = keras.Input(shape=(), name='item_id')
@@ -188,7 +218,7 @@ class NCFRecommender(BaseRecommender):
 
         return model
 
-    def _prepare_training_data(self, data: pd.DataFrame) -> dict:
+    def _prepare_training_data(self, data: pd.DataFrame) -> Dict[str, np.ndarray]:
         """Prepare training data with negative sampling."""
         # Create positive samples
         positive_samples = data[['user_idx', 'item_idx']].copy()
@@ -222,9 +252,9 @@ class NCFRecommender(BaseRecommender):
         all_samples = all_samples.sample(frac=1).reset_index(drop=True)  # Shuffle
 
         return {
-            'user_idx': all_samples['user_idx'].values,
-            'item_idx': all_samples['item_idx'].values,
-            'rating': all_samples['rating'].values
+            'user_idx': np.array(all_samples['user_idx'].tolist()),
+            'item_idx': np.array(all_samples['item_idx'].tolist()),
+            'rating': np.array(all_samples['rating'].tolist())
         }
 
     def predict(self, user_ids: Union[List, np.ndarray, str],
@@ -241,6 +271,11 @@ class NCFRecommender(BaseRecommender):
         """
         if not self.is_fitted:
             raise ValueError("Model must be fitted before making predictions")
+
+        # Ensure required attributes are not None
+        assert self.user_encoder is not None, "User encoder not initialized"
+        assert self.item_encoder is not None, "Item encoder not initialized"
+        assert self.model is not None, "Model not initialized"
 
         if isinstance(user_ids, str):
             user_ids = [user_ids]
@@ -291,6 +326,11 @@ class NCFRecommender(BaseRecommender):
         """
         if not self.is_fitted:
             raise ValueError("Model must be fitted before making predictions")
+
+        # Ensure required attributes are not None
+        assert self.user_encoder is not None, "User encoder not initialized"
+        assert self.item_encoder is not None, "Item encoder not initialized"
+        assert self.model is not None, "Model not initialized"
 
         if isinstance(user_ids, str):
             user_ids = [user_ids]

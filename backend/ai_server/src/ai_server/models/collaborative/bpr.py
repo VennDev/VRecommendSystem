@@ -4,7 +4,8 @@ Bayesian Personalized Ranking (BPR) Implementation
 
 import pandas as pd
 import numpy as np
-from typing import Optional, Union, List, Tuple
+from typing import Optional, Union, List, Tuple, Dict, Set
+from sklearn.preprocessing import LabelEncoder
 import time
 import random
 
@@ -40,18 +41,24 @@ class BPRRecommender(BaseRecommender):
                          regularization=regularization, iterations=iterations,
                          random_state=random_state, **kwargs)
 
-        self.user_items = None
-        self.n_items = None
-        self.n_users = None
+        # Initialize attributes with proper types
+        self.user_items: Optional[Dict[int, Set[int]]] = None
+        self.n_items: int = 0
+        self.n_users: int = 0
         self.factors = factors
         self.learning_rate = learning_rate
         self.regularization = regularization
         self.iterations = iterations
         self.random_state = random_state
 
-        self.user_factors = None
-        self.item_factors = None
-        self.item_bias = None
+        # Model parameters
+        self.user_factors: Optional[np.ndarray] = None
+        self.item_factors: Optional[np.ndarray] = None
+        self.item_bias: Optional[np.ndarray] = None
+        
+        # Encoders
+        self.user_encoder: Optional[LabelEncoder] = None
+        self.item_encoder: Optional[LabelEncoder] = None
 
     def fit(self, interaction_data: pd.DataFrame,
             user_features: Optional[pd.DataFrame] = None,
@@ -75,8 +82,13 @@ class BPRRecommender(BaseRecommender):
         # Encode users and items
         data = self._encode_users_items(interaction_data.copy())
 
-        self.n_users = len(self.user_encoder.classes_)
-        self.n_items = len(self.item_encoder.classes_)
+        # Ensure encoders are not None after encoding
+        assert self.user_encoder is not None, "User encoder should be initialized"
+        assert self.item_encoder is not None, "Item encoder should be initialized"
+
+        # Get number of users and items from the encoded data
+        self.n_users = int(data['user_idx'].max() + 1)
+        self.n_items = int(data['item_idx'].max() + 1)
 
         # Create user-item interaction matrix
         self.user_items = self._create_user_item_dict(data)
@@ -85,11 +97,11 @@ class BPRRecommender(BaseRecommender):
         np.random.seed(self.random_state)
         self.user_factors = np.random.normal(
             scale=1.0 / self.factors, size=(self.n_users, self.factors)
-        )
+        ).astype(np.float64)
         self.item_factors = np.random.normal(
             scale=1.0 / self.factors, size=(self.n_items, self.factors)
-        )
-        self.item_bias = np.zeros(self.n_items)
+        ).astype(np.float64)
+        self.item_bias = np.zeros(self.n_items, dtype=np.float64)
 
         # Training loop
         random.seed(self.random_state)
@@ -102,7 +114,8 @@ class BPRRecommender(BaseRecommender):
             # Log progress
             if iteration % 20 == 0:
                 print(f"Iteration {iteration}/{self.iterations}")
-                self.training_history.append({'iteration': iteration})
+                if hasattr(self, 'training_history'):
+                    self.training_history.append({'iteration': iteration})
 
         training_time = time.time() - start_time
         self.metrics = {
@@ -117,12 +130,12 @@ class BPRRecommender(BaseRecommender):
 
         return self
 
-    def _create_user_item_dict(self, data: pd.DataFrame) -> dict:
+    def _create_user_item_dict(self, data: pd.DataFrame) -> Dict[int, Set[int]]:
         """Create dictionary mapping users to their interacted items."""
-        user_items = {}
+        user_items: Dict[int, Set[int]] = {}
         for _, row in data.iterrows():
-            user_idx = row['user_idx']
-            item_idx = row['item_idx']
+            user_idx = int(row['user_idx'])
+            item_idx = int(row['item_idx'])
 
             if user_idx not in user_items:
                 user_items[user_idx] = set()
@@ -132,6 +145,9 @@ class BPRRecommender(BaseRecommender):
 
     def _sample_triplet(self) -> Tuple[int, int, int]:
         """Sample a (user, positive_item, negative_item) triplet."""
+        # Ensure user_items is not None
+        assert self.user_items is not None, "User items dict should be initialized"
+        
         # Sample user
         user_idx = random.choice(list(self.user_items.keys()))
 
@@ -148,6 +164,11 @@ class BPRRecommender(BaseRecommender):
 
     def _update_factors(self) -> None:
         """Perform one SGD update step."""
+        # Ensure all required attributes are not None
+        assert self.user_factors is not None, "User factors should be initialized"
+        assert self.item_factors is not None, "Item factors should be initialized"
+        assert self.item_bias is not None, "Item bias should be initialized"
+        
         user_idx, pos_item, neg_item = self._sample_triplet()
 
         # Calculate current scores
@@ -161,9 +182,9 @@ class BPRRecommender(BaseRecommender):
         sigmoid = 1.0 / (1.0 + np.exp(x_uij))
 
         # Update factors
-        user_factor = self.user_factors[user_idx]
-        pos_item_factor = self.item_factors[pos_item]
-        neg_item_factor = self.item_factors[neg_item]
+        user_factor = self.user_factors[user_idx].copy()
+        pos_item_factor = self.item_factors[pos_item].copy()
+        neg_item_factor = self.item_factors[neg_item].copy()
 
         # User factor update
         self.user_factors[user_idx] += self.learning_rate * (
@@ -203,6 +224,14 @@ class BPRRecommender(BaseRecommender):
         """
         if not self.is_fitted:
             raise ValueError("Model must be fitted before making predictions")
+
+        # Ensure required attributes are not None
+        assert self.user_encoder is not None, "User encoder not initialized"
+        assert self.item_encoder is not None, "Item encoder not initialized"
+        assert self.user_factors is not None, "User factors not initialized"
+        assert self.item_factors is not None, "Item factors not initialized"
+        assert self.item_bias is not None, "Item bias not initialized"
+        assert self.user_items is not None, "User items dict not initialized"
 
         if isinstance(user_ids, str):
             user_ids = [user_ids]
@@ -256,6 +285,13 @@ class BPRRecommender(BaseRecommender):
         """
         if not self.is_fitted:
             raise ValueError("Model must be fitted before making predictions")
+
+        # Ensure required attributes are not None
+        assert self.user_encoder is not None, "User encoder not initialized"
+        assert self.item_encoder is not None, "Item encoder not initialized"
+        assert self.user_factors is not None, "User factors not initialized"
+        assert self.item_factors is not None, "Item factors not initialized"
+        assert self.item_bias is not None, "Item bias not initialized"
 
         if isinstance(user_ids, str):
             user_ids = [user_ids]

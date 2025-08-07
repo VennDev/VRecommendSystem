@@ -7,6 +7,7 @@ import numpy as np
 from typing import Optional, Union, List
 from scipy.sparse import csr_matrix
 from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import LabelEncoder
 import time
 
 from ..base_model import BaseRecommender
@@ -41,9 +42,14 @@ class ALSRecommender(BaseRecommender):
         self.iterations = iterations
         self.random_state = random_state
 
-        self.user_factors = None
-        self.item_factors = None
-        self.global_mean = None
+        # Initialize attributes to None
+        self.user_factors: Optional[np.ndarray] = None
+        self.item_factors: Optional[np.ndarray] = None
+        self.global_mean: Optional[float] = None
+        self.user_encoder: Optional[LabelEncoder] = None
+        self.item_encoder: Optional[LabelEncoder] = None
+        self.n_users: int = 0
+        self.n_items: int = 0
 
     def fit(self, interaction_data: pd.DataFrame,
             user_features: Optional[pd.DataFrame] = None,
@@ -70,6 +76,14 @@ class ALSRecommender(BaseRecommender):
         # Encode users and items
         data = self._encode_users_items(interaction_data.copy())
 
+        # Ensure encoders are not None after encoding
+        assert self.user_encoder is not None, "User encoder should be initialized"
+        assert self.item_encoder is not None, "Item encoder should be initialized"
+        
+        # Ensure classes_ attribute exists and is not None
+        assert hasattr(self.user_encoder, 'classes_') and self.user_encoder.classes_ is not None, "User encoder classes not found"
+        assert hasattr(self.item_encoder, 'classes_') and self.item_encoder.classes_ is not None, "Item encoder classes not found"
+
         # Create user-item rating matrix
         self.n_users = len(self.user_encoder.classes_)
         self.n_items = len(self.item_encoder.classes_)
@@ -80,16 +94,16 @@ class ALSRecommender(BaseRecommender):
             shape=(self.n_users, self.n_items)
         )
 
-        self.global_mean = data['rating'].mean()
+        self.global_mean = float(data['rating'].mean())
 
         # Initialize factors
         np.random.seed(self.random_state)
         self.user_factors = np.random.normal(
             scale=1.0 / self.factors, size=(self.n_users, self.factors)
-        )
+        ).astype(np.float64)
         self.item_factors = np.random.normal(
             scale=1.0 / self.factors, size=(self.n_items, self.factors)
-        )
+        ).astype(np.float64)
 
         # ALS training loop
         for iteration in range(self.iterations):
@@ -103,7 +117,8 @@ class ALSRecommender(BaseRecommender):
             if iteration % 5 == 0:
                 rmse = self._calculate_rmse(rating_matrix)
                 print(f"Iteration {iteration}: RMSE = {rmse:.4f}")
-                self.training_history.append({'iteration': iteration, 'rmse': rmse})
+                if hasattr(self, 'training_history'):
+                    self.training_history.append({'iteration': iteration, 'rmse': rmse})
 
         # Final metrics
         final_rmse = self._calculate_rmse(rating_matrix)
@@ -124,6 +139,10 @@ class ALSRecommender(BaseRecommender):
 
     def _update_user_factors(self, rating_matrix: csr_matrix) -> None:
         """Update user factors using least squares."""
+        # Ensure factors are not None
+        assert self.item_factors is not None, "Item factors should be initialized"
+        assert self.user_factors is not None, "User factors should be initialized"
+        
         YtY = self.item_factors.T.dot(self.item_factors)
         regularization_diag = np.eye(self.factors) * self.regularization
 
@@ -144,6 +163,10 @@ class ALSRecommender(BaseRecommender):
 
     def _update_item_factors(self, rating_matrix: csr_matrix) -> None:
         """Update item factors using least squares."""
+        # Ensure factors are not None
+        assert self.user_factors is not None, "User factors should be initialized"
+        assert self.item_factors is not None, "Item factors should be initialized"
+        
         XtX = self.user_factors.T.dot(self.user_factors)
         regularization_diag = np.eye(self.factors) * self.regularization
 
@@ -166,6 +189,10 @@ class ALSRecommender(BaseRecommender):
 
     def _calculate_rmse(self, rating_matrix: csr_matrix) -> float:
         """Calculate RMSE on training data."""
+        # Ensure factors are not None
+        assert self.user_factors is not None, "User factors should be initialized"
+        assert self.item_factors is not None, "Item factors should be initialized"
+        
         predictions = []
         actuals = []
 
@@ -175,13 +202,13 @@ class ALSRecommender(BaseRecommender):
 
             for item_idx in rated_items:
                 pred = np.dot(self.user_factors[user_idx], self.item_factors[item_idx])
-                predictions.append(pred)
-                actuals.append(user_ratings[item_idx])
+                predictions.append(float(pred))
+                actuals.append(float(user_ratings[item_idx]))
 
         if len(predictions) == 0:
             return float('inf')
 
-        return np.sqrt(mean_squared_error(actuals, predictions))
+        return float(np.sqrt(mean_squared_error(actuals, predictions)))
 
     def predict(self, user_ids: Union[List, np.ndarray, str],
                 n_recommendations: int = 10) -> pd.DataFrame:
@@ -197,6 +224,12 @@ class ALSRecommender(BaseRecommender):
         """
         if not self.is_fitted:
             raise ValueError("Model must be fitted before making predictions")
+
+        # Ensure required attributes are not None
+        assert self.user_encoder is not None, "User encoder not initialized"
+        assert self.item_encoder is not None, "Item encoder not initialized"
+        assert self.user_factors is not None, "User factors not initialized"
+        assert self.item_factors is not None, "Item factors not initialized"
 
         if isinstance(user_ids, str):
             user_ids = [user_ids]
@@ -245,6 +278,12 @@ class ALSRecommender(BaseRecommender):
         if not self.is_fitted:
             raise ValueError("Model must be fitted before making predictions")
 
+        # Ensure required attributes are not None
+        assert self.user_encoder is not None, "User encoder not initialized"
+        assert self.item_encoder is not None, "Item encoder not initialized"
+        assert self.user_factors is not None, "User factors not initialized"
+        assert self.item_factors is not None, "Item factors not initialized"
+
         if isinstance(user_ids, str):
             user_ids = [user_ids]
         if isinstance(item_ids, str):
@@ -260,6 +299,7 @@ class ALSRecommender(BaseRecommender):
                 scores.append(float(score))
             except ValueError:
                 # Unknown user or item
-                scores.append(self.global_mean if self.global_mean else 0.0)
+                default_score = self.global_mean if self.global_mean is not None else 0.0
+                scores.append(default_score)
 
         return np.array(scores)
