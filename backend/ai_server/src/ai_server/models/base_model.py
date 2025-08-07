@@ -7,11 +7,9 @@ import pandas as pd
 import numpy as np
 import pickle
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any, Union, cast
+from typing import Dict, List, Optional, Any, Union, BinaryIO, cast
 import os
 from datetime import datetime
-
-from python_multipart.decoders import SupportsWrite
 
 
 class BaseRecommender(ABC):
@@ -126,7 +124,7 @@ class BaseRecommender(ABC):
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         with open(filepath, 'wb') as f:
-            pickle.dump(model_data, cast(SupportsWrite[bytes], f))
+            pickle.dump(model_data, f)
 
     @classmethod
     def load(cls, filepath: str) -> 'BaseRecommender':

@@ -1,0 +1,24 @@
+{
+  "model_id": "my_als_model",
+  "algorithm": "als",
+  "hyperparameters": {
+    "factors": 100,
+    "regularization": 0.01
+  },
+  "dataset_path": "data/ecommerce_clickstream_transactions.csv",
+  "user_features_path": null,
+  "item_features_path": null,
+  "created_at": "2025-08-07T23:35:41.179540",
+  "status": "trained",
+  "model_path": "models\\my_als_model.pkl",
+  "training_started_at": "2025-08-07T23:35:41.180539",
+  "training_completed_at": "2025-08-07T23:35:43.685591",
+  "training_time": 2.489034,
+  "model_metrics": {
+    "final_rmse": 0.009376254597900948,
+    "training_time": 2.488032579421997,
+    "iterations": 15,
+    "n_users": 1000,
+    "n_items": 10
+  }
+}
