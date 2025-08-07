@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import pickle
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any, Union, BinaryIO, cast
+from typing import Dict, List, Optional, Any, Union
 import os
 from datetime import datetime
 
@@ -93,7 +93,10 @@ class BaseRecommender(ABC):
             user_recs = self.predict([user_id], n_recommendations=1000)
             item_score = user_recs[user_recs['item_id'] == item_id]
             if len(item_score) > 0:
-                scores.append(item_score['score'].iloc[0])
+                # Fix: Cast to Series to tell type checker the correct type
+                from typing import cast
+                score_series = cast(pd.Series, item_score['score'])
+                scores.append(score_series.iloc[0])
             else:
                 scores.append(0.0)
 
@@ -202,7 +205,8 @@ class BaseRecommender(ABC):
         if interaction_data.empty:
             raise ValueError("Input data cannot be empty")
 
-        if interaction_data.isnull().any().any():
+        # Fix: Check for null values properly
+        if interaction_data.isnull().values.any():
             raise ValueError("Input data contains null values")
 
     def __str__(self) -> str:

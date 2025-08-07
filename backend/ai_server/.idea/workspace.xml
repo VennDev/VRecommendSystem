@@ -5,9 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/ai_server/services/model_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/models/base_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/models/base_model.py" afterDir="false" />
     </list>
@@ -180,7 +177,7 @@
       <workItem from="1754528839393" duration="152000" />
       <workItem from="1754529013476" duration="198000" />
       <workItem from="1754579268842" duration="7361000" />
-      <workItem from="1754591198475" duration="81000" />
+      <workItem from="1754591198475" duration="1332000" />
     </task>
     <servers />
   </component>
@@ -189,7 +186,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ai_server$test1.coverage" NAME="test1 Coverage Results" MODIFIED="1754584534980" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/ai_server$test2.coverage" NAME="test2 Coverage Results" MODIFIED="1754585789749" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/ai_server$test2.coverage" NAME="test2 Coverage Results" MODIFIED="1754591289655" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/ai_server$.coverage" NAME=" Coverage Results" MODIFIED="1754583436005" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>
