@@ -2,6 +2,7 @@
 Bayesian Personalized Ranking (BPR) Implementation
 """
 
+import loguru
 import pandas as pd
 import numpy as np
 from typing import Optional, Union, List, Tuple, Dict, Set
@@ -15,11 +16,11 @@ from ..base_model import BaseRecommender
 class BPRRecommender(BaseRecommender):
     """
     Bayesian Personalized Ranking for implicit feedback collaborative filtering.
-    
+
     BPR optimizes for the ranking of items rather than rating prediction.
     It learns from implicit feedback by assuming users prefer items they
     interacted with over items they didn't interact with.
-    
+
     Parameters:
     -----------
     factors : int, default=100
@@ -34,12 +35,23 @@ class BPRRecommender(BaseRecommender):
         Random seed for reproducibility
     """
 
-    def __init__(self, factors: int = 100, learning_rate: float = 0.05,
-                 regularization: float = 0.01, iterations: int = 100,
-                 random_state: int = 42, **kwargs):
-        super().__init__(factors=factors, learning_rate=learning_rate,
-                         regularization=regularization, iterations=iterations,
-                         random_state=random_state, **kwargs)
+    def __init__(
+        self,
+        factors: int = 100,
+        learning_rate: float = 0.05,
+        regularization: float = 0.01,
+        iterations: int = 100,
+        random_state: int = 42,
+        **kwargs,
+    ):
+        super().__init__(
+            factors=factors,
+            learning_rate=learning_rate,
+            regularization=regularization,
+            iterations=iterations,
+            random_state=random_state,
+            **kwargs,
+        )
 
         # Initialize attributes with proper types
         self.user_items: Optional[Dict[int, Set[int]]] = None
@@ -55,28 +67,33 @@ class BPRRecommender(BaseRecommender):
         self.user_factors: Optional[np.ndarray] = None
         self.item_factors: Optional[np.ndarray] = None
         self.item_bias: Optional[np.ndarray] = None
-        
+
         # Encoders
         self.user_encoder: Optional[LabelEncoder] = None
         self.item_encoder: Optional[LabelEncoder] = None
 
-    def fit(self, interaction_data: pd.DataFrame,
-            user_features: Optional[pd.DataFrame] = None,
-            item_features: Optional[pd.DataFrame] = None) -> 'BPRRecommender':
+    def fit(
+        self,
+        interaction_data: pd.DataFrame,
+        user_features: Optional[pd.DataFrame] = None,
+        item_features: Optional[pd.DataFrame] = None,
+    ) -> "BPRRecommender":
         """
         Train the BPR model.
-        
+
         Args:
             interaction_data: DataFrame with columns ['user_id', 'item_id'] and optionally 'rating'
             user_features: Not used in BPR (for API consistency)
             item_features: Not used in BPR (for API consistency)
-            
+
         Returns:
             Self for method chaining
         """
         self._validate_input(interaction_data)
 
-        print(f"Training BPR model with {len(interaction_data)} interactions...")
+        loguru.logger.info(
+            f"Training BPR model with {len(interaction_data)} interactions..."
+        )
         start_time = time.time()
 
         # Encode users and items
@@ -87,8 +104,8 @@ class BPRRecommender(BaseRecommender):
         assert self.item_encoder is not None, "Item encoder should be initialized"
 
         # Get number of users and items from the encoded data
-        self.n_users = int(data['user_idx'].max() + 1)
-        self.n_items = int(data['item_idx'].max() + 1)
+        self.n_users = int(data["user_idx"].max() + 1)
+        self.n_items = int(data["item_idx"].max() + 1)
 
         # Create user-item interaction matrix
         self.user_items = self._create_user_item_dict(data)
@@ -113,20 +130,20 @@ class BPRRecommender(BaseRecommender):
 
             # Log progress
             if iteration % 20 == 0:
-                print(f"Iteration {iteration}/{self.iterations}")
-                if hasattr(self, 'training_history'):
-                    self.training_history.append({'iteration': iteration})
+                loguru.logger.info(f"Iteration {iteration}/{self.iterations}")
+                if hasattr(self, "training_history"):
+                    self.training_history.append({"iteration": iteration})
 
         training_time = time.time() - start_time
         self.metrics = {
-            'training_time': training_time,
-            'iterations': self.iterations,
-            'n_users': self.n_users,
-            'n_items': self.n_items
+            "training_time": training_time,
+            "iterations": self.iterations,
+            "n_users": self.n_users,
+            "n_items": self.n_items,
         }
 
         self.is_fitted = True
-        print(f"Training completed in {training_time:.2f}s")
+        loguru.logger.info(f"Training completed in {training_time:.2f}s")
 
         return self
 
@@ -134,8 +151,8 @@ class BPRRecommender(BaseRecommender):
         """Create dictionary mapping users to their interacted items."""
         user_items: Dict[int, Set[int]] = {}
         for _, row in data.iterrows():
-            user_idx = int(row['user_idx'])
-            item_idx = int(row['item_idx'])
+            user_idx = int(row["user_idx"])
+            item_idx = int(row["item_idx"])
 
             if user_idx not in user_items:
                 user_items[user_idx] = set()
@@ -147,7 +164,7 @@ class BPRRecommender(BaseRecommender):
         """Sample a (user, positive_item, negative_item) triplet."""
         # Ensure user_items is not None
         assert self.user_items is not None, "User items dict should be initialized"
-        
+
         # Sample user
         user_idx = random.choice(list(self.user_items.keys()))
 
@@ -168,14 +185,18 @@ class BPRRecommender(BaseRecommender):
         assert self.user_factors is not None, "User factors should be initialized"
         assert self.item_factors is not None, "Item factors should be initialized"
         assert self.item_bias is not None, "Item bias should be initialized"
-        
+
         user_idx, pos_item, neg_item = self._sample_triplet()
 
         # Calculate current scores
-        pos_score = (np.dot(self.user_factors[user_idx], self.item_factors[pos_item]) +
-                     self.item_bias[pos_item])
-        neg_score = (np.dot(self.user_factors[user_idx], self.item_factors[neg_item]) +
-                     self.item_bias[neg_item])
+        pos_score = (
+            np.dot(self.user_factors[user_idx], self.item_factors[pos_item])
+            + self.item_bias[pos_item]
+        )
+        neg_score = (
+            np.dot(self.user_factors[user_idx], self.item_factors[neg_item])
+            + self.item_bias[neg_item]
+        )
 
         # Calculate difference and sigmoid
         x_uij = pos_score - neg_score
@@ -188,37 +209,38 @@ class BPRRecommender(BaseRecommender):
 
         # User factor update
         self.user_factors[user_idx] += self.learning_rate * (
-                sigmoid * (pos_item_factor - neg_item_factor) -
-                self.regularization * user_factor
+            sigmoid * (pos_item_factor - neg_item_factor)
+            - self.regularization * user_factor
         )
 
         # Positive item factor update
         self.item_factors[pos_item] += self.learning_rate * (
-                sigmoid * user_factor - self.regularization * pos_item_factor
+            sigmoid * user_factor - self.regularization * pos_item_factor
         )
 
         # Negative item factor update
         self.item_factors[neg_item] += self.learning_rate * (
-                -sigmoid * user_factor - self.regularization * neg_item_factor
+            -sigmoid * user_factor - self.regularization * neg_item_factor
         )
 
         # Bias updates
         self.item_bias[pos_item] += self.learning_rate * (
-                sigmoid - self.regularization * self.item_bias[pos_item]
+            sigmoid - self.regularization * self.item_bias[pos_item]
         )
         self.item_bias[neg_item] += self.learning_rate * (
-                -sigmoid - self.regularization * self.item_bias[neg_item]
+            -sigmoid - self.regularization * self.item_bias[neg_item]
         )
 
-    def predict(self, user_ids: Union[List, np.ndarray, str],
-                n_recommendations: int = 10) -> pd.DataFrame:
+    def predict(
+        self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
+    ) -> pd.DataFrame:
         """
         Generate recommendations for users.
-        
+
         Args:
             user_ids: Single user ID or list of user IDs
             n_recommendations: Number of recommendations per user
-            
+
         Returns:
             DataFrame with columns ['user_id', 'item_id', 'score']
         """
@@ -263,23 +285,22 @@ class BPRRecommender(BaseRecommender):
 
             for item_id, score in zip(item_ids, top_scores):
                 if score != -np.inf:  # Skip filtered items
-                    recommendations.append({
-                        'user_id': user_id,
-                        'item_id': item_id,
-                        'score': float(score)
-                    })
+                    recommendations.append(
+                        {"user_id": user_id, "item_id": item_id, "score": float(score)}
+                    )
 
         return pd.DataFrame(recommendations)
 
-    def predict_score(self, user_ids: Union[List, str],
-                      item_ids: Union[List, str]) -> np.ndarray:
+    def predict_score(
+        self, user_ids: Union[List, str], item_ids: Union[List, str]
+    ) -> np.ndarray:
         """
         Predict scores for specific user-item pairs.
-        
+
         Args:
             user_ids: User IDs
             item_ids: Item IDs
-            
+
         Returns:
             Array of predicted scores
         """
@@ -304,8 +325,10 @@ class BPRRecommender(BaseRecommender):
                 user_idx = self.user_encoder.transform([user_id])[0]
                 item_idx = self.item_encoder.transform([item_id])[0]
 
-                score = (np.dot(self.user_factors[user_idx], self.item_factors[item_idx]) +
-                         self.item_bias[item_idx])
+                score = (
+                    np.dot(self.user_factors[user_idx], self.item_factors[item_idx])
+                    + self.item_bias[item_idx]
+                )
                 scores.append(float(score))
             except ValueError:
                 # Unknown user or item

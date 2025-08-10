@@ -46,11 +46,11 @@ class ModelService:
 
         # Initialize model registry
         self.model_registry: Dict[str, Type[BaseRecommender]] = {
-            'als': ALSRecommender,
-            'bpr': BPRRecommender,
-            'ncf': NCFRecommender,
-            'tfidf': TFIDFRecommender,
-            'feature': FeatureBasedRecommender
+            "als": ALSRecommender,
+            "bpr": BPRRecommender,
+            "ncf": NCFRecommender,
+            "tfidf": TFIDFRecommender,
+            "feature": FeatureBasedRecommender,
         }
 
     def register_dataset(self, dataset_name: str, data: pd.DataFrame) -> str:
@@ -84,27 +84,33 @@ class ModelService:
         try:
             # If it's already a DataFrame, return it
             if isinstance(dataset_source, pd.DataFrame):
-                logger.info(f"Using provided DataFrame with {len(dataset_source)} records")
+                logger.info(
+                    f"Using provided DataFrame with {len(dataset_source)} records"
+                )
                 return dataset_source.copy()
 
             # Check if it's a cached dataset name
             if dataset_source in self.cached_datasets:
                 data = self.cached_datasets[dataset_source].copy()
-                logger.info(f"Loaded cached dataset '{dataset_source}' with {len(data)} records")
+                logger.info(
+                    f"Loaded cached dataset '{dataset_source}' with {len(data)} records"
+                )
                 return data
 
             # Try to load as a file path
             if os.path.exists(dataset_source):
-                if dataset_source.endswith('.csv'):
+                if dataset_source.endswith(".csv"):
                     data = pd.read_csv(dataset_source)
-                elif dataset_source.endswith('.parquet'):
+                elif dataset_source.endswith(".parquet"):
                     data = pd.read_parquet(dataset_source)
-                elif dataset_source.endswith('.json'):
+                elif dataset_source.endswith(".json"):
                     data = pd.read_json(dataset_source)
                 else:
                     raise ValueError(f"Unsupported file format: {dataset_source}")
 
-                logger.info(f"Loaded dataset from file '{dataset_source}' with {len(data)} records")
+                logger.info(
+                    f"Loaded dataset from file '{dataset_source}' with {len(data)} records"
+                )
                 return data
 
             raise FileNotFoundError(f"Dataset source not found: {dataset_source}")
@@ -116,15 +122,21 @@ class ModelService:
     def get_model_class(self, algorithm: str) -> Type[BaseRecommender]:
         """Get model class by algorithm name."""
         if algorithm not in self.model_registry:
-            raise ValueError(f"Unknown algorithm: {algorithm}. Available: {list(self.model_registry.keys())}")
+            raise ValueError(
+                f"Unknown algorithm: {algorithm}. Available: {list(self.model_registry.keys())}"
+            )
 
         return self.model_registry[algorithm]
 
-    def create_model_config(self, model_id: str, algorithm: str,
-                            hyperparameters: Optional[Dict[str, Any]] = None,
-                            dataset_source: Optional[Union[str, pd.DataFrame]] = None,
-                            user_features_source: Optional[Union[str, pd.DataFrame]] = None,
-                            item_features_source: Optional[Union[str, pd.DataFrame]] = None) -> Dict[str, Any]:
+    def create_model_config(
+        self,
+        model_id: str,
+        algorithm: str,
+        hyperparameters: Optional[Dict[str, Any]] = None,
+        dataset_source: Optional[Union[str, pd.DataFrame]] = None,
+        user_features_source: Optional[Union[str, pd.DataFrame]] = None,
+        item_features_source: Optional[Union[str, pd.DataFrame]] = None,
+    ) -> Dict[str, Any]:
         """
         Create and store model configuration.
 
@@ -138,34 +150,41 @@ class ModelService:
         """
 
         # Handle DataFrame inputs by caching them
-        dataset_ref = self._handle_dataset_source(f"{model_id}_interactions", dataset_source)
-        user_features_ref = self._handle_dataset_source(f"{model_id}_user_features", user_features_source)
-        item_features_ref = self._handle_dataset_source(f"{model_id}_item_features", item_features_source)
+        dataset_ref = self._handle_dataset_source(
+            f"{model_id}_interactions", dataset_source
+        )
+        user_features_ref = self._handle_dataset_source(
+            f"{model_id}_user_features", user_features_source
+        )
+        item_features_ref = self._handle_dataset_source(
+            f"{model_id}_item_features", item_features_source
+        )
 
         config = {
-            'model_id': model_id,
-            'algorithm': algorithm,
-            'hyperparameters': hyperparameters or {},
-            'dataset_source': dataset_ref,
-            'user_features_source': user_features_ref,
-            'item_features_source': item_features_ref,
-            'created_at': datetime.now().isoformat(),
-            'status': 'created',
-            'model_path': str(self.models_dir / f"{model_id}.pkl")
+            "model_id": model_id,
+            "algorithm": algorithm,
+            "hyperparameters": hyperparameters or {},
+            "dataset_source": dataset_ref,
+            "user_features_source": user_features_ref,
+            "item_features_source": item_features_ref,
+            "created_at": datetime.now().isoformat(),
+            "status": "created",
+            "model_path": str(self.models_dir / f"{model_id}.pkl"),
         }
 
         self.model_configs[model_id] = config
 
         # Save config to file
         config_path = self.models_dir / f"{model_id}_config.json"
-        with open(config_path, 'w') as f:
+        with open(config_path, "w") as f:
             json.dump(config, f, indent=2)
 
         logger.info(f"Created configuration for model {model_id}")
         return config
 
-    def _handle_dataset_source(self, cache_name: str,
-                               dataset_source: Optional[Union[str, pd.DataFrame]]) -> Optional[str]:
+    def _handle_dataset_source(
+        self, cache_name: str, dataset_source: Optional[Union[str, pd.DataFrame]]
+    ) -> Optional[str]:
         """
         Handle a dataset source and return a reference string.
 
@@ -187,11 +206,15 @@ class ModelService:
         # If it's a string, return as-is (could be file path or existing cache name)
         return dataset_source
 
-    def train_model_from_data(self, model_id: str, algorithm: str,
-                              interaction_data: pd.DataFrame,
-                              user_features: Optional[pd.DataFrame] = None,
-                              item_features: Optional[pd.DataFrame] = None,
-                              hyperparameters: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def train_model_from_data(
+        self,
+        model_id: str,
+        algorithm: str,
+        interaction_data: pd.DataFrame,
+        user_features: Optional[pd.DataFrame] = None,
+        item_features: Optional[pd.DataFrame] = None,
+        hyperparameters: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         Train a model directly from DataFrames.
 
@@ -216,7 +239,7 @@ class ModelService:
                 hyperparameters=hyperparameters,
                 dataset_source=interaction_data,
                 user_features_source=user_features,
-                item_features_source=item_features
+                item_features_source=item_features,
             )
 
             # Train the model
@@ -224,13 +247,11 @@ class ModelService:
 
         except Exception as e:
             logger.error(f"Error training model from data {model_id}: {str(e)}")
-            return {
-                'model_id': model_id,
-                'status': 'error',
-                'error': str(e)
-            }
+            return {"model_id": model_id, "status": "error", "error": str(e)}
 
-    def train_model(self, model_id: str, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def train_model(
+        self, model_id: str, config: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """Train a model with a given configuration."""
         try:
             # Load or use provided config
@@ -238,7 +259,7 @@ class ModelService:
                 if model_id not in self.model_configs:
                     config_path = self.models_dir / f"{model_id}_config.json"
                     if config_path.exists():
-                        with open(config_path, 'r') as f:
+                        with open(config_path, "r") as f:
                             config = json.load(f)
                         self.model_configs[model_id] = config
                     else:
@@ -246,17 +267,19 @@ class ModelService:
                 else:
                     config = self.model_configs[model_id]
 
-            logger.info(f"Starting training for model {model_id} with algorithm {config['algorithm']}")
+            logger.info(
+                f"Starting training for model {model_id} with algorithm {config['algorithm']}"
+            )
 
             # Update status
-            config['status'] = 'training'
-            config['training_started_at'] = datetime.now().isoformat()
+            config["status"] = "training"
+            config["training_started_at"] = datetime.now().isoformat()
 
             # Load datasets using the enhanced load_dataset method
-            if not config.get('dataset_source'):
+            if not config.get("dataset_source"):
                 raise ValueError(f"No dataset source specified for model {model_id}")
 
-            interaction_data = self.load_dataset(config['dataset_source'])
+            interaction_data = self.load_dataset(config["dataset_source"])
 
             # Validate and preprocess data
             DataPreprocessor.validate_data_format(interaction_data)
@@ -265,17 +288,17 @@ class ModelService:
             user_features = None
             item_features = None
 
-            if config.get('user_features_source'):
-                user_features = self.load_dataset(config['user_features_source'])
+            if config.get("user_features_source"):
+                user_features = self.load_dataset(config["user_features_source"])
                 logger.info(f"Loaded user features: {user_features.shape}")
 
-            if config.get('item_features_source'):
-                item_features = self.load_dataset(config['item_features_source'])
+            if config.get("item_features_source"):
+                item_features = self.load_dataset(config["item_features_source"])
                 logger.info(f"Loaded item features: {item_features.shape}")
 
             # Initialize model
-            model_class = self.get_model_class(config['algorithm'])
-            model = model_class(**config['hyperparameters'])
+            model_class = self.get_model_class(config["algorithm"])
+            model = model_class(**config["hyperparameters"])
 
             # Train model
             start_time = datetime.now()
@@ -283,44 +306,42 @@ class ModelService:
             training_time = (datetime.now() - start_time).total_seconds()
 
             # Save trained model
-            model_path = config['model_path']
+            model_path = config["model_path"]
             model.save(model_path)
 
             # Update configuration
-            config['status'] = 'trained'
-            config['training_completed_at'] = datetime.now().isoformat()
-            config['training_time'] = training_time
-            config['model_metrics'] = model.get_metrics()
+            config["status"] = "trained"
+            config["training_completed_at"] = datetime.now().isoformat()
+            config["training_time"] = training_time
+            config["model_metrics"] = model.get_metrics()
 
             # Cache model in memory
             self.loaded_models[model_id] = model
 
             # Save updated config
             config_path = self.models_dir / f"{model_id}_config.json"
-            with open(config_path, 'w') as f:
+            with open(config_path, "w") as f:
                 json.dump(config, f, indent=2)
 
-            logger.info(f"Model {model_id} trained successfully in {training_time:.2f}s")
+            logger.info(
+                f"Model {model_id} trained successfully in {training_time:.2f}s"
+            )
 
             return {
-                'model_id': model_id,
-                'status': 'success',
-                'training_time': training_time,
-                'metrics': model.get_metrics()
+                "model_id": model_id,
+                "status": "success",
+                "training_time": training_time,
+                "metrics": model.get_metrics(),
             }
 
         except Exception as e:
             # Update status to failed
             if model_id in self.model_configs:
-                self.model_configs[model_id]['status'] = 'failed'
-                self.model_configs[model_id]['error'] = str(e)
+                self.model_configs[model_id]["status"] = "failed"
+                self.model_configs[model_id]["error"] = str(e)
 
             logger.error(f"Error training model {model_id}: {str(e)}")
-            return {
-                'model_id': model_id,
-                'status': 'error',
-                'error': str(e)
-            }
+            return {"model_id": model_id, "status": "error", "error": str(e)}
 
     def load_model(self, model_id: str) -> BaseRecommender:
         """Load a trained model from disk."""
@@ -332,18 +353,20 @@ class ModelService:
             # Load config
             config_path = self.models_dir / f"{model_id}_config.json"
             if not config_path.exists():
-                raise FileNotFoundError(f"Configuration file not found for model {model_id}")
+                raise FileNotFoundError(
+                    f"Configuration file not found for model {model_id}"
+                )
 
-            with open(config_path, 'r') as f:
+            with open(config_path, "r") as f:
                 config = json.load(f)
 
             # Check if a model file exists
-            model_path = config['model_path']
+            model_path = config["model_path"]
             if not os.path.exists(model_path):
                 raise FileNotFoundError(f"Model file not found: {model_path}")
 
             # Load model
-            model_class = self.get_model_class(config['algorithm'])
+            model_class = self.get_model_class(config["algorithm"])
             model = model_class.load(model_path)
 
             # Cache in memory
@@ -357,8 +380,9 @@ class ModelService:
             logger.error(f"Error loading model {model_id}: {str(e)}")
             raise
 
-    def predict_with_model(self, model_id: str, user_id: Union[str, List[str]],
-                           top_k: int = 10) -> Dict[str, Any]:
+    def predict_with_model(
+        self, model_id: str, user_id: Union[str, List[str]], top_k: int = 10
+    ) -> Dict[str, Any]:
         """Generate predictions with a trained model."""
         try:
             # Load model if not in memory
@@ -378,31 +402,28 @@ class ModelService:
             # Convert to desired output format
             predictions = {}
             for user in user_ids:
-                user_predictions = predictions_df[predictions_df['user_id'] == user]
+                user_predictions = predictions_df[predictions_df["user_id"] == user]
                 predictions[user] = [
-                    {
-                        'itemId': row['item_id'],
-                        'score': float(row['score'])
-                    }
+                    {"itemId": row["item_id"], "score": float(row["score"])}
                     for _, row in user_predictions.iterrows()
                 ]
 
             return {
-                'model_id': model_id,
-                'predictions': predictions,
-                'status': 'success'
+                "model_id": model_id,
+                "predictions": predictions,
+                "status": "success",
             }
 
         except Exception as e:
             logger.error(f"Error predicting with model {model_id}: {str(e)}")
-            return {
-                'model_id': model_id,
-                'status': 'error',
-                'error': str(e)
-            }
+            return {"model_id": model_id, "status": "error", "error": str(e)}
 
-    def predict_scores(self, model_id: str, user_ids: Union[str, List[str]],
-                       item_ids: Union[str, List[str]]) -> Dict[str, Any]:
+    def predict_scores(
+        self,
+        model_id: str,
+        user_ids: Union[str, List[str]],
+        item_ids: Union[str, List[str]],
+    ) -> Dict[str, Any]:
         """Predict scores for specific user-item pairs."""
         try:
             # Load model if not in memory
@@ -430,30 +451,22 @@ class ModelService:
 
             # Format results
             results = [
-                {
-                    'user_id': user_id,
-                    'item_id': item_id,
-                    'score': float(score)
-                }
+                {"user_id": user_id, "item_id": item_id, "score": float(score)}
                 for user_id, item_id, score in zip(user_ids, item_ids, scores)
             ]
 
-            return {
-                'model_id': model_id,
-                'scores': results,
-                'status': 'success'
-            }
+            return {"model_id": model_id, "scores": results, "status": "success"}
 
         except Exception as e:
             logger.error(f"Error predicting scores with model {model_id}: {str(e)}")
-            return {
-                'model_id': model_id,
-                'status': 'error',
-                'error': str(e)
-            }
+            return {"model_id": model_id, "status": "error", "error": str(e)}
 
-    def evaluate_model_from_data(self, model_id: str, test_data: pd.DataFrame,
-                                 k_values: Optional[List[int]] = None) -> Dict[str, Any]:
+    def evaluate_model_from_data(
+        self,
+        model_id: str,
+        test_data: pd.DataFrame,
+        k_values: Optional[List[int]] = None,
+    ) -> Dict[str, Any]:
         """
         Evaluate a trained model using test data DataFrame.
 
@@ -476,7 +489,7 @@ class ModelService:
             model = self.loaded_models[model_id]
 
             # Generate predictions for test users
-            test_users = test_data['user_id'].unique()
+            test_users = test_data["user_id"].unique()
             predictions_df = model.predict(test_users, n_recommendations=max(k_values))
 
             # Evaluate using ranking metrics
@@ -485,17 +498,19 @@ class ModelService:
             )
 
             # Calculate coverage metrics
-            all_items = set(test_data['item_id'].unique())
-            coverage_metrics = RecommenderEvaluator.coverage_metrics(predictions_df, all_items)
+            all_items = set(test_data["item_id"].unique())
+            coverage_metrics = RecommenderEvaluator.coverage_metrics(
+                predictions_df, all_items
+            )
 
             # Combine results
             evaluation_results = {
-                'model_id': model_id,
-                'ranking_metrics': ranking_metrics,
-                'coverage_metrics': coverage_metrics,
-                'evaluation_timestamp': datetime.now().isoformat(),
-                'test_users': len(test_users),
-                'total_predictions': len(predictions_df)
+                "model_id": model_id,
+                "ranking_metrics": ranking_metrics,
+                "coverage_metrics": coverage_metrics,
+                "evaluation_timestamp": datetime.now().isoformat(),
+                "test_users": len(test_users),
+                "total_predictions": len(predictions_df),
             }
 
             logger.info(f"Evaluated model {model_id} on provided test data")
@@ -503,14 +518,14 @@ class ModelService:
 
         except Exception as e:
             logger.error(f"Error evaluating model {model_id}: {str(e)}")
-            return {
-                'model_id': model_id,
-                'status': 'error',
-                'error': str(e)
-            }
+            return {"model_id": model_id, "status": "error", "error": str(e)}
 
-    def evaluate_model(self, model_id: str, test_data_source: Union[str, pd.DataFrame],
-                       k_values: Optional[List[int]] = None) -> Dict[str, Any]:
+    def evaluate_model(
+        self,
+        model_id: str,
+        test_data_source: Union[str, pd.DataFrame],
+        k_values: Optional[List[int]] = None,
+    ) -> Dict[str, Any]:
         """
         Evaluate a trained model.
 
@@ -531,11 +546,7 @@ class ModelService:
 
         except Exception as e:
             logger.error(f"Error evaluating model {model_id}: {str(e)}")
-            return {
-                'model_id': model_id,
-                'status': 'error',
-                'error': str(e)
-            }
+            return {"model_id": model_id, "status": "error", "error": str(e)}
 
     def list_models(self) -> List[Dict[str, Any]]:
         """List all available models."""
@@ -544,17 +555,17 @@ class ModelService:
         # Check for config files in models directory
         for config_file in self.models_dir.glob("*_config.json"):
             try:
-                with open(config_file, 'r') as f:
+                with open(config_file, "r") as f:
                     config = json.load(f)
 
                 model_info = {
-                    'model_id': config['model_id'],
-                    'algorithm': config['algorithm'],
-                    'status': config['status'],
-                    'created_at': config.get('created_at'),
-                    'training_time': config.get('training_time'),
-                    'metrics': config.get('model_metrics', {}),
-                    'uses_cached_data': self._uses_cached_data(config)
+                    "model_id": config["model_id"],
+                    "algorithm": config["algorithm"],
+                    "status": config["status"],
+                    "created_at": config.get("created_at"),
+                    "training_time": config.get("training_time"),
+                    "metrics": config.get("model_metrics", {}),
+                    "uses_cached_data": self._uses_cached_data(config),
                 }
 
                 models.append(model_info)
@@ -567,9 +578,9 @@ class ModelService:
     def _uses_cached_data(self, config: Dict[str, Any]) -> bool:
         """Check if model config uses cached data."""
         sources = [
-            config.get('dataset_source'),
-            config.get('user_features_source'),
-            config.get('item_features_source')
+            config.get("dataset_source"),
+            config.get("user_features_source"),
+            config.get("item_features_source"),
         ]
 
         return any(source in self.cached_datasets for source in sources if source)
@@ -580,10 +591,12 @@ class ModelService:
 
         for name, data in self.cached_datasets.items():
             dataset_info = {
-                'name': name,
-                'shape': data.shape,
-                'columns': list(data.columns),
-                'memory_usage_mb': round(data.memory_usage(deep=True).sum() / (1024 * 1024), 2)
+                "name": name,
+                "shape": data.shape,
+                "columns": list(data.columns),
+                "memory_usage_mb": round(
+                    data.memory_usage(deep=True).sum() / (1024 * 1024), 2
+                ),
             }
             datasets.append(dataset_info)
 
@@ -631,18 +644,14 @@ class ModelService:
 
             logger.info(f"Deleted model {model_id}")
             return {
-                'model_id': model_id,
-                'status': 'deleted',
-                'files_deleted': files_deleted
+                "model_id": model_id,
+                "status": "deleted",
+                "files_deleted": files_deleted,
             }
 
         except Exception as e:
             logger.error(f"Error deleting model {model_id}: {str(e)}")
-            return {
-                'model_id': model_id,
-                'status': 'error',
-                'error': str(e)
-            }
+            return {"model_id": model_id, "status": "error", "error": str(e)}
 
     def get_model_info(self, model_id: str) -> Dict[str, Any]:
         """Get detailed information about a model."""
@@ -651,27 +660,27 @@ class ModelService:
             if not config_path.exists():
                 raise FileNotFoundError(f"Model {model_id} not found")
 
-            with open(config_path, 'r') as f:
+            with open(config_path, "r") as f:
                 config = json.load(f)
 
             # Check if a model file exists
-            model_exists = os.path.exists(config['model_path'])
+            model_exists = os.path.exists(config["model_path"])
 
             # Get model in memory status
             in_memory = model_id in self.loaded_models
 
             model_info: dict[str, Any] = {
                 **config,
-                'model_file_exists': model_exists,
-                'loaded_in_memory': in_memory,
-                'file_size_mb': None,
-                'uses_cached_data': self._uses_cached_data(config)
+                "model_file_exists": model_exists,
+                "loaded_in_memory": in_memory,
+                "file_size_mb": None,
+                "uses_cached_data": self._uses_cached_data(config),
             }
 
             # Get file size if exists
             if model_exists:
-                file_size = os.path.getsize(config['model_path'])
-                model_info['file_size_mb'] = round(file_size / (1024 * 1024), 2)
+                file_size = os.path.getsize(config["model_path"])
+                model_info["file_size_mb"] = round(file_size / (1024 * 1024), 2)
 
             return model_info
 
@@ -686,13 +695,15 @@ def train_model(model_id: str) -> None:
     service = ModelService()
     result = service.train_model(model_id)
 
-    if result['status'] == 'success':
+    if result["status"] == "success":
         print(f"Model {model_id} trained successfully")
         print(f"Training time: {result['training_time']:.2f}s")
-        if result.get('metrics'):
-            print("Metrics:", json.dumps(result['metrics'], indent=2))
+        if result.get("metrics"):
+            print("Metrics:", json.dumps(result["metrics"], indent=2))
     else:
-        print(f"Error training model {model_id}: {result.get('error')}", file=sys.stderr)
+        print(
+            f"Error training model {model_id}: {result.get('error')}", file=sys.stderr
+        )
         sys.exit(1)
 
 
@@ -701,9 +712,12 @@ def predict_with_model(model_id: str, user_id: str, top_k: int = 10) -> None:
     service = ModelService()
     result = service.predict_with_model(model_id, user_id, top_k)
 
-    if result['status'] == 'success':
-        predictions = result['predictions'][user_id]
+    if result["status"] == "success":
+        predictions = result["predictions"][user_id]
         print(json.dumps(predictions, indent=2))
     else:
-        print(f"Error predicting with model {model_id}: {result.get('error')}", file=sys.stderr)
+        print(
+            f"Error predicting with model {model_id}: {result.get('error')}",
+            file=sys.stderr,
+        )
         sys.exit(1)

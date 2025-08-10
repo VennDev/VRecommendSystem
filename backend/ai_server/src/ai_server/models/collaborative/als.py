@@ -2,6 +2,7 @@
 Alternating Least Squares (ALS) Collaborative Filtering Implementation
 """
 
+import loguru
 import pandas as pd
 import numpy as np
 from typing import Optional, Union, List
@@ -16,10 +17,10 @@ from ..base_model import BaseRecommender
 class ALSRecommender(BaseRecommender):
     """
     Alternating Least Squares matrix factorization for collaborative filtering.
-    
+
     This implementation uses explicit feedback and optimizes the following objective:
     min ||R - U * V^T||_F^2 + lambda * (||U||_F^2 + ||V||_F^2)
-    
+
     Parameters:
     -----------
     factors : int, default=100
@@ -32,10 +33,21 @@ class ALSRecommender(BaseRecommender):
         Random seed for reproducibility
     """
 
-    def __init__(self, factors: int = 100, regularization: float = 0.01,
-                 iterations: int = 15, random_state: int = 42, **kwargs):
-        super().__init__(factors=factors, regularization=regularization,
-                         iterations=iterations, random_state=random_state, **kwargs)
+    def __init__(
+        self,
+        factors: int = 100,
+        regularization: float = 0.01,
+        iterations: int = 15,
+        random_state: int = 42,
+        **kwargs,
+    ):
+        super().__init__(
+            factors=factors,
+            regularization=regularization,
+            iterations=iterations,
+            random_state=random_state,
+            **kwargs,
+        )
 
         self.factors = factors
         self.regularization = regularization
@@ -51,26 +63,31 @@ class ALSRecommender(BaseRecommender):
         self.n_users: int = 0
         self.n_items: int = 0
 
-    def fit(self, interaction_data: pd.DataFrame,
-            user_features: Optional[pd.DataFrame] = None,
-            item_features: Optional[pd.DataFrame] = None) -> 'ALSRecommender':
+    def fit(
+        self,
+        interaction_data: pd.DataFrame,
+        user_features: Optional[pd.DataFrame] = None,
+        item_features: Optional[pd.DataFrame] = None,
+    ) -> "ALSRecommender":
         """
         Train the ALS model.
-        
+
         Args:
             interaction_data: DataFrame with columns ['user_id', 'item_id', 'rating']
             user_features: Not used in ALS (for API consistency)
             item_features: Not used in ALS (for API consistency)
-            
+
         Returns:
             Self for method chaining
         """
         self._validate_input(interaction_data)
 
-        if 'rating' not in interaction_data.columns:
+        if "rating" not in interaction_data.columns:
             raise ValueError("ALS requires 'rating' column for explicit feedback")
 
-        print(f"Training ALS model with {len(interaction_data)} interactions...")
+        loguru.logger.info(
+            f"Training ALS model with {len(interaction_data)} interactions..."
+        )
         start_time = time.time()
 
         # Encode users and items
@@ -79,10 +96,16 @@ class ALSRecommender(BaseRecommender):
         # Ensure encoders are not None after encoding
         assert self.user_encoder is not None, "User encoder should be initialized"
         assert self.item_encoder is not None, "Item encoder should be initialized"
-        
+
         # Ensure classes_ attribute exists and is not None
-        assert hasattr(self.user_encoder, 'classes_') and self.user_encoder.classes_ is not None, "User encoder classes not found"
-        assert hasattr(self.item_encoder, 'classes_') and self.item_encoder.classes_ is not None, "Item encoder classes not found"
+        assert (
+            hasattr(self.user_encoder, "classes_")
+            and self.user_encoder.classes_ is not None
+        ), "User encoder classes not found"
+        assert (
+            hasattr(self.item_encoder, "classes_")
+            and self.item_encoder.classes_ is not None
+        ), "Item encoder classes not found"
 
         # Create user-item rating matrix
         self.n_users = len(self.user_encoder.classes_)
@@ -90,11 +113,11 @@ class ALSRecommender(BaseRecommender):
 
         # Create sparse rating matrix
         rating_matrix = csr_matrix(
-            (data['rating'].values, (data['user_idx'].values, data['item_idx'].values)),
-            shape=(self.n_users, self.n_items)
+            (data["rating"].values, (data["user_idx"].values, data["item_idx"].values)),
+            shape=(self.n_users, self.n_items),
         )
 
-        self.global_mean = float(data['rating'].mean())
+        self.global_mean = float(data["rating"].mean())
 
         # Initialize factors
         np.random.seed(self.random_state)
@@ -110,30 +133,32 @@ class ALSRecommender(BaseRecommender):
             # Update user factors
             self._update_user_factors(rating_matrix)
 
-            # Update item factors  
+            # Update item factors
             self._update_item_factors(rating_matrix)
 
             # Calculate and log training loss
             if iteration % 5 == 0:
                 rmse = self._calculate_rmse(rating_matrix)
-                print(f"Iteration {iteration}: RMSE = {rmse:.4f}")
-                if hasattr(self, 'training_history'):
-                    self.training_history.append({'iteration': iteration, 'rmse': rmse})
+                loguru.logger.info(f"Iteration {iteration}: RMSE = {rmse:.4f}")
+                if hasattr(self, "training_history"):
+                    self.training_history.append({"iteration": iteration, "rmse": rmse})
 
         # Final metrics
         final_rmse = self._calculate_rmse(rating_matrix)
         training_time = time.time() - start_time
 
         self.metrics = {
-            'final_rmse': final_rmse,
-            'training_time': training_time,
-            'iterations': self.iterations,
-            'n_users': self.n_users,
-            'n_items': self.n_items
+            "final_rmse": final_rmse,
+            "training_time": training_time,
+            "iterations": self.iterations,
+            "n_users": self.n_users,
+            "n_items": self.n_items,
         }
 
         self.is_fitted = True
-        print(f"Training completed in {training_time:.2f}s. Final RMSE: {final_rmse:.4f}")
+        loguru.logger.info(
+            f"Training completed in {training_time:.2f}s. Final RMSE: {final_rmse:.4f}"
+        )
 
         return self
 
@@ -142,7 +167,7 @@ class ALSRecommender(BaseRecommender):
         # Ensure factors are not None
         assert self.item_factors is not None, "Item factors should be initialized"
         assert self.user_factors is not None, "User factors should be initialized"
-        
+
         YtY = self.item_factors.T.dot(self.item_factors)
         regularization_diag = np.eye(self.factors) * self.regularization
 
@@ -156,7 +181,11 @@ class ALSRecommender(BaseRecommender):
             Y_rated = self.item_factors[rated_items]
             ratings = user_ratings[rated_items]
 
-            A = YtY + regularization_diag + (self.regularization * len(rated_items)) * np.eye(self.factors)
+            A = (
+                YtY
+                + regularization_diag
+                + (self.regularization * len(rated_items)) * np.eye(self.factors)
+            )
             b = Y_rated.T.dot(ratings)
 
             self.user_factors[user_idx] = np.linalg.solve(A, b)
@@ -166,7 +195,7 @@ class ALSRecommender(BaseRecommender):
         # Ensure factors are not None
         assert self.user_factors is not None, "User factors should be initialized"
         assert self.item_factors is not None, "Item factors should be initialized"
-        
+
         XtX = self.user_factors.T.dot(self.user_factors)
         regularization_diag = np.eye(self.factors) * self.regularization
 
@@ -182,7 +211,11 @@ class ALSRecommender(BaseRecommender):
             X_rated = self.user_factors[rating_users]
             ratings = item_ratings[rating_users]
 
-            A = XtX + regularization_diag + (self.regularization * len(rating_users)) * np.eye(self.factors)
+            A = (
+                XtX
+                + regularization_diag
+                + (self.regularization * len(rating_users)) * np.eye(self.factors)
+            )
             b = X_rated.T.dot(ratings)
 
             self.item_factors[item_idx] = np.linalg.solve(A, b)
@@ -192,7 +225,7 @@ class ALSRecommender(BaseRecommender):
         # Ensure factors are not None
         assert self.user_factors is not None, "User factors should be initialized"
         assert self.item_factors is not None, "Item factors should be initialized"
-        
+
         predictions = []
         actuals = []
 
@@ -206,19 +239,20 @@ class ALSRecommender(BaseRecommender):
                 actuals.append(float(user_ratings[item_idx]))
 
         if len(predictions) == 0:
-            return float('inf')
+            return float("inf")
 
         return float(np.sqrt(mean_squared_error(actuals, predictions)))
 
-    def predict(self, user_ids: Union[List, np.ndarray, str],
-                n_recommendations: int = 10) -> pd.DataFrame:
+    def predict(
+        self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
+    ) -> pd.DataFrame:
         """
         Generate recommendations for users.
-        
+
         Args:
             user_ids: Single user ID or list of user IDs
             n_recommendations: Number of recommendations per user
-            
+
         Returns:
             DataFrame with columns ['user_id', 'item_id', 'score']
         """
@@ -255,23 +289,22 @@ class ALSRecommender(BaseRecommender):
             item_ids = self.item_encoder.inverse_transform(top_items)
 
             for item_id, score in zip(item_ids, top_scores):
-                recommendations.append({
-                    'user_id': user_id,
-                    'item_id': item_id,
-                    'score': float(score)
-                })
+                recommendations.append(
+                    {"user_id": user_id, "item_id": item_id, "score": float(score)}
+                )
 
         return pd.DataFrame(recommendations)
 
-    def predict_score(self, user_ids: Union[List, str],
-                      item_ids: Union[List, str]) -> np.ndarray:
+    def predict_score(
+        self, user_ids: Union[List, str], item_ids: Union[List, str]
+    ) -> np.ndarray:
         """
         Predict scores for specific user-item pairs.
-        
+
         Args:
             user_ids: User IDs
             item_ids: Item IDs
-            
+
         Returns:
             Array of predicted scores
         """
@@ -299,7 +332,9 @@ class ALSRecommender(BaseRecommender):
                 scores.append(float(score))
             except ValueError:
                 # Unknown user or item
-                default_score = self.global_mean if self.global_mean is not None else 0.0
+                default_score = (
+                    self.global_mean if self.global_mean is not None else 0.0
+                )
                 scores.append(default_score)
 
         return np.array(scores)

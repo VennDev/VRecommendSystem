@@ -1,0 +1,131 @@
+---
+# ===========================================
+# KAFKA CONFIGURATION FOR AI SERVER (Consumer Only)
+# ===========================================
+
+# Core Kafka Settings
+kafka:
+  brokers:
+    - kafka:9092
+  client_id: 'ai-recommendation-consumer'
+  auto_offset_reset: 'earliest'
+
+# Topic Configuration - Topics to subscribe to
+topics:
+  prefix: 'user_interactions_'
+  suffix: '_events'
+  # AI server will subscribe to: user_interactions_view_events, user_interactions_like_events, etc.
+
+  # Additional topics for AI server
+  recommendation_requests: 'recommendation_requests'  # Main topic để nhận yêu cầu từ API server
+
+# Consumer Group - AI server riêng biệt
+consumer_groups:
+  ai_server: 'ai_recommendation_consumer_group'
+
+# ===========================================
+# EVENT TYPES CONFIGURATION (For Processing)
+# ===========================================
+
+event_types:
+  supported_events:
+    - view
+    - like
+    - comment
+    - share
+    - bookmark
+    - add_to_cart
+    - add_to_favorites
+    - buy
+    - click
+    - search
+    - rate
+    - follow
+    - unfollow
+
+  # Event weights for an ML model
+  event_weights:
+    view: 1.0
+    like: 2.0
+    comment: 3.0
+    share: 4.0
+    bookmark: 3.5
+    add_to_cart: 5.0
+    add_to_favorites: 4.0
+    buy: 10.0
+    click: 0.5
+    search: 1.5
+    rate: 5.0
+    follow: 7.0
+    unfollow: -2.0
+
+# ===========================================
+# CONSUMER CONFIGURATION (Optimized for AI Processing)
+# ===========================================
+
+consumer:
+  # Polling & Fetching - Tối ưu cho batch processing
+  max_poll_records: 1000        # Tăng để xử lý nhiều record cùng lúc
+  fetch_min_bytes: 1024         # Tăng để giảm số lần fetch
+  fetch_max_bytes: 52428800     # 50MB
+  fetch_max_wait_ms: 1000       # Chờ lâu hơn để collect nhiều message
+  max_partition_fetch_bytes: 2097152  # 2MB per partition
+
+  # Session & Heartbeat
+  session_timeout_ms: 45000     # Tăng timeout cho AI processing
+  heartbeat_interval_ms: 3000
+  max_poll_interval_ms: 600000  # 10 phút cho AI model inference
+
+  # Offset Management - Manual commit for reliability
+  enable_auto_commit: false
+  auto_commit_interval_ms: 5000
+
+# ===========================================
+# AI SERVER SPECIFIC CONFIGURATION
+# ===========================================
+
+ai_server:
+  # Model Configuration
+  model:
+    batch_size: 32
+    inference_timeout_ms: 30000
+    max_recommendations: 50
+
+  # Feature Engineering
+  feature_window:
+    short_term_hours: 24      # 1 day
+    medium_term_days: 7       # 1 week
+    long_term_days: 30        # 1 month
+
+  # Processing Configuration
+  processing:
+    worker_threads: 4
+    queue_size: 10000
+    flush_interval_seconds: 30
+
+# ===========================================
+# SECURITY CONFIGURATION
+# ===========================================
+
+security:
+# Authentication (uncomment for production)
+# protocol: 'SASL_SSL'
+# sasl:
+#   mechanism: 'PLAIN'
+#   username: 'ai_server_user'
+#   password: 'your_password'
+
+# ===========================================
+# ENVIRONMENT-SPECIFIC SETTINGS
+# ===========================================
+
+environment:
+  env: 'development'
+  debug_enabled: true
+  log_level: 'DEBUG'
+
+  # Production overrides
+  # env: 'production'
+  # debug_enabled: false
+  # log_level: 'INFO'
+...
