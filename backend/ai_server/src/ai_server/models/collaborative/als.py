@@ -3,13 +3,13 @@ Alternating Least Squares (ALS) Collaborative Filtering Implementation
 """
 
 import loguru
+import time
 import pandas as pd
 import numpy as np
 from typing import Optional, Union, List
 from scipy.sparse import csr_matrix
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import LabelEncoder
-import time
 
 from ..base_model import BaseRecommender
 

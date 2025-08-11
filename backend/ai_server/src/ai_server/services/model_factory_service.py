@@ -23,6 +23,18 @@ class ModelFactoryService:
         Args:
             fetch_data_type: Type of data to fetch ("messaging", "database", "file", "dataframe")
             **kwargs: Additional parameters for model creation
+
+        - model_id: Unique identifier for the model (default: current timestamp)
+        - model_name: Name of the model (default: model_id)
+        - message: Message for model creation (default: "Creating recommendation model")
+        - algorithm: Algorithm to use for the model (default: "als")
+        - hyperparameters: Hyperparameters for the model (default: empty dict)
+        - dataset_source: Source of the dataset (required for file/dataframe input)
+        - query_string: Query string for database input (required for database input)
+        - transform_map: Optional transformation map for renaming columns in the dataset
+        - database_service: Database service instance for executing queries
+        - dataset_source: Source of the dataset (file path or DataFrame)
+        - transform_map: Optional transformation map for renaming columns in the dataset
         Returns:
             ModelService instance with the created model
         """
@@ -30,6 +42,8 @@ class ModelFactoryService:
         model_id = kwargs.get(
             "model_id", f"model_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
         )
+        model_name = kwargs.get("model_name", model_id)
+        message = kwargs.get("message", "Creating recommendation model")
         algorithm = kwargs.get("algorithm", "als")
         hyperparameters = kwargs.get("hyperparameters", {})
 
@@ -45,13 +59,15 @@ class ModelFactoryService:
             data = self.model_service.load_dataset(dataset_source)
             config = self.model_service.create_model_config(
                 model_id=model_id,
+                model_name=model_name,
+                message=message,
                 algorithm=algorithm,
                 hyperparameters=hyperparameters,
                 dataset_source=data,
             )
 
             # Train model
-            self.model_service.train_model(model_id, config)
+            self.model_service.train_model(model_id, config.to_dict())
         elif fetch_data_type == "database":
             query_string = kwargs.get("query_string")
             transform_map = kwargs.get("transform_map", None)
@@ -68,10 +84,12 @@ class ModelFactoryService:
 
             config = self.model_service.create_model_config(
                 model_id=model_id,
+                model_name=model_name,
+                message=message,
                 algorithm=algorithm,
                 hyperparameters=hyperparameters,
                 dataset_source=data,
             )
 
             # Train model
-            self.model_service.train_model(model_id, config)
+            self.model_service.train_model(model_id, config.to_dict())

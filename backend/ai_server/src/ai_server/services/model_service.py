@@ -19,6 +19,15 @@ from ..models.base_model import BaseRecommender
 from ..models.utils.evaluation import RecommenderEvaluator
 from ..models.utils.preprocessing import DataPreprocessor
 
+# Schemas
+from ..schemas.model_schemas import (
+    ModelInfo,
+    ModelTrainingResult,
+    ModelPredictResult,
+    ModelPredictScoresResult,
+    ModelStatus,
+)
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -129,24 +138,32 @@ class ModelService:
         return self.model_registry[algorithm]
 
     def create_model_config(
-        self,
-        model_id: str,
-        algorithm: str,
-        hyperparameters: Optional[Dict[str, Any]] = None,
-        dataset_source: Optional[Union[str, pd.DataFrame]] = None,
-        user_features_source: Optional[Union[str, pd.DataFrame]] = None,
-        item_features_source: Optional[Union[str, pd.DataFrame]] = None,
-    ) -> Dict[str, Any]:
+            self,
+            model_id: str,
+            model_name: str,
+            message: str,
+            algorithm: str,
+            hyperparameters: Optional[Dict[str, Any]] = None,
+            dataset_source: Optional[Union[str, pd.DataFrame]] = None,
+            user_features_source: Optional[Union[str, pd.DataFrame]] = None,
+            item_features_source: Optional[Union[str, pd.DataFrame]] = None,
+            query_string: Optional[str] = None,
+    ) -> ModelInfo:
         """
         Create and store model configuration.
 
         Args:
             model_id: Unique identifier for the model
+            model_name: User-friendly name for the model
+            message: Description or message about the model
             algorithm: Algorithm name
             hyperparameters: Model hyperparameters
             dataset_source: Dataset source (file path, cached dataset name, or DataFrame)
             user_features_source: User features source
             item_features_source: Item features source
+            query_string: Optional query string for database input
+        Returns:
+            ModelInfo object with the created model configuration
         """
 
         # Handle DataFrame inputs by caching them
@@ -162,14 +179,20 @@ class ModelService:
 
         config = {
             "model_id": model_id,
+            "model_name": model_name,
+            "message": message,
             "algorithm": algorithm,
             "hyperparameters": hyperparameters or {},
             "dataset_source": dataset_ref,
             "user_features_source": user_features_ref,
             "item_features_source": item_features_ref,
             "created_at": datetime.now().isoformat(),
-            "status": "created",
+            "status": ModelStatus.COMPLETED,
             "model_path": str(self.models_dir / f"{model_id}.pkl"),
+            "training_started_at": None,
+            "training_completed_at": None,
+            "training_time": 60.0,  # Default to 60 seconds
+            "query_string": query_string,
         }
 
         self.model_configs[model_id] = config
@@ -180,10 +203,10 @@ class ModelService:
             json.dump(config, f, indent=2)
 
         logger.info(f"Created configuration for model {model_id}")
-        return config
+        return ModelInfo(**config)
 
     def _handle_dataset_source(
-        self, cache_name: str, dataset_source: Optional[Union[str, pd.DataFrame]]
+            self, cache_name: str, dataset_source: Optional[Union[str, pd.DataFrame]]
     ) -> Optional[str]:
         """
         Handle a dataset source and return a reference string.
@@ -207,19 +230,23 @@ class ModelService:
         return dataset_source
 
     def train_model_from_data(
-        self,
-        model_id: str,
-        algorithm: str,
-        interaction_data: pd.DataFrame,
-        user_features: Optional[pd.DataFrame] = None,
-        item_features: Optional[pd.DataFrame] = None,
-        hyperparameters: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+            self,
+            model_id: str,
+            model_name: str,
+            message: str,
+            algorithm: str,
+            interaction_data: pd.DataFrame,
+            user_features: Optional[pd.DataFrame] = None,
+            item_features: Optional[pd.DataFrame] = None,
+            hyperparameters: Optional[Dict[str, Any]] = None,
+    ) -> ModelInfo:
         """
         Train a model directly from DataFrames.
 
         Args:
             model_id: Unique identifier for the model
+            model_name: User-friendly name for the model
+            message: Description or message about the model
             algorithm: Algorithm name
             interaction_data: Interaction data DataFrame
             user_features: Optional user features DataFrame
@@ -227,7 +254,7 @@ class ModelService:
             hyperparameters: Model hyperparameters
 
         Returns:
-            Training result dictionary
+            ModelInfo object with training details
         """
         try:
             logger.info(f"Training model {model_id} directly from DataFrames")
@@ -235,6 +262,8 @@ class ModelService:
             # Create config with DataFrames
             config = self.create_model_config(
                 model_id=model_id,
+                model_name=model_name,
+                message=message,
                 algorithm=algorithm,
                 hyperparameters=hyperparameters,
                 dataset_source=interaction_data,
@@ -243,15 +272,20 @@ class ModelService:
             )
 
             # Train the model
-            return self.train_model(model_id, config)
-
+            self.train_model(model_id, config.to_dict())
+            return config
         except Exception as e:
             logger.error(f"Error training model from data {model_id}: {str(e)}")
-            return {"model_id": model_id, "status": "error", "error": str(e)}
+            return ModelInfo(
+                model_id=model_id,
+                model_name=model_name,
+                message=message,
+                status=ModelStatus.FAILED
+            )
 
     def train_model(
-        self, model_id: str, config: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+            self, model_id: str, config: Optional[Dict[str, Any]] = None
+    ) -> ModelTrainingResult:
         """Train a model with a given configuration."""
         try:
             # Load or use provided config
@@ -327,13 +361,12 @@ class ModelService:
                 f"Model {model_id} trained successfully in {training_time:.2f}s"
             )
 
-            return {
-                "model_id": model_id,
-                "status": "success",
-                "training_time": training_time,
-                "metrics": model.get_metrics(),
-            }
-
+            return ModelTrainingResult(
+                model_id=model_id,
+                status="success",
+                training_time=training_time,
+                metrics=model.get_metrics(),
+            )
         except Exception as e:
             # Update status to failed
             if model_id in self.model_configs:
@@ -341,7 +374,12 @@ class ModelService:
                 self.model_configs[model_id]["error"] = str(e)
 
             logger.error(f"Error training model {model_id}: {str(e)}")
-            return {"model_id": model_id, "status": "error", "error": str(e)}
+            return ModelTrainingResult(
+                model_id=model_id,
+                status="error",
+                training_time=0.0,
+                metrics={},
+            )
 
     def load_model(self, model_id: str) -> BaseRecommender:
         """Load a trained model from disk."""
@@ -381,8 +419,8 @@ class ModelService:
             raise
 
     def predict_with_model(
-        self, model_id: str, user_id: Union[str, List[str]], top_k: int = 10
-    ) -> Dict[str, Any]:
+            self, model_id: str, user_id: Union[str, List[str]], top_k: int = 10
+    ) -> ModelPredictResult:
         """Generate predictions with a trained model."""
         try:
             # Load model if not in memory
@@ -404,26 +442,33 @@ class ModelService:
             for user in user_ids:
                 user_predictions = predictions_df[predictions_df["user_id"] == user]
                 predictions[user] = [
-                    {"itemId": row["item_id"], "score": float(row["score"])}
+                    {"item_id": row["item_id"], "score": float(row["score"])}
                     for _, row in user_predictions.iterrows()
                 ]
 
-            return {
-                "model_id": model_id,
-                "predictions": predictions,
-                "status": "success",
-            }
-
+            return ModelPredictResult(
+                model_id=model_id,
+                user_id=user_id,
+                predictions=predictions,
+                datetime=datetime.now().isoformat(),
+                status=ModelStatus.COMPLETED,
+            )
         except Exception as e:
             logger.error(f"Error predicting with model {model_id}: {str(e)}")
-            return {"model_id": model_id, "status": "error", "error": str(e)}
+            return ModelPredictResult(
+                model_id=model_id,
+                user_id=user_id,
+                predictions={},
+                datetime=datetime.now().isoformat(),
+                status=ModelStatus.FAILED,
+            )
 
     def predict_scores(
-        self,
-        model_id: str,
-        user_ids: Union[str, List[str]],
-        item_ids: Union[str, List[str]],
-    ) -> Dict[str, Any]:
+            self,
+            model_id: str,
+            user_ids: Union[str, List[str]],
+            item_ids: Union[str, List[str]],
+    ) -> ModelPredictScoresResult:
         """Predict scores for specific user-item pairs."""
         try:
             # Load model if not in memory
@@ -455,17 +500,27 @@ class ModelService:
                 for user_id, item_id, score in zip(user_ids, item_ids, scores)
             ]
 
-            return {"model_id": model_id, "scores": results, "status": "success"}
+            return ModelPredictScoresResult(
+                model_id=model_id,
+                results=results,
+                datetime=datetime.now().isoformat(),
+                status=ModelStatus.COMPLETED,
+            )
 
         except Exception as e:
             logger.error(f"Error predicting scores with model {model_id}: {str(e)}")
-            return {"model_id": model_id, "status": "error", "error": str(e)}
+            return ModelPredictScoresResult(
+                model_id=model_id,
+                results=[],
+                datetime=datetime.now().isoformat(),
+                status=ModelStatus.FAILED,
+            )
 
     def evaluate_model_from_data(
-        self,
-        model_id: str,
-        test_data: pd.DataFrame,
-        k_values: Optional[List[int]] = None,
+            self,
+            model_id: str,
+            test_data: pd.DataFrame,
+            k_values: Optional[List[int]] = None,
     ) -> Dict[str, Any]:
         """
         Evaluate a trained model using test data DataFrame.
@@ -521,10 +576,10 @@ class ModelService:
             return {"model_id": model_id, "status": "error", "error": str(e)}
 
     def evaluate_model(
-        self,
-        model_id: str,
-        test_data_source: Union[str, pd.DataFrame],
-        k_values: Optional[List[int]] = None,
+            self,
+            model_id: str,
+            test_data_source: Union[str, pd.DataFrame],
+            k_values: Optional[List[int]] = None,
     ) -> Dict[str, Any]:
         """
         Evaluate a trained model.
