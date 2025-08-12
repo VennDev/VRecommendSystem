@@ -1,6 +1,4 @@
 ---
-kafka_enabled: true # Enable Kafka integration
-
 # Logger configuration
 logger:
   max_size: 10 # Maximum size of the log file in MB
@@ -11,21 +9,33 @@ logger:
 
 # Database configuration
 database:
-  # Database type can be 'mysql', 'postgres', 'mongodb'
-  type: "mysql"
-  host: "0.0.0.0"
-  port: 3306
-  user: "root"
-  password: "password"
-  name: "shop"
-  ssl: false
-  max_idle_conns: 10
-  max_open_conns: 100
-  conn_max_lifetime: "30s"
-  conn_max_idle_time: "30s"
+  sql:
+    # Database type can be 'mysql', 'postgres', 'sqlite', etc.
+    type: "mysql"
+    host: "0.0.0.0"
+    port: 3306
+    user: "root"
+    password: "password"
+    name: "shop"
+    ssl: false
+    max_idle_conns: 10
+    max_open_conns: 100
+    conn_max_lifetime: "30s"
+    conn_max_idle_time: "30s"
 
-  # Options for MongoDB
-  auth_source: "admin" # Authentication source for MongoDB
-  replica_set: "rs0" # Replica set name for MongoDB
-  connection_timeout: 5000 # Connection timeout in milliseconds
-  server_selection_timeout: 5000 # Server selection timeout in milliseconds
+  nosql:
+    # Database type can be 'mongodb'
+    type: "mongodb"
+    host: "0.0.0.0"
+    port: 27017
+    username: "root"
+    password: "password"
+    ssl: false
+    max_idle_conns: 10
+    max_open_conns: 100
+    conn_max_lifetime: "30s"
+    conn_max_idle_time: "30s"
+    connection_timeout: "5s"
+    auth_source: "admin"
+    replica_set: "rs0"
+    server_selection_timeout: "5s"

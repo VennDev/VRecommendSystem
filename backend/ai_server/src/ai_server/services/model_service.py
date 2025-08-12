@@ -1,10 +1,10 @@
-import sys
 import json
+
+import loguru
 import pandas as pd
 import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Union, Type
-import logging
 from datetime import datetime
 
 # Import models from the models folder
@@ -27,10 +27,6 @@ from ..schemas.model_schemas import (
     ModelPredictScoresResult,
     ModelStatus,
 )
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 class ModelService:
@@ -74,7 +70,7 @@ class ModelService:
             Dataset identifier that can be used in model configs
         """
         self.cached_datasets[dataset_name] = data.copy()
-        logger.info(f"Registered dataset '{dataset_name}' with {len(data)} records")
+        loguru.logger.info(f"Registered dataset '{dataset_name}' with {len(data)} records")
         return dataset_name
 
     def load_dataset(self, dataset_source: Union[str, pd.DataFrame]) -> pd.DataFrame:
@@ -93,7 +89,7 @@ class ModelService:
         try:
             # If it's already a DataFrame, return it
             if isinstance(dataset_source, pd.DataFrame):
-                logger.info(
+                loguru.logger.info(
                     f"Using provided DataFrame with {len(dataset_source)} records"
                 )
                 return dataset_source.copy()
@@ -101,7 +97,7 @@ class ModelService:
             # Check if it's a cached dataset name
             if dataset_source in self.cached_datasets:
                 data = self.cached_datasets[dataset_source].copy()
-                logger.info(
+                loguru.logger.info(
                     f"Loaded cached dataset '{dataset_source}' with {len(data)} records"
                 )
                 return data
@@ -117,7 +113,7 @@ class ModelService:
                 else:
                     raise ValueError(f"Unsupported file format: {dataset_source}")
 
-                logger.info(
+                loguru.logger.info(
                     f"Loaded dataset from file '{dataset_source}' with {len(data)} records"
                 )
                 return data
@@ -125,7 +121,7 @@ class ModelService:
             raise FileNotFoundError(f"Dataset source not found: {dataset_source}")
 
         except Exception as e:
-            logger.error(f"Error loading dataset from {dataset_source}: {str(e)}")
+            loguru.logger.error(f"Error loading dataset from {dataset_source}: {str(e)}")
             raise
 
     def get_model_class(self, algorithm: str) -> Type[BaseRecommender]:
@@ -202,7 +198,7 @@ class ModelService:
         with open(config_path, "w") as f:
             json.dump(config, f, indent=2)
 
-        logger.info(f"Created configuration for model {model_id}")
+        loguru.logger.info(f"Created configuration for model {model_id}")
         return ModelInfo(**config)
 
     def _handle_dataset_source(
@@ -257,7 +253,7 @@ class ModelService:
             ModelInfo object with training details
         """
         try:
-            logger.info(f"Training model {model_id} directly from DataFrames")
+            loguru.logger.info(f"Training model {model_id} directly from DataFrames")
 
             # Create config with DataFrames
             config = self.create_model_config(
@@ -275,7 +271,7 @@ class ModelService:
             self.train_model(model_id, config.to_dict())
             return config
         except Exception as e:
-            logger.error(f"Error training model from data {model_id}: {str(e)}")
+            loguru.logger.error(f"Error training model from data {model_id}: {str(e)}")
             return ModelInfo(
                 model_id=model_id,
                 model_name=model_name,
@@ -301,7 +297,7 @@ class ModelService:
                 else:
                     config = self.model_configs[model_id]
 
-            logger.info(
+            loguru.logger.info(
                 f"Starting training for model {model_id} with algorithm {config['algorithm']}"
             )
 
@@ -324,11 +320,11 @@ class ModelService:
 
             if config.get("user_features_source"):
                 user_features = self.load_dataset(config["user_features_source"])
-                logger.info(f"Loaded user features: {user_features.shape}")
+                loguru.logger.info(f"Loaded user features: {user_features.shape}")
 
             if config.get("item_features_source"):
                 item_features = self.load_dataset(config["item_features_source"])
-                logger.info(f"Loaded item features: {item_features.shape}")
+                loguru.logger.info(f"Loaded item features: {item_features.shape}")
 
             # Initialize model
             model_class = self.get_model_class(config["algorithm"])
@@ -357,7 +353,7 @@ class ModelService:
             with open(config_path, "w") as f:
                 json.dump(config, f, indent=2)
 
-            logger.info(
+            loguru.logger.info(
                 f"Model {model_id} trained successfully in {training_time:.2f}s"
             )
 
@@ -373,7 +369,7 @@ class ModelService:
                 self.model_configs[model_id]["status"] = "failed"
                 self.model_configs[model_id]["error"] = str(e)
 
-            logger.error(f"Error training model {model_id}: {str(e)}")
+            loguru.logger.error(f"Error training model {model_id}: {str(e)}")
             return ModelTrainingResult(
                 model_id=model_id,
                 status="error",
@@ -411,11 +407,11 @@ class ModelService:
             self.loaded_models[model_id] = model
             self.model_configs[model_id] = config
 
-            logger.info(f"Loaded model {model_id}")
+            loguru.logger.info(f"Loaded model {model_id}")
             return model
 
         except Exception as e:
-            logger.error(f"Error loading model {model_id}: {str(e)}")
+            loguru.logger.error(f"Error loading model {model_id}: {str(e)}")
             raise
 
     def predict_with_model(
@@ -454,7 +450,7 @@ class ModelService:
                 status=ModelStatus.COMPLETED,
             )
         except Exception as e:
-            logger.error(f"Error predicting with model {model_id}: {str(e)}")
+            loguru.logger.error(f"Error predicting with model {model_id}: {str(e)}")
             return ModelPredictResult(
                 model_id=model_id,
                 user_id=user_id,
@@ -508,7 +504,7 @@ class ModelService:
             )
 
         except Exception as e:
-            logger.error(f"Error predicting scores with model {model_id}: {str(e)}")
+            loguru.logger.error(f"Error predicting scores with model {model_id}: {str(e)}")
             return ModelPredictScoresResult(
                 model_id=model_id,
                 results=[],
@@ -568,11 +564,11 @@ class ModelService:
                 "total_predictions": len(predictions_df),
             }
 
-            logger.info(f"Evaluated model {model_id} on provided test data")
+            loguru.logger.info(f"Evaluated model {model_id} on provided test data")
             return evaluation_results
 
         except Exception as e:
-            logger.error(f"Error evaluating model {model_id}: {str(e)}")
+            loguru.logger.error(f"Error evaluating model {model_id}: {str(e)}")
             return {"model_id": model_id, "status": "error", "error": str(e)}
 
     def evaluate_model(
@@ -600,7 +596,7 @@ class ModelService:
             return self.evaluate_model_from_data(model_id, test_data, k_values)
 
         except Exception as e:
-            logger.error(f"Error evaluating model {model_id}: {str(e)}")
+            loguru.logger.error(f"Error evaluating model {model_id}: {str(e)}")
             return {"model_id": model_id, "status": "error", "error": str(e)}
 
     def list_models(self) -> List[Dict[str, Any]]:
@@ -626,7 +622,7 @@ class ModelService:
                 models.append(model_info)
 
             except Exception as e:
-                logger.warning(f"Error reading config {config_file}: {str(e)}")
+                loguru.logger.warning(f"Error reading config {config_file}: {str(e)}")
 
         return models
 
@@ -661,7 +657,7 @@ class ModelService:
         """Clear a specific cached dataset."""
         if dataset_name in self.cached_datasets:
             del self.cached_datasets[dataset_name]
-            logger.info(f"Cleared cached dataset: {dataset_name}")
+            loguru.logger.info(f"Cleared cached dataset: {dataset_name}")
             return True
         return False
 
@@ -669,7 +665,7 @@ class ModelService:
         """Clear all cached datasets."""
         count = len(self.cached_datasets)
         self.cached_datasets.clear()
-        logger.info(f"Cleared {count} cached datasets")
+        loguru.logger.info(f"Cleared {count} cached datasets")
         return count
 
     def delete_model(self, model_id: str) -> Dict[str, Any]:
@@ -697,7 +693,7 @@ class ModelService:
                 config_path.unlink()
                 files_deleted.append(str(config_path))
 
-            logger.info(f"Deleted model {model_id}")
+            loguru.logger.info(f"Deleted model {model_id}")
             return {
                 "model_id": model_id,
                 "status": "deleted",
@@ -705,7 +701,7 @@ class ModelService:
             }
 
         except Exception as e:
-            logger.error(f"Error deleting model {model_id}: {str(e)}")
+            loguru.logger.error(f"Error deleting model {model_id}: {str(e)}")
             return {"model_id": model_id, "status": "error", "error": str(e)}
 
     def get_model_info(self, model_id: str) -> Dict[str, Any]:
@@ -740,39 +736,5 @@ class ModelService:
             return model_info
 
         except Exception as e:
-            logger.error(f"Error getting model info {model_id}: {str(e)}")
+            loguru.logger.error(f"Error getting model info {model_id}: {str(e)}")
             raise
-
-
-# CLI Interface functions for backward compatibility
-def train_model(model_id: str) -> None:
-    """CLI function to train a model."""
-    service = ModelService()
-    result = service.train_model(model_id)
-
-    if result["status"] == "success":
-        print(f"Model {model_id} trained successfully")
-        print(f"Training time: {result['training_time']:.2f}s")
-        if result.get("metrics"):
-            print("Metrics:", json.dumps(result["metrics"], indent=2))
-    else:
-        print(
-            f"Error training model {model_id}: {result.get('error')}", file=sys.stderr
-        )
-        sys.exit(1)
-
-
-def predict_with_model(model_id: str, user_id: str, top_k: int = 10) -> None:
-    """CLI function to generate predictions."""
-    service = ModelService()
-    result = service.predict_with_model(model_id, user_id, top_k)
-
-    if result["status"] == "success":
-        predictions = result["predictions"][user_id]
-        print(json.dumps(predictions, indent=2))
-    else:
-        print(
-            f"Error predicting with model {model_id}: {result.get('error')}",
-            file=sys.stderr,
-        )
-        sys.exit(1)

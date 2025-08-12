@@ -1,0 +1,35 @@
+logger:
+  max_size: 10
+  max_backups: 5
+  max_age: 30
+  compression: true
+  local_time: true
+database:
+  sql:
+    type: mysql
+    host: 0.0.0.0
+    port: 3306
+    user: root
+    password: password
+    name: shop
+    ssl: false
+    max_idle_conns: 10
+    max_open_conns: 100
+    conn_max_lifetime: 30s
+    conn_max_idle_time: 30s
+  nosql:
+    type: mongodb
+    host: 0.0.0.0
+    port: 27017
+    username: root
+    password: password
+    database: shop
+    ssl: false
+    max_idle_conns: 10
+    max_open_conns: 100
+    conn_max_lifetime: 30s
+    conn_max_idle_time: 30s
+    connection_timeout: 5s
+    auth_source: admin
+    replica_set: rs0
+    server_selection_timeout: 5s

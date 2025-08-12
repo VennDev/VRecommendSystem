@@ -1,0 +1,15 @@
+---
+data_1:
+  type: 'csv'
+  path: 'C:\\data\\query_1.csv'
+data_2:
+  type: 'sql'
+  query: 'SELECT * FROM table_2 WHERE condition = true'
+data_3:
+  type: 'api'
+  url: 'https://api.example.com/data?param=value'
+data_4:
+  type: 'nosql'
+  database: 'database_name'
+  collection: 'collection_name'
+...
