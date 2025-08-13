@@ -1,23 +1,23 @@
 {
   "model_id": "ncf_example",
+  "model_name": "ncf_example",
+  "message": "Training NCF model with interaction data",
   "algorithm": "ncf",
   "hyperparameters": {
     "factors": 50,
     "iterations": 10
   },
-  "dataset_source": "ncf_example_interactions",
-  "user_features_source": null,
-  "item_features_source": null,
-  "created_at": "2025-08-08T03:28:42.223950",
-  "status": "trained",
+  "created_at": "2025-08-13T21:21:52.719645",
+  "training_started_at": "2025-08-13T21:21:52.719645",
+  "status": "completed",
   "model_path": "models\\ncf_example.pkl",
-  "training_started_at": "2025-08-08T03:28:42.224935",
-  "training_completed_at": "2025-08-08T03:28:49.992503",
-  "training_time": 7.66956,
+  "training_time": 3600,
+  "training_completed_at": "2025-08-13T21:22:00.257268",
+  "actual_training_duration": 7.475623,
   "model_metrics": {
-    "final_loss": 0.1663530170917511,
-    "final_val_loss": 0.06231514737010002,
-    "training_time": 7.6685826778411865,
+    "final_loss": 0.2201353907585144,
+    "final_val_loss": 0.08276358246803284,
+    "training_time": 7.473617792129517,
     "n_users": 2,
     "n_items": 3
   }

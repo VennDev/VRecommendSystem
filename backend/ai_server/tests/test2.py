@@ -13,14 +13,17 @@ if __name__ == "__main__":
         'rating': [5, 4, 3, 5]
     })
 
-    result = service.train_model_from_data(
+    result = service.train_model(
         model_id='ncf_example',
+        model_name='ncf_example',
+        message='Training NCF model with interaction data',
         algorithm='ncf',
         interaction_data=interaction_data,
-        hyperparameters={'factors': 50, 'iterations': 10}
+        hyperparameters={'factors': 50, 'iterations': 10},
+        training_time=3600,
     )
 
-    predict = service.predict_with_model(
+    predict = service.predict_recommendations(
         model_id='ncf_example',
         user_id='u1',
         top_k=5

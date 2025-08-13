@@ -5,16 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/ai_server/config/restaurant_data.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/config/local.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/config/local.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/database/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/database/nosql.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/database/sql.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/initialize/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/initialize/logger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/database_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/database_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/model_factory_service.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/models/base_model.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/services/model_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/model_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/models/als_example.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/models/als_example_config.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/models/my_als_model.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/models/my_als_model_config.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/models/ncf_example.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/models/ncf_example_config.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,8 +156,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests in test1.py" />
         <item itemvalue="Python.test2" />
+        <item itemvalue="Python tests.Python tests in test1.py" />
         <item itemvalue="Python.test1" />
       </list>
     </recent_temporary>
@@ -197,7 +199,8 @@
       <workItem from="1754920593872" duration="12187000" />
       <workItem from="1755009859280" duration="2905000" />
       <workItem from="1755014242725" duration="1156000" />
-      <workItem from="1755022442528" duration="6968000" />
+      <workItem from="1755022442528" duration="6996000" />
+      <workItem from="1755079634216" duration="7273000" />
     </task>
     <servers />
   </component>
@@ -206,7 +209,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ai_server$test1.coverage" NAME="test1 Coverage Results" MODIFIED="1754584534980" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/ai_server$test2.coverage" NAME="test2 Coverage Results" MODIFIED="1754598511952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/ai_server$test2.coverage" NAME="test2 Coverage Results" MODIFIED="1755094906027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/ai_server$.coverage" NAME=" Coverage Results" MODIFIED="1754583436005" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
   </component>
 </project>

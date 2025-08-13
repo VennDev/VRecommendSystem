@@ -4,6 +4,7 @@
       <w>actuals</w>
       <w>ndcg</w>
       <w>rmse</w>
+      <w>sslmode</w>
     </words>
   </dictionary>
 </component>
