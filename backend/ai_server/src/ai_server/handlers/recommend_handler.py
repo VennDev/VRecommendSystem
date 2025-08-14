@@ -12,7 +12,10 @@ async def get_recommend_handler(model_id: str, object_id: str, n: int = 10) -> D
     Returns:
         dict: Recommendation results
     """
-    predictions = ModelService().predict_recommendations(
-        model_id=model_id, user_id=object_id, top_k=n
+    import asyncio
+    loop = asyncio.get_event_loop()
+    prediction = await loop.run_in_executor(
+        None, ModelService().predict_recommendations,
+        model_id, object_id, n
     )
-    return predictions.to_dict()
+    return prediction.to_dict()

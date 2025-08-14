@@ -1,10 +1,12 @@
 from loguru import logger
-import hydra
-from omegaconf import DictConfig
+from ai_server.config.config import Config
 
 
-@hydra.main(config_path='../config', config_name='local', version_base=None)
-def init(cfg: DictConfig):
+def init():
+    """
+    Initialize the logger.
+    """
+    cfg = Config().get_config()
     pattern_time = "{time:YYYY-MM-DD}"
     if cfg.logger.local_time:
         pattern_time = "{time:YYYY-MM-DD HH:mm}"

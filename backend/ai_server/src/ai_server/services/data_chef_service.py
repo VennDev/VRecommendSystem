@@ -1,14 +1,18 @@
+import json
 from enum import Enum
-from omegaconf import DictConfig
 from typing import Generator, Dict, Any
+from omegaconf import DictConfig
 from sqlalchemy import text
 import pandas as pd
 import requests
-import json
 from ..services.database_service import DatabaseService
 
 
 class DataType(str, Enum):
+    """
+    Enumeration of supported data types.
+    """
+
     SQL = "sql"
     NOSQL = "nosql"
     CSV = "csv"
@@ -42,10 +46,14 @@ def _cook_sql(query: str) -> Generator[Dict[str, Any], None, None]:
                     yield dict(zip(columns, row))
 
     except Exception as e:
-        raise ValueError(f"An error occurred while querying the SQL database: {e}")
+        raise ValueError(
+            f"An error occurred while querying the SQL database: {e}"
+        ) from e
 
 
-def _cook_nosql(database: str, collection: str) -> Generator[Dict[str, Any], None, None]:
+def _cook_nosql(
+    database: str, collection: str
+) -> Generator[Dict[str, Any], None, None]:
     """
     Query a NoSQL database and yield results as dictionaries.
 
@@ -73,14 +81,16 @@ def _cook_nosql(database: str, collection: str) -> Generator[Dict[str, Any], Non
             # Convert MongoDB documents to dictionaries
             for doc in chunk:
                 # Convert ObjectId to string if present
-                if '_id' in doc:
-                    doc['_id'] = str(doc['_id'])
+                if "_id" in doc:
+                    doc["_id"] = str(doc["_id"])
                 yield dict(doc)
 
             skip_count += batch_size
 
     except Exception as e:
-        raise ValueError(f"An error occurred while querying the NoSQL database: {e}")
+        raise ValueError(
+            f"An error occurred while querying the NoSQL database: {e}"
+        ) from e
 
 
 def _cook_csv(path: str) -> Generator[Dict[str, Any], None, None]:
@@ -94,7 +104,7 @@ def _cook_csv(path: str) -> Generator[Dict[str, Any], None, None]:
     try:
         for chunk in pd.read_csv(path, chunksize=1000):
             # Convert to records (list of dicts) then yield each dict
-            records = chunk.to_dict(orient='records')
+            records = chunk.to_dict(orient="records")
             for record in records:
                 # Ensure all values are JSON serializable
                 cleaned_record = {}
@@ -107,12 +117,12 @@ def _cook_csv(path: str) -> Generator[Dict[str, Any], None, None]:
                         cleaned_record[key] = value
                 yield cleaned_record
 
-    except FileNotFoundError:
-        raise ValueError(f"CSV file not found at path: {path}")
-    except pd.errors.EmptyDataError:
-        raise ValueError("CSV file is empty or invalid.")
+    except FileNotFoundError as e:
+        raise ValueError(f"CSV file not found at path: {path}") from e
+    except pd.errors.EmptyDataError as e:
+        raise ValueError("CSV file is empty or invalid.") from e
     except Exception as e:
-        raise ValueError(f"An error occurred while reading the CSV file: {e}")
+        raise ValueError(f"An error occurred while reading the CSV file: {e}") from e
 
 
 def _cook_api(url: str) -> Generator[Dict[str, Any], None, None]:
@@ -124,13 +134,13 @@ def _cook_api(url: str) -> Generator[Dict[str, Any], None, None]:
     :raises ValueError: If the API request fails or if the response is not valid JSON.
     """
     try:
-        response = requests.get(url, stream=True)
+        response = requests.get(url, stream=True, timeout=10)
         response.raise_for_status()
 
         for line in response.iter_lines():
             if line:
                 try:
-                    json_obj = json.loads(line.decode('utf-8'))
+                    json_obj = json.loads(line.decode("utf-8"))
 
                     # Ensure we always yield a dictionary
                     if isinstance(json_obj, dict):
@@ -151,11 +161,15 @@ def _cook_api(url: str) -> Generator[Dict[str, Any], None, None]:
                     continue
 
     except requests.RequestException as e:
-        raise ValueError(f"API request failed: {e}")
+        raise ValueError(f"API request failed: {e}") from e
 
 
-def _cook_api_paginated(base_url: str, page_param: str = "page",
-                        size_param: str = "size", page_size: int = 100) -> Generator[Dict[str, Any], None, None]:
+def _cook_api_paginated(
+    base_url: str,
+    page_param: str = "page",
+    size_param: str = "size",
+    page_size: int = 100,
+) -> Generator[Dict[str, Any], None, None]:
     """
     Query a paginated API endpoint and yield results as dictionaries.
 
@@ -174,7 +188,7 @@ def _cook_api_paginated(base_url: str, page_param: str = "page",
             separator = "&" if "?" in base_url else "?"
             url = f"{base_url}{separator}{page_param}={page}&{size_param}={page_size}"
 
-            response = requests.get(url)
+            response = requests.get(url, timeout=10)
             response.raise_for_status()
 
             data = response.json()
@@ -185,12 +199,12 @@ def _cook_api_paginated(base_url: str, page_param: str = "page",
                 items = data
             elif isinstance(data, dict):
                 # Common pagination response formats
-                if 'items' in data:
-                    items = data['items']
-                elif 'data' in data:
-                    items = data['data']
-                elif 'results' in data:
-                    items = data['results']
+                if "items" in data:
+                    items = data["items"]
+                elif "data" in data:
+                    items = data["data"]
+                elif "results" in data:
+                    items = data["results"]
                 else:
                     # If single object, treat as single item
                     items = [data]
@@ -209,9 +223,9 @@ def _cook_api_paginated(base_url: str, page_param: str = "page",
             # Check if there are more pages
             if isinstance(data, dict):
                 # Check various pagination indicators
-                if data.get('has_next') is False:
+                if data.get("has_next") is False:
                     break
-                if data.get('next') is None:
+                if data.get("next") is None:
                     break
                 if len(items) < page_size:
                     break
@@ -221,12 +235,14 @@ def _cook_api_paginated(base_url: str, page_param: str = "page",
             page += 1
 
         except requests.RequestException as e:
-            raise ValueError(f"API request failed on page {page}: {e}")
+            raise ValueError(f"API request failed on page {page}: {e}") from e
         except json.JSONDecodeError as e:
-            raise ValueError(f"Invalid JSON response on page {page}: {e}")
+            raise ValueError(f"Invalid JSON response on page {page}: {e}") from e
 
 
-def _cook_data_source(source_type: str, **kwargs) -> Generator[Dict[str, Any], None, None]:
+def _cook_data_source(
+    source_type: str, **kwargs
+) -> Generator[Dict[str, Any], None, None]:
     """
     Unified interface for all data sources.
 
@@ -234,31 +250,33 @@ def _cook_data_source(source_type: str, **kwargs) -> Generator[Dict[str, Any], N
     :param kwargs: Arguments specific to each data source type
     :return: Generator yielding dictionaries from any data source
     """
-    if source_type == 'sql':
-        yield from _cook_sql(kwargs['query'])
-    elif source_type == 'nosql':
-        yield from _cook_nosql(kwargs['database'], kwargs['collection'])
-    elif source_type == 'csv':
-        yield from _cook_csv(kwargs['path'])
-    elif source_type == 'api':
-        if kwargs.get('paginated', False):
+    if source_type == "sql":
+        yield from _cook_sql(kwargs["query"])
+    elif source_type == "nosql":
+        yield from _cook_nosql(kwargs["database"], kwargs["collection"])
+    elif source_type == "csv":
+        yield from _cook_csv(kwargs["path"])
+    elif source_type == "api":
+        if kwargs.get("paginated", False):
             yield from _cook_api_paginated(
-                kwargs['url'],
-                kwargs.get('page_param', 'page'),
-                kwargs.get('size_param', 'size'),
-                kwargs.get('page_size', 100)
+                kwargs["url"],
+                kwargs.get("page_param", "page"),
+                kwargs.get("size_param", "size"),
+                kwargs.get("page_size", 100),
             )
         else:
-            yield from _cook_api(kwargs['url'])
+            yield from _cook_api(kwargs["url"])
     else:
         raise ValueError(f"Unsupported source type: {source_type}")
 
 
 class DataChefService:
+    """
+    Service for cooking data from various sources.
+    """
 
     def __init__(self, cfg: DictConfig):
         self.cfg = cfg
-        pass
 
     def cook(self, name: str) -> Generator[Dict[str, Any], None, None]:
         """
@@ -274,9 +292,9 @@ class DataChefService:
 
         try:
             type_enum = DataType(data.type.lower())
-        except ValueError:
+        except ValueError as e:
             raise ValueError(
                 f"Invalid data type: {data.type}. Must be one of {[t.value for t in DataType]}."
-            )
+            ) from e
 
         return _cook_data_source(type_enum, **data)

@@ -7,6 +7,7 @@
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/handlers/recommend_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/handlers/recommend_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/routers/public_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/public_routers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -191,7 +192,7 @@
       <workItem from="1755014242725" duration="1156000" />
       <workItem from="1755022442528" duration="6996000" />
       <workItem from="1755079634216" duration="8093000" />
-      <workItem from="1755104815589" duration="484000" />
+      <workItem from="1755104815589" duration="7116000" />
     </task>
     <servers />
   </component>

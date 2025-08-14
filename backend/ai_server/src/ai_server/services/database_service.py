@@ -1,57 +1,74 @@
-import hydra
-from omegaconf import DictConfig
+from typing import Any
 from sqlalchemy import create_engine, event, Engine
 from sqlalchemy.pool import QueuePool
-from typing import Any
+from pymongo import MongoClient
+
+from ai_server.config.config import Config
 
 
 class CustomQueuePool(QueuePool):
+    """
+    Custom connection pool with additional parameters.
+    """
+
     def __init__(self, *args, **kwargs):
-        self.conn_max_idle_time = kwargs.pop('conn_max_idle_time', None)
+        self.conn_max_idle_time = kwargs.pop("conn_max_idle_time", None)
         super().__init__(*args, **kwargs)
 
 
 class DatabaseService:
+    """
+    Database service for managing database connections.
+    """
 
     def get_database_specific_args(self, db_type, ssl, conn_max_idle_time):
         """Return database-specific connection arguments"""
         args = {}
 
-        if db_type.lower() == 'postgresql':
+        if db_type.lower() == "postgresql":
             if ssl:
-                args['sslmode'] = 'require'
-            args['connect_timeout'] = 30
+                args["sslmode"] = "require"
+            args["connect_timeout"] = 30
 
-        elif db_type.lower() == 'mysql':
+        elif db_type.lower() == "mysql":
             if ssl:
-                args['ssl_disabled'] = False
-            args['read_timeout'] = conn_max_idle_time
-            args['write_timeout'] = conn_max_idle_time
-            args['connect_timeout'] = 30
+                args["ssl_disabled"] = False
+            args["read_timeout"] = conn_max_idle_time
+            args["write_timeout"] = conn_max_idle_time
+            args["connect_timeout"] = 30
 
-        elif db_type.lower() == 'sqlite':
-            args['timeout'] = conn_max_idle_time
+        elif db_type.lower() == "sqlite":
+            args["timeout"] = conn_max_idle_time
 
         return args
 
-    def build_connection_string(self, db_type, host, port, user, password, database, ssl):
+    def build_connection_string(
+        self, db_type, host, port, user, password, database, ssl
+    ):
         """Build connection string with SSL support"""
-        if db_type.lower() == 'postgresql':
-            ssl_param = '?sslmode=require' if ssl else ''
-            return f"postgresql://{user}:{password}@{host}:{port}/{database}{ssl_param}"
-        elif db_type.lower() == 'mysql':
-            ssl_param = '?ssl=true' if ssl else ''
-            return f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}{ssl_param}"
-        elif db_type.lower() == 'sqlite':
+        if db_type.lower() == "postgresql":
+            ssl_param = "?sslmode=require" if ssl else ""
+            return (
+                f"mysql+pymysql://{user}:{password}@{host}:{port}/"
+                f"{database}{ssl_param}"
+            )
+        elif db_type.lower() == "mysql":
+            ssl_param = "?ssl=true" if ssl else ""
+            return (
+                f"mysql+pymysql://{user}:{password}@{host}:{port}/"
+                f"{database}{ssl_param}"
+            )
+        elif db_type.lower() == "sqlite":
             return f"sqlite:///{database}"
         else:
             raise ValueError(f"Unsupported database type: {db_type}")
 
-    @hydra.main(config_path="../config", config_name="local", version_base=None)
-    def get_sql(self, cfg: DictConfig) -> Engine:
+    def get_sql(self) -> Engine:
         """
         Returns the database instance using ALL config parameters.
         """
+        cfg = Config().get_config()
+
         # Extract ALL parameters from config
         db_type = cfg.database.sql.type
         host = cfg.database.sql.host
@@ -81,19 +98,18 @@ class DatabaseService:
             pool_recycle=conn_max_lifetime,
             pool_pre_ping=True,
             pool_use_lifo=True,
-            pool_reset_on_return='rollback',
-
+            pool_reset_on_return="rollback",
             # Pass conn_max_idle_time to custom pool
             conn_max_idle_time=conn_max_idle_time,
-
             # Database-specific connection arguments
-            connect_args=self.get_database_specific_args(db_type, ssl, conn_max_idle_time),
-
+            connect_args=self.get_database_specific_args(
+                db_type, ssl, conn_max_idle_time
+            ),
             # Execution options
             execution_options={
-                'autocommit': False,
-                'isolation_level': 'READ_COMMITTED'
-            }
+                "autocommit": False,
+                "isolation_level": "READ_COMMITTED",
+            },
         )
 
         # Event listener for additional connection setup if needed
@@ -104,7 +120,9 @@ class DatabaseService:
 
         return engine
 
-    def build_mongodb_connection_string(self, host, port, username, password, ssl, auth_source, replica_set):
+    def build_mongodb_connection_string(
+        self, host, port, username, password, ssl, auth_source, replica_set
+    ):
         """Build MongoDB connection string with all parameters"""
         # Basic connection string
         if username and password:
@@ -126,11 +144,11 @@ class DatabaseService:
 
         return connection_string
 
-    @hydra.main(config_path="../config", config_name="local", version_base=None)
-    def get_nosql(self, cfg: DictConfig) -> Any:
+    def get_nosql(self) -> Any:
         """
         Returns the NoSQL database instance using ALL config parameters.
         """
+        cfg = Config().get_config()
         db_type = cfg.database.nosql.type
         if db_type != "mongodb":
             raise NotImplementedError("This method should be overridden by subclasses.")
@@ -143,7 +161,7 @@ class DatabaseService:
         ssl = cfg.database.nosql.ssl
         max_idle_conns = cfg.database.nosql.max_idle_conns
         max_open_conns = cfg.database.nosql.max_open_conns
-        conn_max_lifetime = cfg.database.nosql.conn_max_lifetime
+        # conn_max_lifetime = cfg.database.nosql.conn_max_lifetime
         conn_max_idle_time = cfg.database.nosql.conn_max_idle_time
         connection_timeout = cfg.database.nosql.connection_timeout
         auth_source = cfg.database.nosql.auth_source
@@ -157,40 +175,42 @@ class DatabaseService:
 
         # Convert string timeouts to milliseconds for MongoDB
         def parse_timeout(timeout_str):
-            if timeout_str.endswith('s'):
+            if timeout_str.endswith("s"):
                 return int(timeout_str[:-1]) * 1000
-            elif timeout_str.endswith('ms'):
+            elif timeout_str.endswith("ms"):
                 return int(timeout_str[:-2])
             return int(timeout_str) * 1000
 
         connection_timeout_ms = parse_timeout(connection_timeout)
         server_selection_timeout_ms = parse_timeout(server_selection_timeout)
-        conn_max_lifetime_ms = parse_timeout(conn_max_lifetime)
+        # conn_max_lifetime_ms = parse_timeout(conn_max_lifetime)
         conn_max_idle_time_ms = parse_timeout(conn_max_idle_time)
 
         # MongoDB client options using ALL parameters
         client_options = {
-            'connectTimeoutMS': connection_timeout_ms,
-            'serverSelectionTimeoutMS': server_selection_timeout_ms,
-            'maxPoolSize': max_open_conns,
-            'minPoolSize': max_idle_conns,
-            'maxIdleTimeMS': conn_max_idle_time_ms,
-            'maxConnecting': max_open_conns,
-            'ssl': ssl,
+            "connectTimeoutMS": connection_timeout_ms,
+            "serverSelectionTimeoutMS": server_selection_timeout_ms,
+            "maxPoolSize": max_open_conns,
+            "minPoolSize": max_idle_conns,
+            "maxIdleTimeMS": conn_max_idle_time_ms,
+            "maxConnecting": max_open_conns,
+            "ssl": ssl,
         }
 
         # Add a replica set if specified
         if replica_set:
-            client_options['replicaSet'] = replica_set
+            client_options["replicaSet"] = replica_set
 
         # Add an auth source if specified
         if auth_source:
-            client_options['authSource'] = auth_source
+            client_options["authSource"] = auth_source
 
         # Create MongoDB client (assuming pymongo)
         try:
-            from pymongo import MongoClient
+
             client = MongoClient(connection_string, **client_options)
             return client
-        except ImportError:
-            raise ImportError("pymongo is required for MongoDB connections. Install with: pip install pymongo")
+        except ImportError as exc:
+            raise ImportError(
+                "pymongo is required for MongoDB connections. Install with: pip install pymongo"
+            ) from exc

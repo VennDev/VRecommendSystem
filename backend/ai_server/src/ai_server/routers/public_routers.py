@@ -16,4 +16,4 @@ async def get_recommendations(user_id: str, model_id: str, n: int = 10):
     Returns:
         dict: A dictionary containing the recommendations for the user.
     """
-    return get_recommend_handler(model_id=model_id, object_id=user_id, n=n)
+    return await get_recommend_handler(model_id=model_id, object_id=user_id, n=n)
