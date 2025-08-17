@@ -1,10 +1,10 @@
+import signal
+from threading import Event
 import json
 import logging
 from typing import List, Dict, Any, Optional, Callable
 from confluent_kafka import Consumer as KafkaConsumer, KafkaError, KafkaException
 from omegaconf import DictConfig
-import signal
-from threading import Event
 
 
 class Consumer:
@@ -28,36 +28,35 @@ class Consumer:
         """Build consumer configuration from Hydra config"""
         consumer_config = {
             # Basic connection
-            'bootstrap.servers': ','.join(self.cfg.kafka.brokers),
-            'client.id': self.cfg.kafka.client_id,
-            'group.id': self.cfg.consumer_groups.ai_server,
-
+            "bootstrap.servers": ",".join(self.cfg.kafka.brokers),
+            "client.id": self.cfg.kafka.client_id,
+            "group.id": self.cfg.consumer_groups.ai_server,
             # KafkaConsumer behavior
-            'auto.offset.reset': self.cfg.kafka.auto_offset_reset,
-            'enable.auto.commit': self.cfg.consumer.enable_auto_commit,
-            'auto.commit.interval.ms': self.cfg.consumer.auto_commit_interval_ms,
-
+            "auto.offset.reset": self.cfg.kafka.auto_offset_reset,
+            "enable.auto.commit": self.cfg.consumer.enable_auto_commit,
+            "auto.commit.interval.ms": self.cfg.consumer.auto_commit_interval_ms,
             # Performance tuning
-            'max.poll.interval.ms': self.cfg.consumer.max_poll_interval_ms,
-            'session.timeout.ms': self.cfg.consumer.session_timeout_ms,
-            'heartbeat.interval.ms': self.cfg.consumer.heartbeat_interval_ms,
-            'fetch.min.bytes': self.cfg.consumer.fetch_min_bytes,
-            'fetch.max.bytes': self.cfg.consumer.fetch_max_bytes,
-            'fetch.max.wait.ms': self.cfg.consumer.fetch_max_wait_ms,
-            'max.partition.fetch.bytes': self.cfg.consumer.max_partition_fetch_bytes,
-
+            "max.poll.interval.ms": self.cfg.consumer.max_poll_interval_ms,
+            "session.timeout.ms": self.cfg.consumer.session_timeout_ms,
+            "heartbeat.interval.ms": self.cfg.consumer.heartbeat_interval_ms,
+            "fetch.min.bytes": self.cfg.consumer.fetch_min_bytes,
+            "fetch.max.bytes": self.cfg.consumer.fetch_max_bytes,
+            "fetch.max.wait.ms": self.cfg.consumer.fetch_max_wait_ms,
+            "max.partition.fetch.bytes": self.cfg.consumer.max_partition_fetch_bytes,
             # Message processing
-            'max.poll.records': self.cfg.consumer.max_poll_records,
+            "max.poll.records": self.cfg.consumer.max_poll_records,
         }
 
         # Add security config if present
-        if hasattr(self.cfg, 'security') and hasattr(self.cfg.security, 'protocol'):
-            consumer_config.update({
-                'security.protocol': self.cfg.security.protocol,
-                'sasl.mechanism': self.cfg.security.sasl.mechanism,
-                'sasl.username': self.cfg.security.sasl.username,
-                'sasl.password': self.cfg.security.sasl.password,
-            })
+        if hasattr(self.cfg, "security") and hasattr(self.cfg.security, "protocol"):
+            consumer_config.update(
+                {
+                    "security.protocol": self.cfg.security.protocol,
+                    "sasl.mechanism": self.cfg.security.sasl.mechanism,
+                    "sasl.username": self.cfg.security.sasl.username,
+                    "sasl.password": self.cfg.security.sasl.password,
+                }
+            )
 
         return consumer_config
 
@@ -105,13 +104,13 @@ class Consumer:
         try:
             # Parse message
             message_data = {
-                'topic': msg.topic(),
-                'partition': msg.partition(),
-                'offset': msg.offset(),
-                'key': msg.key().decode('utf-8') if msg.key() else None,
-                'value': json.loads(msg.value().decode('utf-8')),
-                'timestamp': msg.timestamp(),
-                'headers': dict(msg.headers()) if msg.headers() else {}
+                "topic": msg.topic(),
+                "partition": msg.partition(),
+                "offset": msg.offset(),
+                "key": msg.key().decode("utf-8") if msg.key() else None,
+                "value": json.loads(msg.value().decode("utf-8")),
+                "timestamp": msg.timestamp(),
+                "headers": dict(msg.headers()) if msg.headers() else {},
             }
 
             return message_data
@@ -134,7 +133,9 @@ class Consumer:
             return
 
         if not self.message_handler:
-            self.logger.error("Message handler not set. Call set_message_handler() first.")
+            self.logger.error(
+                "Message handler not set. Call set_message_handler() first."
+            )
             return
 
         self.logger.info("Starting message consumption...")
@@ -148,10 +149,10 @@ class Consumer:
 
                 if msg.error():
                     if msg.error().code() == KafkaError._PARTITION_EOF:
-                        self.logger.debug(f'Reached end of partition {msg.partition()}')
+                        self.logger.debug(f"Reached end of partition {msg.partition()}")
                         continue
                     else:
-                        self.logger.error(f'Kafka error: {msg.error()}')
+                        self.logger.error(f"Kafka error: {msg.error()}")
                         continue
 
                 # Process message
@@ -174,7 +175,9 @@ class Consumer:
         except Exception as e:
             self.logger.error(f"Unexpected error during consumption: {e}")
 
-    def consume_batch(self, max_messages: int = None, timeout: float = 1.0) -> List[Dict[str, Any]]:
+    def consume_batch(
+        self, max_messages: int = None, timeout: float = 1.0
+    ) -> List[Dict[str, Any]]:
         """
         Consume messages in batch for ML processing
         Args:
@@ -202,7 +205,7 @@ class Consumer:
 
                 if msg.error():
                     if msg.error().code() != KafkaError._PARTITION_EOF:
-                        self.logger.error(f'Kafka error: {msg.error()}')
+                        self.logger.error(f"Kafka error: {msg.error()}")
                     continue
 
                 processed_msg = self._process_message(msg)

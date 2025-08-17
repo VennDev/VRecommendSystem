@@ -1,10 +1,11 @@
 import json
-import loguru
-import pandas as pd
 import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Type
 from datetime import datetime
+
+import loguru
+import pandas as pd
 
 # Import models from the models folder
 from ..models.collaborative.als import ALSRecommender
@@ -61,16 +62,16 @@ class ModelService:
         return self.model_registry[algorithm]
 
     def train_model(
-            self,
-            model_id: str,
-            model_name: str,
-            algorithm: str,
-            interaction_data: pd.DataFrame,
-            user_features: Optional[pd.DataFrame] = None,
-            item_features: Optional[pd.DataFrame] = None,
-            hyperparameters: Optional[Dict[str, Any]] = None,
-            message: str = "",
-            training_time: Optional[float] = None,
+        self,
+        model_id: str,
+        model_name: str,
+        algorithm: str,
+        interaction_data: pd.DataFrame,
+        user_features: Optional[pd.DataFrame] = None,
+        item_features: Optional[pd.DataFrame] = None,
+        hyperparameters: Optional[Dict[str, Any]] = None,
+        message: str = "",
+        training_time: Optional[float] = None,
     ) -> ModelTrainingResult:
         """
         Train a model from DataFrames.
@@ -90,7 +91,9 @@ class ModelService:
             ModelTrainingResult object with training details
         """
         try:
-            loguru.logger.info(f"Starting training for model {model_id} with algorithm {algorithm}")
+            loguru.logger.info(
+                f"Starting training for model {model_id} with algorithm {algorithm}"
+            )
 
             # Validate interaction data
             DataPreprocessor.validate_data_format(interaction_data)
@@ -135,7 +138,9 @@ class ModelService:
             # Update configuration
             config["status"] = ModelStatus.COMPLETED
             config["training_completed_at"] = datetime.now().isoformat()
-            config["actual_training_duration"] = actual_training_duration  # Actual time taken
+            config["actual_training_duration"] = (
+                actual_training_duration  # Actual time taken
+            )
             config["model_metrics"] = model.get_metrics()
 
             # Cache model in memory
@@ -143,10 +148,12 @@ class ModelService:
 
             # Save config to file
             config_path = self.models_dir / f"{model_id}_config.json"
-            with open(config_path, "w") as f:
+            with open(config_path, "w", encoding="utf-8") as f:
                 json.dump(config, f, indent=2)
 
-            loguru.logger.info(f"Model {model_id} trained successfully in {actual_training_duration:.2f}s")
+            loguru.logger.info(
+                f"Model {model_id} trained successfully in {actual_training_duration:.2f}s"
+            )
 
             return ModelTrainingResult(
                 model_id=model_id,
@@ -155,7 +162,7 @@ class ModelService:
                 metrics=model.get_metrics(),
             )
 
-        except Exception as e:
+        except (FileNotFoundError, ValueError, KeyError) as e:
             # Update status to failed
             if model_id in self.model_configs:
                 self.model_configs[model_id]["status"] = ModelStatus.FAILED
@@ -179,9 +186,11 @@ class ModelService:
             # Load config
             config_path = self.models_dir / f"{model_id}_config.json"
             if not config_path.exists():
-                raise FileNotFoundError(f"Configuration file not found for model {model_id}")
+                raise FileNotFoundError(
+                    f"Configuration file not found for model {model_id}"
+                )
 
-            with open(config_path, "r") as f:
+            with open(config_path, "r", encoding="utf-8") as f:
                 config = json.load(f)
 
             # Check if a model file exists
@@ -200,15 +209,12 @@ class ModelService:
             loguru.logger.info(f"Loaded model {model_id}")
             return model
 
-        except Exception as e:
+        except (FileNotFoundError, ValueError) as e:
             loguru.logger.error(f"Error loading model {model_id}: {str(e)}")
             raise
 
     def predict_recommendations(
-            self,
-            model_id: str,
-            user_id: str,
-            top_k: int = 10
+        self, model_id: str, user_id: str, top_k: int = 10
     ) -> ModelPredictResult:
         """Generate recommendations for a single user."""
         try:
@@ -237,8 +243,7 @@ class ModelService:
                 datetime=datetime.now().isoformat(),
                 status=ModelStatus.COMPLETED,
             )
-
-        except Exception as e:
+        except (FileNotFoundError, ValueError, KeyError) as e:
             loguru.logger.error(f"Error predicting with model {model_id}: {str(e)}")
             return ModelPredictResult(
                 model_id=model_id,
@@ -249,10 +254,7 @@ class ModelService:
             )
 
     def predict_recommendations_batch(
-            self,
-            model_id: str,
-            user_ids: List[str],
-            top_k: int = 10
+        self, model_id: str, user_ids: List[str], top_k: int = 10
     ) -> List[ModelPredictResult]:
         """Generate recommendations for multiple users."""
         results = []
@@ -262,10 +264,10 @@ class ModelService:
         return results
 
     def predict_scores(
-            self,
-            model_id: str,
-            user_ids: List[str],
-            item_ids: List[str],
+        self,
+        model_id: str,
+        user_ids: List[str],
+        item_ids: List[str],
     ) -> ModelPredictScoresResult:
         """Predict scores for specific user-item pairs."""
         try:
@@ -298,9 +300,10 @@ class ModelService:
                 datetime=datetime.now().isoformat(),
                 status=ModelStatus.COMPLETED,
             )
-
-        except Exception as e:
-            loguru.logger.error(f"Error predicting scores with model {model_id}: {str(e)}")
+        except (FileNotFoundError, ValueError, KeyError) as e:
+            loguru.logger.error(
+                f"Error predicting scores with model {model_id}: {str(e)}"
+            )
             return ModelPredictScoresResult(
                 model_id=model_id,
                 results=[],
@@ -309,10 +312,10 @@ class ModelService:
             )
 
     def evaluate_model(
-            self,
-            model_id: str,
-            test_data: pd.DataFrame,
-            k_values: Optional[List[int]] = None,
+        self,
+        model_id: str,
+        test_data: pd.DataFrame,
+        k_values: Optional[List[int]] = None,
     ) -> Dict[str, Any]:
         """
         Evaluate a trained model using test data.
@@ -361,10 +364,12 @@ class ModelService:
                 "k_values": k_values,
             }
 
-            loguru.logger.info(f"Evaluated model {model_id} on test data with {len(test_users)} users")
+            loguru.logger.info(
+                f"Evaluated model {model_id} on test data with {len(test_users)} users"
+            )
             return evaluation_results
 
-        except Exception as e:
+        except (FileNotFoundError, ValueError, KeyError) as e:
             loguru.logger.error(f"Error evaluating model {model_id}: {str(e)}")
             return {"model_id": model_id, "status": "error", "error": str(e)}
 
@@ -375,7 +380,7 @@ class ModelService:
         # Check for config files in models directory
         for config_file in self.models_dir.glob("*_config.json"):
             try:
-                with open(config_file, "r") as f:
+                with open(config_file, "r", encoding="utf-8") as f:
                     config = json.load(f)
 
                 model_info = {
@@ -385,15 +390,16 @@ class ModelService:
                     "status": config["status"],
                     "created_at": config.get("created_at"),
                     "training_time": config.get("training_time"),  # Retrain interval
-                    "actual_training_duration": config.get("actual_training_duration"),  # Actual time taken
+                    "actual_training_duration": config.get(
+                        "actual_training_duration"
+                    ),  # Actual time taken
                     "metrics": config.get("model_metrics", {}),
                 }
 
                 models.append(model_info)
 
-            except Exception as e:
+            except (json.JSONDecodeError, OSError) as e:
                 loguru.logger.warning(f"Error reading config {config_file}: {str(e)}")
-
         return models
 
     def get_model_info(self, model_id: str) -> Dict[str, Any]:
@@ -403,7 +409,7 @@ class ModelService:
             if not config_path.exists():
                 raise FileNotFoundError(f"Model {model_id} not found")
 
-            with open(config_path, "r") as f:
+            with open(config_path, "r", encoding="utf-8") as f:
                 config = json.load(f)
 
             # Check if a model file exists
@@ -462,7 +468,7 @@ class ModelService:
                 "files_deleted": files_deleted,
             }
 
-        except Exception as e:
+        except (FileNotFoundError, ValueError, KeyError) as e:
             loguru.logger.error(f"Error deleting model {model_id}: {str(e)}")
             return {"model_id": model_id, "status": "error", "error": str(e)}
 
@@ -494,8 +500,10 @@ class ModelService:
             # Check if an interval has passed
             return time_since_training >= model_info["training_time"]
 
-        except Exception as e:
-            loguru.logger.error(f"Error checking retrain status for model {model_id}: {str(e)}")
+        except (FileNotFoundError, ValueError, KeyError) as e:
+            loguru.logger.error(
+                f"Error checking retrain status for model {model_id}: {str(e)}"
+            )
             return False
 
     def get_available_algorithms(self) -> List[str]:

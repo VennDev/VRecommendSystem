@@ -1,8 +1,11 @@
+import asyncio
 from typing import Dict
 from ..services.model_service import ModelService
 
 
-async def get_recommend_handler(model_id: str, object_id: str, n: int = 10) -> Dict[str, any]:
+async def get_recommend_handler(
+    model_id: str, object_id: str, n: int = 10
+) -> Dict[str, any]:
     """
     Handle recommendation requests.
     Args:
@@ -12,10 +15,8 @@ async def get_recommend_handler(model_id: str, object_id: str, n: int = 10) -> D
     Returns:
         dict: Recommendation results
     """
-    import asyncio
     loop = asyncio.get_event_loop()
     prediction = await loop.run_in_executor(
-        None, ModelService().predict_recommendations,
-        model_id, object_id, n
+        None, ModelService().predict_recommendations, model_id, object_id, n
     )
     return prediction.to_dict()

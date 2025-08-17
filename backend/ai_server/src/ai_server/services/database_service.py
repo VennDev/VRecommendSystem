@@ -116,7 +116,6 @@ class DatabaseService:
         @event.listens_for(engine, "connect")
         def set_connection_settings(dbapi_connection, connection_record):
             """Set connection-level settings"""
-            pass
 
         return engine
 

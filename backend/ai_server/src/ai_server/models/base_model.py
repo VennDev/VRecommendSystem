@@ -10,6 +10,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Any, Union
 import os
 from datetime import datetime
+from sklearn.preprocessing import LabelEncoder
 
 
 class BaseRecommender(ABC):
@@ -36,9 +37,12 @@ class BaseRecommender(ABC):
         self.metrics = {}
 
     @abstractmethod
-    def fit(self, interaction_data: pd.DataFrame,
-            user_features: Optional[pd.DataFrame] = None,
-            item_features: Optional[pd.DataFrame] = None) -> 'BaseRecommender':
+    def fit(
+        self,
+        interaction_data: pd.DataFrame,
+        user_features: Optional[pd.DataFrame] = None,
+        item_features: Optional[pd.DataFrame] = None,
+    ) -> "BaseRecommender":
         """
         Train the recommendation model.
 
@@ -53,8 +57,9 @@ class BaseRecommender(ABC):
         pass
 
     @abstractmethod
-    def predict(self, user_ids: Union[List, np.ndarray, str],
-                n_recommendations: int = 10) -> pd.DataFrame:
+    def predict(
+        self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
+    ) -> pd.DataFrame:
         """
         Generate recommendations for users.
 
@@ -67,8 +72,9 @@ class BaseRecommender(ABC):
         """
         pass
 
-    def predict_score(self, user_ids: Union[List, str],
-                      item_ids: Union[List, str]) -> np.ndarray:
+    def predict_score(
+        self, user_ids: Union[List, str], item_ids: Union[List, str]
+    ) -> np.ndarray:
         """
         Predict scores for specific user-item pairs.
 
@@ -91,11 +97,12 @@ class BaseRecommender(ABC):
         scores = []
         for user_id, item_id in zip(user_ids, item_ids):
             user_recs = self.predict([user_id], n_recommendations=1000)
-            item_score = user_recs[user_recs['item_id'] == item_id]
+            item_score = user_recs[user_recs["item_id"] == item_id]
             if len(item_score) > 0:
                 # Fix: Cast to Series to tell type checker the correct type
                 from typing import cast
-                score_series = cast(pd.Series, item_score['score'])
+
+                score_series = cast(pd.Series, item_score["score"])
                 scores.append(score_series.iloc[0])
             else:
                 scores.append(0.0)
@@ -113,24 +120,24 @@ class BaseRecommender(ABC):
             raise ValueError("Cannot save unfitted model")
 
         model_data = {
-            'model': self.model,
-            'hyperparameters': self.hyperparameters,
-            'user_encoder': self.user_encoder,
-            'item_encoder': self.item_encoder,
-            'is_fitted': self.is_fitted,
-            'training_history': self.training_history,
-            'metrics': self.metrics,
-            'model_type': self.__class__.__name__,
-            'timestamp': datetime.now().isoformat()
+            "model": self.model,
+            "hyperparameters": self.hyperparameters,
+            "user_encoder": self.user_encoder,
+            "item_encoder": self.item_encoder,
+            "is_fitted": self.is_fitted,
+            "training_history": self.training_history,
+            "metrics": self.metrics,
+            "model_type": self.__class__.__name__,
+            "timestamp": datetime.now().isoformat(),
         }
 
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
-        with open(filepath, 'wb') as f:
+        with open(filepath, "wb") as f:
             pickle.dump(model_data, f)
 
     @classmethod
-    def load(cls, filepath: str) -> 'BaseRecommender':
+    def load(cls, filepath: str) -> "BaseRecommender":
         """
         Load a trained model from disk.
 
@@ -140,19 +147,19 @@ class BaseRecommender(ABC):
         Returns:
             Loaded model instance
         """
-        with open(filepath, 'rb') as f:
+        with open(filepath, "rb") as f:
             model_data = pickle.load(f)
 
         # Create instance
-        instance = cls(**model_data['hyperparameters'])
+        instance = cls(**model_data["hyperparameters"])
 
         # Restore state
-        instance.model = model_data['model']
-        instance.user_encoder = model_data['user_encoder']
-        instance.item_encoder = model_data['item_encoder']
-        instance.is_fitted = model_data['is_fitted']
-        instance.training_history = model_data['training_history']
-        instance.metrics = model_data['metrics']
+        instance.model = model_data["model"]
+        instance.user_encoder = model_data["user_encoder"]
+        instance.item_encoder = model_data["item_encoder"]
+        instance.is_fitted = model_data["is_fitted"]
+        instance.training_history = model_data["training_history"]
+        instance.metrics = model_data["metrics"]
 
         return instance
 
@@ -174,19 +181,26 @@ class BaseRecommender(ABC):
         Returns:
             DataFrame with encoded user_idx and item_idx columns
         """
-        from sklearn.preprocessing import LabelEncoder
 
         if self.user_encoder is None:
             self.user_encoder = LabelEncoder()
-            interaction_data['user_idx'] = self.user_encoder.fit_transform(interaction_data['user_id'])
+            interaction_data["user_idx"] = self.user_encoder.fit_transform(
+                interaction_data["user_id"]
+            )
         else:
-            interaction_data['user_idx'] = self.user_encoder.transform(interaction_data['user_id'])
+            interaction_data["user_idx"] = self.user_encoder.transform(
+                interaction_data["user_id"]
+            )
 
         if self.item_encoder is None:
             self.item_encoder = LabelEncoder()
-            interaction_data['item_idx'] = self.item_encoder.fit_transform(interaction_data['item_id'])
+            interaction_data["item_idx"] = self.item_encoder.fit_transform(
+                interaction_data["item_id"]
+            )
         else:
-            interaction_data['item_idx'] = self.item_encoder.transform(interaction_data['item_id'])
+            interaction_data["item_idx"] = self.item_encoder.transform(
+                interaction_data["item_id"]
+            )
 
         return interaction_data
 
@@ -197,7 +211,7 @@ class BaseRecommender(ABC):
         Args:
             interaction_data: Input DataFrame to validate
         """
-        required_columns = ['user_id', 'item_id']
+        required_columns = ["user_id", "item_id"]
 
         if not all(col in interaction_data.columns for col in required_columns):
             raise ValueError(f"Input data must contain columns: {required_columns}")

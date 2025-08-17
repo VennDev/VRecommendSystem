@@ -53,16 +53,16 @@ class NCFRecommender(BaseRecommender):
     """
 
     def __init__(
-        self,
-        embedding_size: int = 50,
-        hidden_units: Optional[List[int]] = None,
-        dropout_rate: float = 0.2,
-        learning_rate: float = 0.001,
-        epochs: int = 50,
-        batch_size: int = 256,
-        negative_sampling: int = 4,
-        random_state: int = 42,
-        **kwargs,
+            self,
+            embedding_size: int = 50,
+            hidden_units: Optional[List[int]] = None,
+            dropout_rate: float = 0.2,
+            learning_rate: float = 0.001,
+            epochs: int = 50,
+            batch_size: int = 256,
+            negative_sampling: int = 4,
+            random_state: int = 42,
+            **kwargs,
     ):
 
         if not HAS_TENSORFLOW:
@@ -107,10 +107,10 @@ class NCFRecommender(BaseRecommender):
             tf.random.set_seed(random_state)
 
     def fit(
-        self,
-        interaction_data: pd.DataFrame,
-        user_features: Optional[pd.DataFrame] = None,
-        item_features: Optional[pd.DataFrame] = None,
+            self,
+            interaction_data: pd.DataFrame,
+            user_features: Optional[pd.DataFrame] = None,
+            item_features: Optional[pd.DataFrame] = None,
     ) -> "NCFRecommender":
         """
         Train the NCF model.
@@ -140,7 +140,7 @@ class NCFRecommender(BaseRecommender):
         assert self.user_encoder is not None, "User encoder should be initialized"
         assert self.item_encoder is not None, "Item encoder should be initialized"
 
-        # Get number of users and items from the encoded data
+        # Get the number of users and items from the encoded data
         self.n_users = int(data["user_idx"].max() + 1)
         self.n_items = int(data["item_idx"].max() + 1)
 
@@ -284,7 +284,7 @@ class NCFRecommender(BaseRecommender):
         }
 
     def predict(
-        self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
+            self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
     ) -> pd.DataFrame:
         """
         Generate recommendations for users.
@@ -338,7 +338,7 @@ class NCFRecommender(BaseRecommender):
         return pd.DataFrame(recommendations)
 
     def predict_score(
-        self, user_ids: Union[List, str], item_ids: Union[List, str]
+            self, user_ids: Union[List, str], item_ids: Union[List, str]
     ) -> np.ndarray:
         """
         Predict scores for specific user-item pairs.

@@ -5,9 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/ai_server/initialize/scheduler.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/tasks/base_task.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.flake8" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/handlers/recommend_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/handlers/recommend_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/initialize/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/initialize/logger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/messaging/kafka/consumer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/messaging/kafka/consumer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/models/base_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/models/base_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/models/collaborative/ncf.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/models/collaborative/ncf.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/routers/public_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/public_routers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/schemas/model_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/schemas/model_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/database_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/database_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/model_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/model_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,28 +66,29 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python tests.Python tests in test1.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test1.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test2.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python tests.Python tests in test1.py.executor": "Run",
+    "Python.test1.executor": "Run",
+    "Python.test2.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "full.screen.before.presentation.mode": "false",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "editor.preferences.appearance",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\VennDev\OneDrive\Desktop\VRecommendation\backend\ai_server\src\ai_server\models\collaborative_filtering" />
@@ -193,6 +208,11 @@
       <workItem from="1755022442528" duration="6996000" />
       <workItem from="1755079634216" duration="8093000" />
       <workItem from="1755104815589" duration="7116000" />
+      <workItem from="1755283346793" duration="1438000" />
+      <workItem from="1755284817987" duration="829000" />
+      <workItem from="1755363364307" duration="3571000" />
+      <workItem from="1755367900764" duration="6086000" />
+      <workItem from="1755449718685" duration="2322000" />
     </task>
     <servers />
   </component>

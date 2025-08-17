@@ -1,8 +1,8 @@
-from loguru import logger
+import loguru
 from ai_server.config.config import Config
 
 
-def init():
+def init() -> None:
     """
     Initialize the logger.
     """
@@ -11,7 +11,7 @@ def init():
     if cfg.logger.local_time:
         pattern_time = "{time:YYYY-MM-DD HH:mm}"
 
-    logger.add(
+    loguru.logger.add(
         "logs/" + pattern_time + ".log",
         rotation=str(cfg.logger.max_size) + " MB",
         retention=str(cfg.logger.max_backups) + " days",
@@ -19,3 +19,5 @@ def init():
         enqueue=True,
         serialize=True,
     )
+
+    loguru.logger.info("Initializing logger.")

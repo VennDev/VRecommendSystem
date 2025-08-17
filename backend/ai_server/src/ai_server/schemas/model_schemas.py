@@ -56,6 +56,9 @@ class ALSModelConfig(BaseModelConfig, BaseModel):
     @field_validator("factors")
     @classmethod
     def validate_factors(cls, v: int) -> int:
+        """
+        Validate the number of factors for ALS.
+        """
         if v <= 0:
             raise ValueError("factors must be positive")
         return v
@@ -80,6 +83,9 @@ class BPRModelConfig(BaseModelConfig):
     @field_validator("learning_rate")
     @classmethod
     def validate_learning_rate(cls, v: float) -> float:
+        """
+        Validate the learning rate for BPR.
+        """
         if v <= 0:
             raise ValueError("learning_rate must be positive")
         return v
@@ -116,6 +122,9 @@ class NCFModelConfig(BaseModelConfig):
     @field_validator("hidden_units")
     @classmethod
     def validate_hidden_units(cls, v: List[int]) -> List[int]:
+        """
+        Validate the hidden units for NCF.
+        """
         if not v or any(unit <= 0 for unit in v):
             raise ValueError("hidden_units must be non-empty with positive values")
         return v
@@ -142,6 +151,9 @@ class TFIDFModelConfig(BaseModelConfig):
     @field_validator("ngram_range")
     @classmethod
     def validate_ngram_range(cls, v: tuple) -> tuple:
+        """
+        Validate the n-gram range for TF-IDF.
+        """
         if len(v) != 2 or v[0] > v[1] or v[0] < 1:
             raise ValueError(
                 "ngram_range must be a tuple of two positive integers where first <= second"
@@ -171,6 +183,9 @@ class FeatureBasedModelConfig(BaseModelConfig):
     @field_validator("similarity_metric")
     @classmethod
     def validate_similarity_metric(cls, v: str) -> str:
+        """
+        Validate the similarity metric for Feature-Based models.
+        """
         valid_metrics = ["cosine", "euclidean", "manhattan", "pearson"]
         if v not in valid_metrics:
             raise ValueError(f"similarity_metric must be one of {valid_metrics}")
@@ -246,10 +261,14 @@ class ModelInfo(BaseModel):
     model_name: str = Field(..., description="Human-readable model name")
     message: str = Field(..., description="Description or message about the model")
     algorithm: AlgorithmType = Field(default=None, description="Algorithm used")
-    model_type: ModelType = Field(default=None, description="Type of recommendation model")
+    model_type: ModelType = Field(
+        default=None, description="Type of recommendation model"
+    )
     status: ModelStatus = Field(..., description="Current model status")
     created_at: datetime = Field(default=None, description="When the model was created")
-    updated_at: datetime = Field(default=None, description="When the model was last updated")
+    updated_at: datetime = Field(
+        default=None, description="When the model was last updated"
+    )
     metrics: Dict[str, Any] = Field(
         default_factory=dict, description="Model performance metrics"
     )
@@ -277,13 +296,29 @@ class ModelInfo(BaseModel):
             "algorithm": self.algorithm,
             "model_type": self.model_type,
             "status": self.status,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "created_at": (
+                self.created_at.isoformat()
+                if isinstance(self.created_at, datetime)
+                else None
+            ),
+            "updated_at": (
+                self.updated_at.isoformat()
+                if isinstance(self.updated_at, datetime)
+                else None
+            ),
             "metrics": self.metrics,
             "config": self.config,
             "training_time": self.training_time,
-            "training_started_at": self.training_started_at.isoformat() if self.training_started_at else None,
-            "training_completed_at": self.training_completed_at.isoformat() if self.training_completed_at else None,
+            "training_started_at": (
+                self.training_started_at.isoformat()
+                if self.training_started_at
+                else None
+            ),
+            "training_completed_at": (
+                self.training_completed_at.isoformat()
+                if self.training_completed_at
+                else None
+            ),
             "query_string": self.query_string,
         }
 
@@ -308,9 +343,7 @@ class ModelInfo(BaseModel):
 class ModelPredictResult(BaseModel):
     """Result schema for model predictions"""
 
-    model_id: str = Field(
-        ..., description="ID of the recommendation model"
-    )
+    model_id: str = Field(..., description="ID of the recommendation model")
     user_id: str = Field(..., description="ID of the user")
     predictions: Dict = Field(
         ...,
@@ -320,9 +353,7 @@ class ModelPredictResult(BaseModel):
         ...,
         description="Timestamp of the prediction",
     )
-    status: ModelStatus = Field(
-        ..., description="Status of the prediction"
-    )
+    status: ModelStatus = Field(..., description="Status of the prediction")
     n_recommendations: int = Field(
         default=10, description="Number of recommendations returned"
     )
@@ -341,9 +372,7 @@ class ModelPredictResult(BaseModel):
 class ModelPredictScoresResult(BaseModel):
     """Result schema for specific user-item score predictions"""
 
-    model_id: str = Field(
-        ..., description="ID of the recommendation model"
-    )
+    model_id: str = Field(..., description="ID of the recommendation model")
     results: List[Dict[str, Union[str, float]]] = Field(
         ...,
         description="Prediction results with user_id, item_id, and score",
@@ -352,9 +381,7 @@ class ModelPredictScoresResult(BaseModel):
         ...,
         description="Timestamp of the prediction",
     )
-    status: ModelStatus = Field(
-        ..., description="Status of the prediction"
-    )
+    status: ModelStatus = Field(..., description="Status of the prediction")
 
     def to_dict(self) -> Dict[str, Any]:
         return {
