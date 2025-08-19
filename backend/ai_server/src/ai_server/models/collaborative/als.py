@@ -34,12 +34,12 @@ class ALSRecommender(BaseRecommender):
     """
 
     def __init__(
-        self,
-        factors: int = 100,
-        regularization: float = 0.01,
-        iterations: int = 15,
-        random_state: int = 42,
-        **kwargs,
+            self,
+            factors: int = 100,
+            regularization: float = 0.01,
+            iterations: int = 15,
+            random_state: int = 42,
+            **kwargs,
     ):
         super().__init__(
             factors=factors,
@@ -64,10 +64,10 @@ class ALSRecommender(BaseRecommender):
         self.n_items: int = 0
 
     def fit(
-        self,
-        interaction_data: pd.DataFrame,
-        user_features: Optional[pd.DataFrame] = None,
-        item_features: Optional[pd.DataFrame] = None,
+            self,
+            interaction_data: pd.DataFrame,
+            user_features: Optional[pd.DataFrame] = None,
+            item_features: Optional[pd.DataFrame] = None,
     ) -> "ALSRecommender":
         """
         Train the ALS model.
@@ -99,12 +99,12 @@ class ALSRecommender(BaseRecommender):
 
         # Ensure classes_ attribute exists and is not None
         assert (
-            hasattr(self.user_encoder, "classes_")
-            and self.user_encoder.classes_ is not None
+                hasattr(self.user_encoder, "classes_")
+                and self.user_encoder.classes_ is not None
         ), "User encoder classes not found"
         assert (
-            hasattr(self.item_encoder, "classes_")
-            and self.item_encoder.classes_ is not None
+                hasattr(self.item_encoder, "classes_")
+                and self.item_encoder.classes_ is not None
         ), "Item encoder classes not found"
 
         # Create user-item rating matrix
@@ -163,7 +163,7 @@ class ALSRecommender(BaseRecommender):
         return self
 
     def _update_user_factors(self, rating_matrix: csr_matrix) -> None:
-        """Update user factors using least squares."""
+        """Update user factors using the fewest squares."""
         # Ensure factors are not None
         assert self.item_factors is not None, "Item factors should be initialized"
         assert self.user_factors is not None, "User factors should be initialized"
@@ -182,16 +182,16 @@ class ALSRecommender(BaseRecommender):
             ratings = user_ratings[rated_items]
 
             A = (
-                YtY
-                + regularization_diag
-                + (self.regularization * len(rated_items)) * np.eye(self.factors)
+                    YtY
+                    + regularization_diag
+                    + (self.regularization * len(rated_items)) * np.eye(self.factors)
             )
             b = Y_rated.T.dot(ratings)
 
             self.user_factors[user_idx] = np.linalg.solve(A, b)
 
     def _update_item_factors(self, rating_matrix: csr_matrix) -> None:
-        """Update item factors using least squares."""
+        """Update item factors using the fewest squares."""
         # Ensure factors are not None
         assert self.user_factors is not None, "User factors should be initialized"
         assert self.item_factors is not None, "Item factors should be initialized"
@@ -212,9 +212,9 @@ class ALSRecommender(BaseRecommender):
             ratings = item_ratings[rating_users]
 
             A = (
-                XtX
-                + regularization_diag
-                + (self.regularization * len(rating_users)) * np.eye(self.factors)
+                    XtX
+                    + regularization_diag
+                    + (self.regularization * len(rating_users)) * np.eye(self.factors)
             )
             b = X_rated.T.dot(ratings)
 
@@ -244,7 +244,7 @@ class ALSRecommender(BaseRecommender):
         return float(np.sqrt(mean_squared_error(actuals, predictions)))
 
     def predict(
-        self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
+            self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
     ) -> pd.DataFrame:
         """
         Generate recommendations for users.
@@ -296,7 +296,7 @@ class ALSRecommender(BaseRecommender):
         return pd.DataFrame(recommendations)
 
     def predict_score(
-        self, user_ids: Union[List, str], item_ids: Union[List, str]
+            self, user_ids: Union[List, str], item_ids: Union[List, str]
     ) -> np.ndarray:
         """
         Predict scores for specific user-item pairs.

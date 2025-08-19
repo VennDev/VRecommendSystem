@@ -62,16 +62,16 @@ class ModelService:
         return self.model_registry[algorithm]
 
     def train_model(
-        self,
-        model_id: str,
-        model_name: str,
-        algorithm: str,
-        interaction_data: pd.DataFrame,
-        user_features: Optional[pd.DataFrame] = None,
-        item_features: Optional[pd.DataFrame] = None,
-        hyperparameters: Optional[Dict[str, Any]] = None,
-        message: str = "",
-        training_time: Optional[float] = None,
+            self,
+            model_id: str,
+            model_name: str,
+            algorithm: str,
+            message: str,
+            training_time: float,
+            interaction_data: pd.DataFrame,
+            user_features: Optional[pd.DataFrame] = None,
+            item_features: Optional[pd.DataFrame] = None,
+            hyperparameters: Optional[Dict[str, Any]] = None,
     ) -> ModelTrainingResult:
         """
         Train a model from DataFrames.
@@ -214,7 +214,7 @@ class ModelService:
             raise
 
     def predict_recommendations(
-        self, model_id: str, user_id: str, top_k: int = 10
+            self, model_id: str, user_id: str, top_k: int = 10
     ) -> ModelPredictResult:
         """Generate recommendations for a single user."""
         try:
@@ -254,7 +254,7 @@ class ModelService:
             )
 
     def predict_recommendations_batch(
-        self, model_id: str, user_ids: List[str], top_k: int = 10
+            self, model_id: str, user_ids: List[str], top_k: int = 10
     ) -> List[ModelPredictResult]:
         """Generate recommendations for multiple users."""
         results = []
@@ -264,10 +264,10 @@ class ModelService:
         return results
 
     def predict_scores(
-        self,
-        model_id: str,
-        user_ids: List[str],
-        item_ids: List[str],
+            self,
+            model_id: str,
+            user_ids: List[str],
+            item_ids: List[str],
     ) -> ModelPredictScoresResult:
         """Predict scores for specific user-item pairs."""
         try:
@@ -312,10 +312,10 @@ class ModelService:
             )
 
     def evaluate_model(
-        self,
-        model_id: str,
-        test_data: pd.DataFrame,
-        k_values: Optional[List[int]] = None,
+            self,
+            model_id: str,
+            test_data: pd.DataFrame,
+            k_values: Optional[List[int]] = None,
     ) -> Dict[str, Any]:
         """
         Evaluate a trained model using test data.
