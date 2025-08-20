@@ -13,18 +13,21 @@ if __name__ == "__main__":
         'rating': [5, 4, 3, 5]
     })
 
-    result = service.train_no_save_model(
-        model_id='ncf_example',
-        model_name='ncf_example',
-        message='Training NCF model with interaction data',
-        algorithm='ncf',
-        interaction_data=interaction_data,
-        hyperparameters={'factors': 50, 'iterations': 10},
-        training_time=3600,
+    service.initialize_training(
+        model_id="my_model",
+        model_name="My Recommendation Model",
+        algorithm="als",
+        message="Training with incremental data"
     )
 
+    service.train_batch("my_model", interaction_data)
+
+    result = service.finalize_training("my_model")
+
+    save_result = service.save_model("my_model")
+
     predict = service.predict_recommendations(
-        model_id='ncf_example',
+        model_id='my_model',
         user_id='u1',
         top_k=5
     )

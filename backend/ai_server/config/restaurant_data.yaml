@@ -2,9 +2,9 @@
 data_1:
   type: 'csv'
   path: 'C:\\data\\query_1.csv'
-data_2:
+data_a:
   type: 'sql'
-  query: 'SELECT * FROM table_2 WHERE condition = true'
+  query: 'SELECT * FROM interactions'
 data_3:
   type: 'api'
   url: 'https://api.example.com/data?param=value'
