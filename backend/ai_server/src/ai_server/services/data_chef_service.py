@@ -1,11 +1,11 @@
 import json
 from enum import Enum
 from typing import Generator, Dict, Any
-from omegaconf import DictConfig
 from sqlalchemy import text
 import pandas as pd
 import requests
-from ..services.database_service import DatabaseService
+from ai_server.services.database_service import DatabaseService
+from ai_server.config.config import Config
 
 
 class DataType(str, Enum):
@@ -52,7 +52,7 @@ def _cook_sql(query: str) -> Generator[Dict[str, Any], None, None]:
 
 
 def _cook_nosql(
-    database: str, collection: str
+        database: str, collection: str
 ) -> Generator[Dict[str, Any], None, None]:
     """
     Query a NoSQL database and yield results as dictionaries.
@@ -165,10 +165,10 @@ def _cook_api(url: str) -> Generator[Dict[str, Any], None, None]:
 
 
 def _cook_api_paginated(
-    base_url: str,
-    page_param: str = "page",
-    size_param: str = "size",
-    page_size: int = 100,
+        base_url: str,
+        page_param: str = "page",
+        size_param: str = "size",
+        page_size: int = 100,
 ) -> Generator[Dict[str, Any], None, None]:
     """
     Query a paginated API endpoint and yield results as dictionaries.
@@ -241,7 +241,7 @@ def _cook_api_paginated(
 
 
 def _cook_data_source(
-    source_type: str, **kwargs
+        source_type: str, **kwargs
 ) -> Generator[Dict[str, Any], None, None]:
     """
     Unified interface for all data sources.
@@ -275,8 +275,8 @@ class DataChefService:
     Service for cooking data from various sources.
     """
 
-    def __init__(self, cfg: DictConfig):
-        self.cfg = cfg
+    def __init__(self):
+        pass
 
     def cook(self, name: str) -> Generator[Dict[str, Any], None, None]:
         """
@@ -286,7 +286,8 @@ class DataChefService:
         :return: Generator yielding dictionaries from the data source.
         :raises ValueError: If the configuration is not found or if the data type is invalid
         """
-        data = self.cfg.get(name, None)
+        cfg = Config().get_config("restaurant_data")
+        data = cfg.get(name, None)
         if data is None:
             raise ValueError(f"Configuration for {name} not found in DataChefService")
 

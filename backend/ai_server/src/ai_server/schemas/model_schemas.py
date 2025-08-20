@@ -242,14 +242,12 @@ class ModelTrainingResult(BaseModel):
 
     model_id: str = Field(..., description="ID of the trained model")
     status: str = Field(..., description="Training status")
-    training_time: float = Field(..., description="Time taken for training")
     metrics: Dict[str, float] = Field(..., description="Training metrics")
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "model_id": self.model_id,
             "status": self.status,
-            "training_time": self.training_time,
             "metrics": self.metrics,
         }
 

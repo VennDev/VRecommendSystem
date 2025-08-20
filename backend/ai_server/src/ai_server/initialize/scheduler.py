@@ -1,5 +1,7 @@
 import threading
 from scheduler import Scheduler
+
+from ai_server.config.config import Config
 from ai_server.tasks.model_trainer_task import ModelTrainerTask
 
 
@@ -18,7 +20,8 @@ def init() -> None:
     """
     Initialize the scheduler.
     """
-    scheduler = Scheduler()
+    cfg = Config().get_config()
+    scheduler = Scheduler(n_threads=cfg.scheduler.threads)
 
     # Inject the ModelTrainerTask into the scheduler
     ModelTrainerTask().inject(scheduler)

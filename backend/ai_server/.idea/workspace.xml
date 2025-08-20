@@ -5,16 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/ai_server/initialize/routers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tasks/model_a_config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/schemas/base_schema.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/schemas/data_result.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/model_config_1.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/model_config_2.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/collaborative/als.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/models/collaborative/als.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/local.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/local.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/initialize/scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/initialize/scheduler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/routers/public_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/public_routers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/schemas/model_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/schemas/model_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/services/model_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/model_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/utils/result_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/utils/result_processing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -210,7 +212,10 @@
       <workItem from="1755454026608" duration="306000" />
       <workItem from="1755454348429" duration="4398000" />
       <workItem from="1755535851005" duration="3406000" />
-      <workItem from="1755587133065" duration="3360000" />
+      <workItem from="1755587133065" duration="6793000" />
+      <workItem from="1755623131283" duration="1661000" />
+      <workItem from="1755682383152" duration="5603000" />
+      <workItem from="1755708914351" duration="1069000" />
     </task>
     <servers />
   </component>

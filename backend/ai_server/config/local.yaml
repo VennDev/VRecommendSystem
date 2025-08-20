@@ -7,6 +7,10 @@ logger:
   compression: true # Whether to compress old log files
   local_time: true # Use local time for timestamps in logs
 
+# Scheduler configuration
+scheduler:
+  threads: 4 # Number of threads to use for scheduling tasks
+
 # Database configuration
 database:
   sql:

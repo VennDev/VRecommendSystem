@@ -13,7 +13,7 @@ if __name__ == "__main__":
         'rating': [5, 4, 3, 5]
     })
 
-    result = service.train_model(
+    result = service.train_no_save_model(
         model_id='ncf_example',
         model_name='ncf_example',
         message='Training NCF model with interaction data',

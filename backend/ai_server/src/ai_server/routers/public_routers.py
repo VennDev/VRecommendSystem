@@ -13,7 +13,7 @@ router = APIRouter()
 
 @router.get("/recommend/{user_id}/{model_id}/{n}", tags=["recommendations"])
 async def get_recommendations(
-    user_id: str, model_id: str, n: int = 10
+        user_id: str, model_id: str, n: int = 10
 ) -> Dict[str, Any]:
     """
     Get recommendations for a user based on the specified model.

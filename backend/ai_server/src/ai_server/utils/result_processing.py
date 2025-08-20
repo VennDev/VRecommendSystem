@@ -64,3 +64,27 @@ def list_dict_to_dataframe(data: List[Dict[str, Any]]) -> pd.DataFrame:
         return pd.DataFrame()
 
     return pd.DataFrame(data)
+
+
+def dict_to_dataframe(data: Dict[str, Any]) -> pd.DataFrame:
+    """
+    Convert Dict[str, Any] to pandas DataFrame
+
+    Args:
+        data: Dictionary containing data
+
+    Returns:
+        pd.DataFrame: DataFrame created from input data
+
+    Example:
+        >>> data = {'id': [1, 2], 'name': ['John', 'Jane'], 'age': [30, 25]}
+        >>> df = dict_to_dataframe(data)
+        >>> print(df)
+           id  name  age
+        0   1  John   30
+        1   2  Jane   25
+    """
+    if not data:
+        return pd.DataFrame()
+
+    return pd.DataFrame.from_dict(data)
