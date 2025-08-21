@@ -16,16 +16,16 @@ database:
   sql:
     # Database type can be 'mysql', 'postgres', 'sqlite', etc.
     type: "mysql"
-    host: "0.0.0.0"
+    host: "localhost"
     port: 3306
     user: "root"
     password: "pokiwar0981"
-    name: "shop"
+    db: "shop"
     ssl: false
     max_idle_conns: 10
     max_open_conns: 100
-    conn_max_lifetime: "30s"
-    conn_max_idle_time: "30s"
+    conn_max_lifetime: 30
+    conn_max_idle_time: 30
 
   nosql:
     # Database type can be 'mongodb'

@@ -4,6 +4,7 @@ from typing import Generator, Dict, Any
 from sqlalchemy import text
 import pandas as pd
 import requests
+from ai_server.utils.result_processing import rename_columns
 from ai_server.services.database_service import DatabaseService
 from ai_server.config.config import Config
 
@@ -240,7 +241,7 @@ def _cook_api_paginated(
             raise ValueError(f"Invalid JSON response on page {page}: {e}") from e
 
 
-def _cook_data_source(
+def _cook_raw_data_source(
         source_type: str, **kwargs
 ) -> Generator[Dict[str, Any], None, None]:
     """
@@ -298,4 +299,8 @@ class DataChefService:
                 f"Invalid data type: {data.type}. Must be one of {[t.value for t in DataType]}."
             ) from e
 
-        return _cook_data_source(type_enum, **data)
+        for value in _cook_raw_data_source(type_enum, **data):
+            # Rename columns if specified in the configuration
+            if "rename_columns" in data:
+                value = rename_columns(value, data.rename_columns)
+            yield value

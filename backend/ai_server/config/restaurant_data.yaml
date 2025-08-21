@@ -2,14 +2,18 @@
 data_1:
   type: 'csv'
   path: 'C:\\data\\query_1.csv'
+  rename_columns: 'userId->user_id,productId->item_id,clicks->rating'
 data_a:
   type: 'sql'
   query: 'SELECT * FROM interactions'
+  rename_columns: 'userId->user_id,productId->item_id,clicks->rating'
 data_3:
   type: 'api'
   url: 'https://api.example.com/data?param=value'
+  rename_columns: 'userId->user_id,productId->item_id,clicks->rating'
 data_4:
   type: 'nosql'
   database: 'database_name'
   collection: 'collection_name'
+  rename_columns: 'userId->user_id,productId->item_id,clicks->rating'
 ...

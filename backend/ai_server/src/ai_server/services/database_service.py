@@ -43,7 +43,7 @@ class DatabaseService:
         return args
 
     def build_connection_string(
-        self, db_type, host, port, user, password, database, ssl
+            self, db_type, host, port, user, password, database, ssl
     ):
         """Build connection string with SSL support"""
         if db_type.lower() == "postgresql":
@@ -75,7 +75,7 @@ class DatabaseService:
         port = cfg.database.sql.port
         user = cfg.database.sql.user
         password = cfg.database.sql.password
-        database = cfg.database.sql.database
+        database = cfg.database.sql.db
         ssl = cfg.database.sql.ssl
         max_idle_conns = cfg.database.sql.max_idle_conns
         max_open_conns = cfg.database.sql.max_open_conns
@@ -94,13 +94,13 @@ class DatabaseService:
             poolclass=CustomQueuePool,
             pool_size=max_idle_conns,
             max_overflow=max_open_conns - max_idle_conns,
-            pool_timeout=30,
+            pool_timeout=30.0,
             pool_recycle=conn_max_lifetime,
             pool_pre_ping=True,
             pool_use_lifo=True,
             pool_reset_on_return="rollback",
             # Pass conn_max_idle_time to custom pool
-            conn_max_idle_time=conn_max_idle_time,
+            # conn_max_idle_time=conn_max_idle_time,
             # Database-specific connection arguments
             connect_args=self.get_database_specific_args(
                 db_type, ssl, conn_max_idle_time
@@ -120,7 +120,7 @@ class DatabaseService:
         return engine
 
     def build_mongodb_connection_string(
-        self, host, port, username, password, ssl, auth_source, replica_set
+            self, host, port, username, password, ssl, auth_source, replica_set
     ):
         """Build MongoDB connection string with all parameters"""
         # Basic connection string
