@@ -6,6 +6,7 @@ from datetime import datetime
 
 import loguru
 import pandas as pd
+import numpy as np
 
 # Import models from the models folder
 from ..models.collaborative.als import ALSRecommender
@@ -63,6 +64,114 @@ class ModelService:
                 f"Unknown algorithm: {algorithm}. Available: {list(self.model_registry.keys())}"
             )
         return self.model_registry[algorithm]
+
+    def _clean_and_validate_data(self, data: pd.DataFrame, data_type: str = "interaction") -> pd.DataFrame:
+        """
+        Clean and validate data to ensure compatibility with recommendation algorithms.
+
+        Args:
+            data: DataFrame to clean
+            data_type: Type of data ("interaction", "user", "item")
+
+        Returns:
+            Cleaned DataFrame
+        """
+        try:
+            if data.empty:
+                loguru.logger.warning(f"Empty {data_type} data provided")
+                return data
+
+            # Make a copy to avoid modifying original data
+            cleaned_data = data.copy()
+
+            # Handle interaction data
+            if data_type == "interaction":
+                required_columns = ["user_id", "item_id"]
+
+                # Check for required columns
+                missing_cols = [col for col in required_columns if col not in cleaned_data.columns]
+                if missing_cols:
+                    raise ValueError(f"Missing required columns for {data_type} data: {missing_cols}")
+
+                # Ensure user_id and item_id are strings initially for consistency
+                cleaned_data["user_id"] = cleaned_data["user_id"].astype(str)
+                cleaned_data["item_id"] = cleaned_data["item_id"].astype(str)
+
+                # Handle rating column
+                if "rating" in cleaned_data.columns:
+                    # Convert rating to numeric, replacing non-numeric values with default
+                    cleaned_data["rating"] = pd.to_numeric(cleaned_data["rating"], errors="coerce")
+
+                    # Fill NaN ratings with default value (e.g., 1.0 for implicit feedback)
+                    if cleaned_data["rating"].isna().any():
+                        loguru.logger.warning("Found NaN values in rating column, filling with 1.0")
+                        cleaned_data["rating"] = cleaned_data["rating"].fillna(1.0)
+                else:
+                    # Add implicit rating if not present
+                    cleaned_data["rating"] = 1.0
+
+                # Ensure rating is a float type
+                cleaned_data["rating"] = cleaned_data["rating"].astype(np.float32)
+
+                # Handle timestamp if present
+                if "timestamp" in cleaned_data.columns:
+                    # Try to convert to datetime, then to numeric timestamp
+                    try:
+                        if not pd.api.types.is_numeric_dtype(cleaned_data["timestamp"]):
+                            cleaned_data["timestamp"] = pd.to_datetime(cleaned_data["timestamp"])
+                            cleaned_data["timestamp"] = cleaned_data["timestamp"].astype(np.int64) // 10 ** 9
+                        else:
+                            cleaned_data["timestamp"] = cleaned_data["timestamp"].astype(np.float32)
+                    except:
+                        loguru.logger.warning("Could not parse timestamp column, removing it")
+                        cleaned_data = cleaned_data.drop("timestamp", axis=1)
+
+                # Remove any completely duplicate rows
+                initial_rows = len(cleaned_data)
+                cleaned_data = cleaned_data.drop_duplicates()
+                if len(cleaned_data) < initial_rows:
+                    loguru.logger.info(f"Removed {initial_rows - len(cleaned_data)} duplicate interaction rows")
+
+            elif data_type in ["user", "item"]:
+                # Handle feature data
+                id_column = f"{data_type}_id"
+
+                if id_column not in cleaned_data.columns:
+                    raise ValueError(f"Missing required column: {id_column}")
+
+                # Ensure ID column is string
+                cleaned_data[id_column] = cleaned_data[id_column].astype(str)
+
+                # Handle other columns - convert to appropriate numeric types where possible
+                for col in cleaned_data.columns:
+                    if col != id_column:
+                        if cleaned_data[col].dtype == 'object':
+                            # Try to convert to numeric
+                            numeric_series = pd.to_numeric(cleaned_data[col], errors="coerce")
+                            if not numeric_series.isna().all():
+                                # If some values could be converted to numeric, use them
+                                cleaned_data[col] = numeric_series.fillna(0.0)
+                            else:
+                                # If all values are non-numeric, keep as categorical
+                                cleaned_data[col] = cleaned_data[col].astype("category")
+
+            # Remove any rows with NaN in critical columns
+            if data_type == "interaction":
+                critical_columns = ["user_id", "item_id", "rating"]
+            else:
+                critical_columns = [f"{data_type}_id"]
+
+            initial_rows = len(cleaned_data)
+            cleaned_data = cleaned_data.dropna(subset=critical_columns)
+            if len(cleaned_data) < initial_rows:
+                loguru.logger.info(
+                    f"Removed {initial_rows - len(cleaned_data)} rows with NaN values in critical columns")
+
+            return cleaned_data
+
+        except Exception as e:
+            loguru.logger.error(f"Error cleaning {data_type} data: {str(e)}")
+            raise
 
     def initialize_training(
             self,
@@ -170,53 +279,57 @@ class ModelService:
             if model_id not in self.training_states:
                 raise ValueError(f"Training state not found for model {model_id}")
 
-            # Validate interaction data
-            DataPreprocessor.validate_data_format(interaction_data)
+            # Clean and validate interaction data
+            cleaned_interaction_data = self._clean_and_validate_data(interaction_data, "interaction")
+
+            # Validate interaction data format
+            DataPreprocessor.validate_data_format(cleaned_interaction_data)
 
             training_state = self.training_states[model_id]
             model = self.loaded_models[model_id]
 
             loguru.logger.info(
                 f"Processing batch {training_state['total_batches'] + 1} for model {model_id} "
-                f"with {len(interaction_data)} interactions"
+                f"with {len(cleaned_interaction_data)} interactions"
             )
 
-            # Store features if provided (first time)
-            if user_features is not None and training_state["user_features"] is None:
-                training_state["user_features"] = user_features.copy()
-            elif user_features is not None:
-                # Append new user features
-                existing_users = set(training_state["user_features"]["user_id"])
-                new_users = user_features[~user_features["user_id"].isin(existing_users)]
-                if len(new_users) > 0:
-                    training_state["user_features"] = pd.concat([
-                        training_state["user_features"],
-                        new_users
-                    ], ignore_index=True)
+            # Clean and store features if provided (first time)
+            if user_features is not None:
+                cleaned_user_features = self._clean_and_validate_data(user_features, "user")
+                if training_state["user_features"] is None:
+                    training_state["user_features"] = cleaned_user_features.copy()
+                else:
+                    # Append new user features
+                    existing_users = set(training_state["user_features"]["user_id"])
+                    new_users = cleaned_user_features[~cleaned_user_features["user_id"].isin(existing_users)]
+                    if len(new_users) > 0:
+                        training_state["user_features"] = pd.concat([
+                            training_state["user_features"],
+                            new_users
+                        ], ignore_index=True)
 
-            if item_features is not None and training_state["item_features"] is None:
-                training_state["item_features"] = item_features.copy()
-            elif item_features is not None:
-                # Append new item features
-                existing_items = set(training_state["item_features"]["item_id"])
-                new_items = item_features[~item_features["item_id"].isin(existing_items)]
-                if len(new_items) > 0:
-                    training_state["item_features"] = pd.concat([
-                        training_state["item_features"],
-                        new_items
-                    ], ignore_index=True)
+            if item_features is not None:
+                cleaned_item_features = self._clean_and_validate_data(item_features, "item")
+                if training_state["item_features"] is None:
+                    training_state["item_features"] = cleaned_item_features.copy()
+                else:
+                    # Append new item features
+                    existing_items = set(training_state["item_features"]["item_id"])
+                    new_items = cleaned_item_features[~cleaned_item_features["item_id"].isin(existing_items)]
+                    if len(new_items) > 0:
+                        training_state["item_features"] = pd.concat([
+                            training_state["item_features"],
+                            new_items
+                        ], ignore_index=True)
 
             # Accumulate data if requested
             if accumulate_data:
-                training_state["accumulated_data"].append(interaction_data.copy())
+                training_state["accumulated_data"].append(cleaned_interaction_data.copy())
 
             # Update training state
             training_state["total_batches"] += 1
-            training_state["total_interactions"] += len(interaction_data)
+            training_state["total_interactions"] += len(cleaned_interaction_data)
             training_state["last_batch_time"] = datetime.now().isoformat()
-
-            # For algorithms that support true online learning (like some neural models),
-            # we could train on this batch immediately. For now, we'll accumulate data.
 
             # Update model config
             self.model_configs[model_id]["last_updated"] = datetime.now().isoformat()
@@ -232,7 +345,7 @@ class ModelService:
                 "status": "batch_processed",
                 "total_batches": training_state["total_batches"],
                 "total_interactions": training_state["total_interactions"],
-                "batch_size": len(interaction_data),
+                "batch_size": len(cleaned_interaction_data),
             }
 
         except Exception as e:
@@ -276,40 +389,79 @@ class ModelService:
                 ignore_index=True
             ).drop_duplicates()
 
+            # Additional cleaning step before training
+            combined_interaction_data = self._clean_and_validate_data(combined_interaction_data, "interaction")
+
             loguru.logger.info(
                 f"Combined data shape: {combined_interaction_data.shape} "
-                f"(after removing duplicates)"
+                f"(after removing duplicates and cleaning)"
             )
+
+            # Log data types for debugging
+            loguru.logger.debug(f"Data types in combined data: {combined_interaction_data.dtypes}")
+
+            # Ensure data types are correct for the algorithm
+            if config["algorithm"] == "als":
+                # ALS specifically needs numeric user/item IDs for sparse matrix operations
+                # We'll handle the encoding in the model itself, but ensure rating is numeric
+                if not pd.api.types.is_numeric_dtype(combined_interaction_data["rating"]):
+                    loguru.logger.warning("Rating column is not numeric, converting...")
+                    combined_interaction_data["rating"] = pd.to_numeric(
+                        combined_interaction_data["rating"],
+                        errors="coerce"
+                    ).fillna(1.0).astype(np.float32)
 
             # Train the model on all accumulated data
             start_time = datetime.now()
-            model.fit(
-                combined_interaction_data,
-                training_state["user_features"],
-                training_state["item_features"]
-            )
-            training_duration = (datetime.now() - start_time).total_seconds()
 
-            # Update configuration
-            config["status"] = ModelStatus.COMPLETED
-            config["training_completed_at"] = datetime.now().isoformat()
-            config["training_duration_seconds"] = training_duration
-            config["model_metrics"] = model.get_metrics()
-            config["total_batches"] = training_state["total_batches"]
-            config["total_interactions"] = training_state["total_interactions"]
+            try:
+                model.fit(
+                    combined_interaction_data,
+                    training_state["user_features"],
+                    training_state["item_features"]
+                )
+                training_duration = (datetime.now() - start_time).total_seconds()
 
-            # Clean up training state
+                # Update configuration
+                config["status"] = ModelStatus.COMPLETED
+                config["training_completed_at"] = datetime.now().isoformat()
+                config["training_duration_seconds"] = training_duration
+                config["model_metrics"] = model.get_metrics()
+                config["total_batches"] = training_state["total_batches"]
+                config["total_interactions"] = training_state["total_interactions"]
+
+                loguru.logger.info(
+                    f"Training completed for model {model_id} in {training_duration:.2f} seconds"
+                )
+
+                result = ModelTrainingResult(
+                    model_id=model_id,
+                    status="success",
+                    metrics=model.get_metrics(),
+                )
+
+            except Exception as training_error:
+                # Log detailed error information
+                loguru.logger.error(f"Training failed for model {model_id}: {str(training_error)}")
+                loguru.logger.error(f"Data shape: {combined_interaction_data.shape}")
+                loguru.logger.error(f"Data columns: {combined_interaction_data.columns.tolist()}")
+                loguru.logger.error(f"Data dtypes: {combined_interaction_data.dtypes}")
+
+                # Update status to failed
+                config["status"] = ModelStatus.FAILED
+                config["error"] = str(training_error)
+                config["training_failed_at"] = datetime.now().isoformat()
+
+                result = ModelTrainingResult(
+                    model_id=model_id,
+                    status="error",
+                    metrics={},
+                )
+
+            # Clean up training state regardless of success/failure
             del self.training_states[model_id]
 
-            loguru.logger.info(
-                f"Training completed for model {model_id} in {training_duration:.2f} seconds"
-            )
-
-            return ModelTrainingResult(
-                model_id=model_id,
-                status="success",
-                metrics=model.get_metrics(),
-            )
+            return result
 
         except Exception as e:
             # Update status to failed
@@ -688,17 +840,20 @@ class ModelService:
 
             model = self.loaded_models[model_id]
 
+            # Clean test data
+            cleaned_test_data = self._clean_and_validate_data(test_data, "interaction")
+
             # Generate predictions for test users
-            test_users = test_data["user_id"].unique().tolist()
+            test_users = cleaned_test_data["user_id"].unique().tolist()
             predictions_df = model.predict(test_users, n_recommendations=max(k_values))
 
             # Evaluate using ranking metrics
             ranking_metrics = RecommenderEvaluator.evaluate_recommendations(
-                predictions_df, test_data, k_values
+                predictions_df, cleaned_test_data, k_values
             )
 
             # Calculate coverage metrics
-            all_items = set(test_data["item_id"].unique())
+            all_items = set(cleaned_test_data["item_id"].unique())
             coverage_metrics = RecommenderEvaluator.coverage_metrics(
                 predictions_df, all_items
             )

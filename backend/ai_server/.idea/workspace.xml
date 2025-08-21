@@ -5,13 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/tests/test1.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/local.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/local.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/restaurant_data.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/restaurant_data.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/database_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/database_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/utils/result_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/utils/result_processing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/my_model.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/model_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/model_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -212,7 +208,7 @@
       <workItem from="1755682383152" duration="5603000" />
       <workItem from="1755708914351" duration="7488000" />
       <workItem from="1755790333912" duration="593000" />
-      <workItem from="1755794615822" duration="3035000" />
+      <workItem from="1755794615822" duration="6323000" />
     </task>
     <servers />
   </component>
