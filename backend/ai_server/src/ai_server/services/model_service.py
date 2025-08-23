@@ -9,19 +9,19 @@ import pandas as pd
 import numpy as np
 
 # Import models from the models folder
-from ..models.collaborative.als import ALSRecommender
-from ..models.collaborative.bpr import BPRRecommender
-from ..models.collaborative.ncf import NCFRecommender
-from ..models.content.tfidf import TFIDFRecommender
-from ..models.content.feature_based import FeatureBasedRecommender
-from ..models.base_model import BaseRecommender
+from ai_server.models.collaborative.als import ALSRecommender
+from ai_server.models.collaborative.bpr import BPRRecommender
+from ai_server.models.collaborative.ncf import NCFRecommender
+from ai_server.models.content.tfidf import TFIDFRecommender
+from ai_server.models.content.feature_based import FeatureBasedRecommender
+from ai_server.models.base_model import BaseRecommender
 
 # Import evaluation utilities
-from ..models.utils.evaluation import RecommenderEvaluator
-from ..models.utils.preprocessing import DataPreprocessor
+from ai_server.models.utils.evaluation import RecommenderEvaluator
+from ai_server.models.utils.preprocessing import DataPreprocessor
 
 # Schemas
-from ..schemas.model_schemas import (
+from ai_server.schemas.model_schemas import (
     ModelTrainingResult,
     ModelPredictResult,
     ModelPredictScoresResult,
@@ -35,7 +35,7 @@ class ModelService:
     Handles training, loading, saving, and prediction operations using DataFrames with streaming capability.
     """
 
-    def __init__(self, models_dir: str = "../../models"):
+    def __init__(self, models_dir: str = "models"):
         self.models_dir = Path(models_dir)
         self.models_dir.mkdir(exist_ok=True)
 
@@ -506,7 +506,7 @@ class ModelService:
 
             # Save config
             config["last_saved_at"] = datetime.now().isoformat()
-            config_path = self.models_dir / f"{model_id}_config.json"
+            config_path = self.models_dir / f"{model_id}.json"
             with open(config_path, "w", encoding="utf-8") as f:
                 json.dump(config, f, indent=2)
 

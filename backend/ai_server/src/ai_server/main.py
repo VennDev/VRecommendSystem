@@ -1,12 +1,16 @@
 import loguru
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from ai_server.initialize import logger, scheduler, config
+from ai_server.initialize import logger, scheduler, config, routers
 
 
 def main():
     """
     Main entry point for the application.
     """
+
     # Initialize config
     config.init()
     print("Initializing configuration...")
@@ -19,5 +23,27 @@ def main():
     scheduler.init()
     loguru.logger.info("Scheduler initialized.")
 
-    while True:
-        pass
+    cfg = config.Config().get_config()
+
+    # Create FastAPI app
+    app = FastAPI(
+        title=cfg.name,
+        description=cfg.description,
+        version=cfg.version,
+    )
+
+    # Set all CORS enabled origins
+    cfg_cors = cfg.middleware.cors
+    app.add_middleware(
+        CORSMiddleware,
+        allow_credentials=cfg_cors.credentials,
+        allow_origins=cfg_cors.origins,
+        allow_methods=cfg_cors.methods,
+        allow_headers=cfg_cors.headers,
+    )
+
+    # Initialize routers
+    routers.init(app)
+
+    # Run the app with Uvicorn
+    uvicorn.run(app, host=cfg.host, port=cfg.port)

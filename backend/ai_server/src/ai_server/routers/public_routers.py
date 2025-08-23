@@ -11,6 +11,17 @@ from ..handlers.recommend_handler import get_recommend_handler
 router = APIRouter()
 
 
+@router.get("/health", tags=["health"])
+def health_check() -> Dict[str, str]:
+    """
+    Health check endpoint to verify the service is running.
+
+    Returns:
+        Dictionary indicating the service status.
+    """
+    return {"status": "ok"}
+
+
 @router.get("/recommend/{user_id}/{model_id}/{n}", tags=["recommendations"])
 async def get_recommendations(
         user_id: str, model_id: str, n: int = 10

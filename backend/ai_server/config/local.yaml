@@ -1,4 +1,19 @@
 ---
+# Name and port configuration
+name: "Shop Service"
+description: "Service for managing shop operations"
+version: "1.0.0"
+host: "0.0.0.0"
+port: 9999
+
+# Middleware configuration
+middleware:
+  cors:
+    credentials: false
+    origins: [ "*" ]
+    methods: [ "*" ]
+    headers: [ "*" ]
+
 # Logger configuration
 logger:
   max_size: 10 # Maximum size of the log file in MB
