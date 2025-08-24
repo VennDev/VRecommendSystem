@@ -4,21 +4,21 @@
   "message": "Training with incremental data",
   "algorithm": "als",
   "hyperparameters": {},
-  "created_at": "2025-08-24T01:13:10.355213",
-  "training_started_at": "2025-08-24T01:13:10.355213",
+  "created_at": "2025-08-24T01:33:10.490554",
+  "training_started_at": "2025-08-24T01:33:10.490554",
   "status": "completed",
   "model_path": "models\\my_model.pkl",
-  "last_updated": "2025-08-24T01:13:10.863572",
-  "training_completed_at": "2025-08-24T01:13:10.933778",
-  "training_duration_seconds": 0.058208,
+  "last_updated": "2025-08-24T01:33:10.801630",
+  "training_completed_at": "2025-08-24T01:33:10.880527",
+  "training_duration_seconds": 0.068901,
   "model_metrics": {
     "final_rmse": 0.0020865079396560427,
-    "training_time": 0.05721282958984375,
+    "training_time": 0.06690382957458496,
     "iterations": 15,
     "n_users": 2,
     "n_items": 13
   },
   "total_batches": 20,
   "total_interactions": 20,
-  "last_saved_at": "2025-08-24T01:13:10.935770"
+  "last_saved_at": "2025-08-24T01:33:10.881527"
 }

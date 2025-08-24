@@ -1,3 +1,4 @@
+import os
 import loguru
 from ai_server.config.config import Config
 
@@ -7,17 +8,24 @@ def init() -> None:
     Initialize the logger.
     """
     cfg = Config().get_config()
-    pattern_time = "{time:YYYY-MM-DD}"
+
+    log_dir = "logs"
+    os.makedirs(log_dir, exist_ok=True)
+
     if cfg.logger.local_time:
-        pattern_time = "{time:YYYY-MM-DD HH:mm}"
+        log_file = os.path.join(log_dir, "app_{time:YYYY-MM-DD_HH-mm}.log")
+    else:
+        log_file = os.path.join(log_dir, "app_{time:YYYY-MM-DD}.log")
 
     loguru.logger.add(
-        "logs/" + pattern_time + ".log",
-        rotation=str(cfg.logger.max_size) + " MB",
-        retention=str(cfg.logger.max_backups) + " days",
+        log_file,
+        rotation=f"{cfg.logger.max_size} MB",
+        retention=f"{cfg.logger.max_backups} days",
         compression="zip" if cfg.logger.compression else None,
         enqueue=True,
-        serialize=True,
+        serialize=False,
+        level="INFO",
+        format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}"
     )
 
-    loguru.logger.info("Initializing logger.")
+    loguru.logger.info("Logger initialized successfully.")
