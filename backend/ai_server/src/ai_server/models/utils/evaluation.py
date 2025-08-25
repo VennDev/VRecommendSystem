@@ -1,7 +1,7 @@
 """
 Evaluation metrics and utilities for recommendation systems.
 """
-
+import loguru
 import pandas as pd
 import numpy as np
 from typing import Dict, List, Optional, Any, Protocol
@@ -269,7 +269,7 @@ class RecommenderEvaluator:
         }
 
         for fold in range(n_folds):
-            print(f"Cross-validation fold {fold + 1}/{n_folds}")
+            loguru.logger.info(f"Cross-validation fold {fold + 1}/{n_folds}")
 
             # Split data
             train_data, test_data = DataPreprocessor.train_test_split(
@@ -321,7 +321,7 @@ class RecommenderEvaluator:
         results = []
 
         for model_name, model in models.items():
-            print(f"Evaluating {model_name}...")
+            loguru.logger.info(f"Evaluating {model_name}...")
 
             # Train model
             start_time = time.time()

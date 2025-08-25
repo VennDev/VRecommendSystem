@@ -30,19 +30,19 @@ class FeatureBasedRecommender(BaseRecommender):
     feature_weights : dict, default=None
         Dictionary mapping feature names to their weights
     similarity_metric : str, default='cosine'
-        Similarity metric to use ('cosine', 'euclidean')
+        Similarity metric to use ('cosine', 'Euclidean')
     normalize_features : bool, default=True
         Whether to normalize numerical features
     """
 
     def __init__(
-        self,
-        categorical_features: Optional[List[str]] = None,
-        numerical_features: Optional[List[str]] = None,
-        feature_weights: Optional[Dict[str, float]] = None,
-        similarity_metric: str = "cosine",
-        normalize_features: bool = True,
-        **kwargs,
+            self,
+            categorical_features: Optional[List[str]] = None,
+            numerical_features: Optional[List[str]] = None,
+            feature_weights: Optional[Dict[str, float]] = None,
+            similarity_metric: str = "cosine",
+            normalize_features: bool = True,
+            **kwargs,
     ):
         super().__init__(
             categorical_features=categorical_features,
@@ -66,17 +66,17 @@ class FeatureBasedRecommender(BaseRecommender):
         self.encoders: Dict[str, LabelEncoder] = {}
 
     def fit(
-        self,
-        interaction_data: pd.DataFrame,
-        user_features: Optional[pd.DataFrame] = None,
-        item_features: Optional[pd.DataFrame] = None,
+            self,
+            interaction_data: pd.DataFrame,
+            user_features: Optional[pd.DataFrame] = None,
+            item_features: Optional[pd.DataFrame] = None,
     ) -> "FeatureBasedRecommender":
         """
         Train the feature-based content model.
 
         Args:
             interaction_data: DataFrame with columns ['user_id', 'item_id'] and optionally 'rating'
-            user_features: Not used in basic feature-based model (for API consistency)
+            user_features: Not used in a basic feature-based model (for API consistency)
             item_features: DataFrame with item features
 
         Returns:
@@ -210,7 +210,7 @@ class FeatureBasedRecommender(BaseRecommender):
                 continue
 
             values = item_features[feature].fillna(0).values
-            # Ensure values is numpy array and reshape properly
+            # Ensure values is a numpy array and reshape properly
             values = np.array(values).reshape(-1, 1)
 
             if self.normalize_features:
@@ -262,7 +262,7 @@ class FeatureBasedRecommender(BaseRecommender):
             raise ValueError(f"Unsupported similarity metric: {self.similarity_metric}")
 
     def _build_user_profiles(
-        self, interaction_data: pd.DataFrame, item_features: pd.DataFrame
+            self, interaction_data: pd.DataFrame, item_features: pd.DataFrame
     ) -> Dict[int, np.ndarray]:
         """Build user profiles based on item features."""
         if self.feature_matrix is None:
@@ -295,9 +295,9 @@ class FeatureBasedRecommender(BaseRecommender):
                 if "rating" in interaction_data.columns:
                     user_data = interaction_data[
                         interaction_data["user_idx"] == user_idx
-                    ]
+                        ]
                     rating_series = user_data["rating"]
-                    # Convert pandas Series to numpy array
+                    # Convert panda Series to a numpy array
                     user_ratings = np.array(rating_series)
                     user_ratings_sum = float(np.sum(user_ratings))
 
@@ -317,7 +317,7 @@ class FeatureBasedRecommender(BaseRecommender):
         return user_profiles
 
     def predict(
-        self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
+            self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
     ) -> pd.DataFrame:
         """
         Generate recommendations for users.
@@ -330,9 +330,9 @@ class FeatureBasedRecommender(BaseRecommender):
             DataFrame with columns ['user_id', 'item_id', 'score']
         """
         if (
-            not self.is_fitted
-            or self.feature_matrix is None
-            or self.user_profiles is None
+                not self.is_fitted
+                or self.feature_matrix is None
+                or self.user_profiles is None
         ):
             raise ValueError("Model must be fitted before making predictions")
 
@@ -390,7 +390,7 @@ class FeatureBasedRecommender(BaseRecommender):
         return pd.DataFrame(recommendations)
 
     def predict_score(
-        self, user_ids: Union[List, str], item_ids: Union[List, str]
+            self, user_ids: Union[List, str], item_ids: Union[List, str]
     ) -> np.ndarray:
         """
         Predict scores for specific user-item pairs.
@@ -403,9 +403,9 @@ class FeatureBasedRecommender(BaseRecommender):
             Array of predicted scores
         """
         if (
-            not self.is_fitted
-            or self.feature_matrix is None
-            or self.user_profiles is None
+                not self.is_fitted
+                or self.feature_matrix is None
+                or self.user_profiles is None
         ):
             raise ValueError("Model must be fitted before making predictions")
 

@@ -1,7 +1,7 @@
 """
 Data preprocessing utilities for recommendation systems.
 """
-
+import loguru
 import pandas as pd
 import numpy as np
 from typing import Tuple, Dict, Any
@@ -98,9 +98,9 @@ class DataPreprocessor:
 
             interaction_data = new_data
 
-        print(f"Filtered data: {original_size} -> {len(interaction_data)} interactions")
-        print(f"Users: {interaction_data['user_id'].nunique()}")
-        print(f"Items: {interaction_data['item_id'].nunique()}")
+        loguru.logger.info(f"Filtered data: {original_size} -> {len(interaction_data)} interactions")
+        loguru.logger.info(f"Users: {interaction_data['user_id'].nunique()}")
+        loguru.logger.info(f"Items: {interaction_data['item_id'].nunique()}")
 
         return interaction_data.reset_index(drop=True)
 
@@ -282,12 +282,12 @@ class DataPreprocessor:
         if not pd.api.types.is_object_dtype(interaction_data['user_id']) and \
                 not pd.api.types.is_string_dtype(interaction_data['user_id']):
             if not pd.api.types.is_integer_dtype(interaction_data['user_id']):
-                print("Warning: user_id should be string/object or integer type")
+                loguru.logger.warning("Warning: user_id should be string/object or integer type")
 
         if not pd.api.types.is_object_dtype(interaction_data['item_id']) and \
                 not pd.api.types.is_string_dtype(interaction_data['item_id']):
             if not pd.api.types.is_integer_dtype(interaction_data['item_id']):
-                print("Warning: item_id should be string/object or integer type")
+                loguru.logger.warning("Warning: item_id should be string/object or integer type")
 
         return True
 

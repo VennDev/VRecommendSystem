@@ -22,9 +22,8 @@ def init() -> None:
         rotation=f"{cfg.logger.max_size} MB",
         retention=f"{cfg.logger.max_backups} days",
         compression="zip" if cfg.logger.compression else None,
-        enqueue=True,
-        serialize=False,
-        level="INFO",
+        enqueue=cfg.logger.enqueue,
+        serialize=cfg.logger.serialize,
         format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}"
     )
 

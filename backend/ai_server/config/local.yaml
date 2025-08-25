@@ -21,6 +21,8 @@ logger:
   max_age: 30 # Maximum age of a log file in days
   compression: true # Whether to compress old log files
   local_time: true # Use local time for timestamps in logs
+  enqueue: true # Whether to use an asynchronous logging queue
+  serialize: false # Whether to serialize log entries
 
 # Scheduler configuration
 scheduler:
