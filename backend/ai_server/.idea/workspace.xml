@@ -6,15 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/local.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/local.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model.pkl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/initialize/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/initialize/logger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/content/feature_based.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/models/content/feature_based.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/utils/evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/models/utils/evaluation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/utils/preprocessing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/models/utils/preprocessing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/initialize/scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/initialize/scheduler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tasks/task_a.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,7 +216,7 @@
       <workItem from="1755970679664" duration="4803000" />
       <workItem from="1756056785428" duration="3991000" />
       <workItem from="1756130850983" duration="1723000" />
-      <workItem from="1756137539590" duration="2198000" />
+      <workItem from="1756137539590" duration="3404000" />
     </task>
     <servers />
   </component>
