@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from ai_server.services.scheduler_service import SchedulerService
+from ai_server.services import scheduler_service
 
 router = APIRouter()
 
@@ -121,5 +122,35 @@ def set_task_interval(task_name: str, interval: int) -> dict:
         scheduler = SchedulerService()
         scheduler.set_interval(task_name, interval)
         return {"message": f"Task {task_name} interval updated to {interval} seconds successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/stop_scheduler/{timeout}")
+def stop_scheduler(timeout: float) -> dict:
+    """
+    Stop the scheduler.
+
+    :return: A confirmation message
+    """
+    try:
+        scheduler = scheduler_service.get_scheduler_manager()
+        scheduler.stop(timeout)
+        return {"message": "Scheduler started successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/restart_scheduler/{timeout}")
+def restart_scheduler(timeout: float) -> dict:
+    """
+    Restart the scheduler.
+
+    :return: A confirmation message
+    """
+    try:
+        scheduler = scheduler_service.get_scheduler_manager()
+        scheduler.restart(timeout)
+        return {"message": "Scheduler restarted successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
