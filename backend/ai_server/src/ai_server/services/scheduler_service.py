@@ -151,13 +151,18 @@ class SchedulerService:
         self.scheduler_dir = Path(scheduler_dir)
         self.scheduler_dir.mkdir(exist_ok=True)
 
-    def add_model_task(self, task_name: str, model_id: str, data_chef_id: str, interval: int) -> None:
+    def add_model_task(self, task_name: str, model_id: str, interactions_data_chef_id: str,
+                       user_features_data_chef_id: Optional[str] = None,
+                       item_features_data_chef_id: Optional[str] = None,
+                       interval: int = 3600) -> None:
         """
         Add a model training task to the scheduler.
 
         :param task_name: Name of the task.
         :param model_id: ID of the model to be trained.
-        :param data_chef_id: ID of the data chef associated with the model.
+        :param interactions_data_chef_id: ID of the interaction data chef associated with the model.
+        :param user_features_data_chef_id: ID of the user features data chef (optional).
+        :param item_features_data_chef_id: ID of the item features data chef (optional).
         :param interval: Interval in seconds for the task to run.
         """
         task_file = self.scheduler_dir / f"{task_name}.json"
@@ -170,7 +175,9 @@ class SchedulerService:
         task_config = {
             "task_name": task_name,
             "model_id": model_id,
-            "data_chef_id": data_chef_id,
+            "interactions_data_chef_id": interactions_data_chef_id,
+            "user_features_data_chef_id": user_features_data_chef_id,
+            "item_features_data_chef_id": item_features_data_chef_id,
             "interval": interval
         }
 
@@ -258,7 +265,7 @@ class SchedulerService:
 
         loguru.logger.info(f"Model ID for task {task_name} updated to {model_id}.")
 
-    def set_data_chef_id(self, task_name: str, data_chef_id: str) -> None:
+    def set_interactions_data_chef_id(self, task_name: str, data_chef_id: str) -> None:
         """
         Update the data chef ID for a scheduled task.
         :param task_name: Name of the task to update.
@@ -272,12 +279,54 @@ class SchedulerService:
 
         with open(task_file, 'r+') as f:
             task_config = json.load(f)
-            task_config['data_chef_id'] = data_chef_id
+            task_config['interactions_data_chef_id'] = data_chef_id
             f.seek(0)
             json.dump(task_config, f)
             f.truncate()
 
-        loguru.logger.info(f"Data Chef ID for task {task_name} updated to {data_chef_id}.")
+        loguru.logger.info(f"Interaction Data Chef ID for task {task_name} updated to {data_chef_id}.")
+
+    def set_item_features_data_chef_id(self, task_name: str, data_chef_id: str) -> None:
+        """
+        Update the item features data chef ID for a scheduled task.
+        :param task_name: Name of the task to update.
+        :param data_chef_id: New item features data chef ID to set.
+        """
+        task_file = self.scheduler_dir / f"{task_name}.json"
+
+        if not task_file.exists():
+            loguru.logger.error(f"Task {task_name} does not exist.")
+            return
+
+        with open(task_file, 'r+') as f:
+            task_config = json.load(f)
+            task_config['item_features_data_chef_id'] = data_chef_id
+            f.seek(0)
+            json.dump(task_config, f)
+            f.truncate()
+
+        loguru.logger.info(f"Item Features Data Chef ID for task {task_name} updated to {data_chef_id}.")
+
+    def set_user_features_data_chef_id(self, task_name: str, data_chef_id: str) -> None:
+        """
+        Update the user features data chef ID for a scheduled task.
+        :param task_name: Name of the task to update.
+        :param data_chef_id: New user features data chef ID to set.
+        """
+        task_file = self.scheduler_dir / f"{task_name}.json"
+
+        if not task_file.exists():
+            loguru.logger.error(f"Task {task_name} does not exist.")
+            return
+
+        with open(task_file, 'r+') as f:
+            task_config = json.load(f)
+            task_config['user_features_data_chef_id'] = data_chef_id
+            f.seek(0)
+            json.dump(task_config, f)
+            f.truncate()
+
+        loguru.logger.info(f"User Features Data Chef ID for task {task_name} updated to {data_chef_id}.")
 
     def set_interval(self, task_name: str, interval: int) -> None:
         """

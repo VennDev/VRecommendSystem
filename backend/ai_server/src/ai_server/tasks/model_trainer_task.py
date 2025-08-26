@@ -1,7 +1,10 @@
 import datetime
+import itertools
 import os
 import glob
 import json
+from typing import Optional
+
 import loguru
 from pathlib import Path
 from scheduler import Scheduler
@@ -12,7 +15,13 @@ from ai_server.utils.result_processing import dict_to_dataframe
 from ai_server.tasks.base_task import BaseTask
 
 
-def _train_model_task(config: dict, data_chef_id: str, json_file: str) -> None:
+def _train_model_task(
+        config: dict,
+        json_file: str,
+        interactions_data_chef_id: str,
+        item_features_data_chef_id: Optional[str] = None,
+        user_features_data_chef_id: Optional[str] = None,
+) -> None:
     """
     Placeholder function for model training logic.
     You will implement this later.
@@ -32,8 +41,26 @@ def _train_model_task(config: dict, data_chef_id: str, json_file: str) -> None:
         hyperparameters=config.get("hyperparameters", {}),
     )
 
-    for data in DataChefService().cook(data_chef_id):
-        service.train_batch(model_id, dict_to_dataframe(data))
+    data_chef = DataChefService()
+
+    interactions_gen = data_chef.cook(interactions_data_chef_id)
+    item_features_gen = data_chef.cook(item_features_data_chef_id) \
+        if item_features_data_chef_id else itertools.repeat(None)
+    user_features_gen = data_chef.cook(user_features_data_chef_id) \
+        if user_features_data_chef_id else itertools.repeat(None)
+
+    for interactions_data, item_data, user_data in zip(interactions_gen, item_features_gen, user_features_gen):
+        interactions_df = dict_to_dataframe(interactions_data)
+        item_features_df = dict_to_dataframe(item_data) if item_data else None
+        user_features_df = dict_to_dataframe(user_data) if user_data else None
+
+        service.train_batch(
+            model_id,
+            interactions_df,
+            item_features=item_features_df,
+            user_features=user_features_df
+        )
+
         progress = service.get_training_progress(model_id)
         loguru.logger.info(f"Training progress for {model_name}: {progress['total_batches']}")
 
@@ -85,7 +112,9 @@ class ModelTrainerTask(BaseTask):
                     # Extract an interval from config
                     interval = config.get("interval")
                     model_id = config.get("model_id")
-                    data_chef_id = config.get("data_chef_id")
+                    interactions_data_chef_id = config.get("interactions_data_chef_id")
+                    item_features_data_chef_id = config.get("item_features_data_chef_id")
+                    user_features_data_chef_id = config.get("user_features_data_chef_id")
 
                     if interval is None:
                         loguru.logger.warning(f"No 'interval' found in {json_file}")
@@ -95,8 +124,16 @@ class ModelTrainerTask(BaseTask):
                         loguru.logger.warning(f"No 'model_id' found in {json_file}")
                         continue
 
-                    if data_chef_id is None:
-                        loguru.logger.warning(f"No 'data_chef_id' found in {json_file}")
+                    if interactions_data_chef_id is None:
+                        loguru.logger.warning(f"No 'interactions_data_chef_id' found in {json_file}")
+                        continue
+
+                    if item_features_data_chef_id is None:
+                        loguru.logger.warning(f"No 'item_features_data_chef_id' found in {json_file}")
+                        continue
+
+                    if user_features_data_chef_id is None:
+                        loguru.logger.warning(f"No 'user_features_data_chef_id' found in {json_file}")
                         continue
 
                     if not isinstance(interval, (int, float)) or interval <= 0:
@@ -117,7 +154,13 @@ class ModelTrainerTask(BaseTask):
                     scheduler.minutely(
                         timing=datetime.time(second=interval),
                         handle=_train_model_task,
-                        args=(model_data, data_chef_id, json_file)
+                        args=(
+                            model_data,
+                            interactions_data_chef_id,
+                            item_features_data_chef_id,
+                            user_features_data_chef_id,
+                            json_file
+                        )
                     )
                 except json.JSONDecodeError as e:
                     loguru.logger.error(f"Error parsing JSON file {json_file}: {e}")

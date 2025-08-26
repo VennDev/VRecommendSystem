@@ -1,0 +1,1 @@
+{"task_name": "task_a", "model_id": "my_model", "interactions_data_chef_id": "data_a", "user_features_data_chef_id": 30, "item_features_data_chef_id": null, "interval": 3600}

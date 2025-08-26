@@ -28,6 +28,12 @@ from ai_server.schemas.model_schemas import (
     ModelStatus,
 )
 
+SAMPLE_INTERACTION_DATA = pd.DataFrame({
+    'user_id': ['u1', 'u1', 'u2', 'u2'],
+    'item_id': ['i1', 'i2', 'i1', 'i3'],
+    'rating': [5, 4, 3, 5]
+})
+
 
 class ModelService:
     """
@@ -286,7 +292,7 @@ class ModelService:
             DataPreprocessor.validate_data_format(cleaned_interaction_data)
 
             training_state = self.training_states[model_id]
-            model = self.loaded_models[model_id]
+            # model = self.loaded_models[model_id]
 
             loguru.logger.info(
                 f"Processing batch {training_state['total_batches'] + 1} for model {model_id} "
