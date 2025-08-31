@@ -304,3 +304,92 @@ class DataChefService:
             if "rename_columns" in data:
                 value = rename_columns(value, data.rename_columns)
             yield value
+
+    def create_data_chef_csv(self, name: str, path: str, rename_columns: Dict[str, str] = None) -> None:
+        """
+        Create a CSV data chef configuration.
+
+        :param name: Name of the configuration
+        :param path: Path to the CSV file
+        :param rename_columns: Optional dictionary for renaming columns
+        """
+        cfg = Config().get_config("restaurant_data")
+        cfg[name] = {
+            "type": DataType.CSV.value,
+            "path": path,
+        }
+        if rename_columns:
+            cfg[name]["rename_columns"] = rename_columns
+
+        Config().set_config_with_dict("restaurant_data", cfg)
+
+    def create_data_chef_sql(self, name: str, query: str, rename_columns: Dict[str, str] = None) -> None:
+        """
+        Create a SQL data chef configuration.
+
+        :param name:
+        :param query:
+        :param rename_columns:
+        :return:
+        """
+        cfg = Config().get_config("restaurant_data")
+        cfg[name] = {
+            "type": DataType.SQL.value,
+            "query": query,
+        }
+        if rename_columns:
+            cfg[name]["rename_columns"] = rename_columns
+
+        Config().set_config_with_dict("restaurant_data", cfg)
+
+    def create_data_chef_nosql(self, name: str, database: str, collection: str,
+                               rename_columns: Dict[str, str] = None) -> None:
+        """
+        Create a NoSQL data chef configuration.
+
+        :param name:
+        :param database:
+        :param collection:
+        :param rename_columns:
+        :return:
+        """
+        cfg = Config().get_config("restaurant_data")
+        cfg[name] = {
+            "type": DataType.NOSQL.value,
+            "database": database,
+            "collection": collection,
+        }
+        if rename_columns:
+            cfg[name]["rename_columns"] = rename_columns
+
+        Config().set_config_with_dict("restaurant_data", cfg)
+
+    def create_data_chef_api(self, name: str, url: str, paginated: bool = False,
+                             page_param: str = "page", size_param: str = "size", page_size: int = 100,
+                             rename_columns: Dict[str, str] = None) -> None:
+        """
+        Create an API data chef configuration.
+
+        :param name:
+        :param url:
+        :param paginated:
+        :param page_param:
+        :param size_param:
+        :param page_size:
+        :param rename_columns:
+        :return:
+        """
+        cfg = Config().get_config("restaurant_data")
+        cfg[name] = {
+            "type": DataType.API.value,
+            "url": url,
+            "paginated": paginated,
+        }
+        if paginated:
+            cfg[name]["page_param"] = page_param
+            cfg[name]["size_param"] = size_param
+            cfg[name]["page_size"] = page_size
+        if rename_columns:
+            cfg[name]["rename_columns"] = rename_columns
+
+        Config().set_config_with_dict("restaurant_data", cfg)

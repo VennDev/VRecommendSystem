@@ -5,12 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/tests/test3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/model_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/model_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/config/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/models/content/tfidf.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/models/content/tfidf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -218,7 +216,12 @@
       <workItem from="1756056785428" duration="3991000" />
       <workItem from="1756130850983" duration="1723000" />
       <workItem from="1756137539590" duration="6643000" />
-      <workItem from="1756204375532" duration="5043000" />
+      <workItem from="1756204375532" duration="6501000" />
+      <workItem from="1756299887925" duration="19000" />
+      <workItem from="1756317971551" duration="2048000" />
+      <workItem from="1756486352430" duration="1114000" />
+      <workItem from="1756625413058" duration="1493000" />
+      <workItem from="1756660419482" duration="587000" />
     </task>
     <servers />
   </component>

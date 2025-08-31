@@ -37,13 +37,13 @@ class TFIDFRecommender(BaseRecommender):
     """
 
     def __init__(
-        self,
-        max_features: int = 5000,
-        min_df: int = 2,
-        max_df: float = 0.8,
-        stop_words: str = "english",
-        ngram_range: tuple = (1, 2),
-        **kwargs,
+            self,
+            max_features: int = 5000,
+            min_df: int = 2,
+            max_df: float = 0.8,
+            stop_words: str = "english",
+            ngram_range: tuple = (1, 2),
+            **kwargs,
     ):
         super().__init__(
             max_features=max_features,
@@ -66,18 +66,18 @@ class TFIDFRecommender(BaseRecommender):
         self.user_profiles: Optional[Dict[int, csr_matrix]] = None
 
     def fit(
-        self,
-        interaction_data: pd.DataFrame,
-        user_features: Optional[pd.DataFrame] = None,
-        item_features: Optional[pd.DataFrame] = None,
+            self,
+            interaction_data: pd.DataFrame,
+            user_features: Optional[pd.DataFrame] = None,
+            item_features: Optional[pd.DataFrame] = None,
     ) -> "TFIDFRecommender":
         """
         Train the TF-IDF content-based model.
 
         Args:
             interaction_data: DataFrame with columns ['user_id', 'item_id'] and optionally 'rating'
-            user_features: Not used in TF-IDF model (for API consistency)
-            item_features: DataFrame with columns ['item_id', 'content'] where content is text
+            user_features: Not used in a TF-IDF model (for API consistency)
+            item_features: DataFrame with columns ['item_id', 'content'] where content is texted
 
         Returns:
             Self for method chaining
@@ -137,8 +137,8 @@ class TFIDFRecommender(BaseRecommender):
         if self.item_features_matrix is not None:
             n_features = self.item_features_matrix.shape[1]
         if (
-            self.tfidf_vectorizer is not None
-            and self.tfidf_vectorizer.vocabulary_ is not None
+                self.tfidf_vectorizer is not None
+                and self.tfidf_vectorizer.vocabulary_ is not None
         ):
             vocab_size = len(self.tfidf_vectorizer.vocabulary_)
 
@@ -182,7 +182,7 @@ class TFIDFRecommender(BaseRecommender):
         return item_features
 
     def _build_user_profiles(
-        self, interaction_data: pd.DataFrame, item_content: pd.DataFrame
+            self, interaction_data: pd.DataFrame, item_content: pd.DataFrame
     ) -> Dict[int, csr_matrix]:
         """Build user profiles based on TF-IDF vectors of interacted items."""
         if self.item_features_matrix is None:
@@ -215,9 +215,9 @@ class TFIDFRecommender(BaseRecommender):
                 if "rating" in interaction_data.columns:
                     user_data = interaction_data[
                         interaction_data["user_idx"] == user_idx
-                    ]
+                        ]
                     rating_series = user_data["rating"]
-                    # Convert pandas Series to numpy array
+                    # Convert panda Series to a numpy array
                     user_ratings = np.array(rating_series)
                     user_ratings_sum = float(np.sum(user_ratings))
 
@@ -246,7 +246,7 @@ class TFIDFRecommender(BaseRecommender):
         return user_profiles
 
     def predict(
-        self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
+            self, user_ids: Union[List, np.ndarray, str], n_recommendations: int = 10
     ) -> pd.DataFrame:
         """
         Generate recommendations for users.
@@ -259,9 +259,9 @@ class TFIDFRecommender(BaseRecommender):
             DataFrame with columns ['user_id', 'item_id', 'score']
         """
         if (
-            not self.is_fitted
-            or self.item_features_matrix is None
-            or self.user_profiles is None
+                not self.is_fitted
+                or self.item_features_matrix is None
+                or self.user_profiles is None
         ):
             raise ValueError("Model must be fitted before making predictions")
 
@@ -313,7 +313,7 @@ class TFIDFRecommender(BaseRecommender):
         return pd.DataFrame(recommendations)
 
     def predict_score(
-        self, user_ids: Union[List, str], item_ids: Union[List, str]
+            self, user_ids: Union[List, str], item_ids: Union[List, str]
     ) -> np.ndarray:
         """
         Predict scores for specific user-item pairs.
@@ -326,9 +326,9 @@ class TFIDFRecommender(BaseRecommender):
             Array of predicted scores
         """
         if (
-            not self.is_fitted
-            or self.item_features_matrix is None
-            or self.user_profiles is None
+                not self.is_fitted
+                or self.item_features_matrix is None
+                or self.user_profiles is None
         ):
             raise ValueError("Model must be fitted before making predictions")
 
@@ -393,7 +393,7 @@ class TFIDFRecommender(BaseRecommender):
         similarities = self.item_similarity_matrix[item_idx]
 
         # Get top N similar items (excluding the item itself)
-        similar_indices = np.argsort(similarities)[::-1][1 : n_similar + 1]
+        similar_indices = np.argsort(similarities)[::-1][1: n_similar + 1]
         similar_scores = similarities[similar_indices]
 
         # Convert back to original item IDs

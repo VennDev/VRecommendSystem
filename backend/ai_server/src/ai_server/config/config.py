@@ -20,3 +20,10 @@ class Config:
         """
         cfg = hydra.compose(config_name=name)
         return cfg
+
+    def set_config_with_dict(self, name: str, config_dict: DictConfig) -> DictConfig:
+        """
+        Set the configuration using a dictionary.
+        """
+        cfg = hydra.compose(config_name=name, overrides=[f"{k}={v}" for k, v in config_dict.items()])
+        return cfg
