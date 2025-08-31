@@ -325,7 +325,7 @@ class DataChefService:
 
     def create_data_chef_sql(self, name: str, query: str, rename_columns: Dict[str, str] = None) -> None:
         """
-        Create a SQL data chef configuration.
+        Create an SQL data chef configuration.
 
         :param name:
         :param query:
