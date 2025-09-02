@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from ai_server.services.model_service import ModelService, SAMPLE_INTERACTION_DATA
 from ai_server.services.scheduler_service import SchedulerService
-from ai_server.services import scheduler_service
+from ai_server.services import scheduler_service, data_chef_service
 
 router = APIRouter()
 
@@ -220,5 +220,139 @@ def restart_scheduler(timeout: float) -> dict:
         scheduler = scheduler_service.get_scheduler_manager()
         scheduler.restart(timeout)
         return {"message": "Scheduler restarted successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/create_data_chef_from_csv/{data_chef_id}/{file_path}/{rename_columns}")
+def create_data_chef_from_csv(data_chef_id: str, file_path: str, rename_columns: str) -> dict:
+    """
+    Create a new data chef from a CSV file.
+
+    :param data_chef_id: ID of the data chef to be created
+    :param file_path: Path to the CSV file
+    :param rename_columns: Column renaming mapping in the format "old_key1->new_key1,old_key2->new_key2"
+    :return: A confirmation message
+    """
+    try:
+        data_chef_service.DataChefService().create_data_chef_csv(
+            name=data_chef_id,
+            path=file_path,
+            rename_columns=rename_columns
+        )
+        return {"message": f"Data chef {data_chef_id} created successfully from {file_path}."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/create_data_chef_from_sql/{data_chef_id}/{query}/{rename_columns}")
+def create_data_chef_from_sql(data_chef_id: str, query: str, rename_columns: str) -> dict:
+    """
+    Create a new data chef from an SQL query.
+
+    :param data_chef_id: ID of the data chef to be created
+    :param query: SQL query to fetch data
+    :param rename_columns: Column renaming mapping in the format "old_key1->new_key1,old_key2->new_key2"
+    :return: A confirmation message
+    """
+    try:
+        data_chef_service.DataChefService().create_data_chef_sql(
+            name=data_chef_id,
+            query=query,
+            rename_columns=rename_columns
+        )
+        return {"message": f"Data chef {data_chef_id} created successfully from SQL query."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/create_data_chef_from_nosql/{data_chef_id}/{database}/{collection}/{rename_columns}")
+def create_data_chef_from_nosql(data_chef_id: str, database: str, collection: str, rename_columns: str) -> dict:
+    """
+    Create a new data chef from a NoSQL database collection.
+
+    :param data_chef_id: ID of the data chef to be created
+    :param database: Name of the NoSQL database
+    :param collection: Name of the collection within the database
+    :param rename_columns: Column renaming mapping in the format "old_key1->new_key1,old_key2->new_key2"
+    :return: A confirmation message
+    """
+    try:
+        data_chef_service.DataChefService().create_data_chef_nosql(
+            name=data_chef_id,
+            database=database,
+            collection=collection,
+            rename_columns=rename_columns
+        )
+        return {"message": f"Data chef {data_chef_id} created successfully from NoSQL collection."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get(
+    "/create_data_chef_from_api/{data_chef_id}/{api_endpoint}/{rename_columns}/{paginated}/{pagination_param}/{size_param}/{size_value}")
+def create_data_chef_from_api(
+        data_chef_id: str,
+        api_endpoint: str,
+        rename_columns: str,
+        paginated: bool = False,
+        pagination_param: str = "page",
+        size_param: str = "size",
+        size_value: int = 100
+) -> dict:
+    """
+    Create a new data chef from a REST API endpoint.
+
+    :param data_chef_id: ID of the data chef to be created
+    :param api_endpoint: URL of the REST API endpoint
+    :param rename_columns: Column renaming mapping in the format "old_key1->new_key1,old_key2->new_key2"
+    :param paginated: Whether the API is paginated (default is False)
+    :param pagination_param: Name of the pagination parameter (default is "page")
+    :param size_param: Name of the page size parameter (default is "size")
+    :param size_value: Value for the page size parameter (default is 100)
+    :return: A confirmation message
+    """
+    try:
+        data_chef_service.DataChefService().create_data_chef_api(
+            name=data_chef_id,
+            url=api_endpoint,
+            rename_columns=rename_columns,
+            paginated=paginated,
+            page_param=pagination_param,
+            size_param=size_param,
+            page_size=size_value
+        )
+        return {"message": f"Data chef {data_chef_id} created successfully from API endpoint."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/create_data_chef_from_message_queue/{data_chef_id}/{brokers}/{topic}/{rename_columns}/{group_id}")
+def create_data_chef_from_message_queue(
+        data_chef_id: str,
+        brokers: str,
+        topic: str,
+        rename_columns: str,
+        group_id: str
+) -> dict:
+    """
+    Create a new data chef from a message queue (e.g., Kafka).
+
+    :param data_chef_id: ID of the data chef to be created
+    :param brokers: Comma-separated list of broker addresses
+    :param topic: Topic to consume messages from
+    :param rename_columns: Column renaming mapping in the format "old_key1->new_key1,old_key2->new_key2"
+    :param group_id: Consumer group ID
+    :return: A confirmation message
+    """
+    try:
+        data_chef_service.DataChefService().create_data_chef_messaging_queue(
+            name=data_chef_id,
+            brokers=brokers,
+            topic=topic,
+            rename_columns=rename_columns,
+            group_id=group_id
+        )
+        return {"message": f"Data chef {data_chef_id} created successfully from message queue."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

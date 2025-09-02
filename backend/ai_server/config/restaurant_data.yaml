@@ -16,4 +16,10 @@ data_4:
   database: 'database_name'
   collection: 'collection_name'
   rename_columns: 'userId->user_id,productId->item_id,clicks->rating'
+data_5:
+  type: 'messaging'
+  brokers: 'broker1:9092,broker2:9092'
+  topic: 'data_topic'
+  group_id: 'data_group'
+  rename_columns: 'userId->user_id,productId->item_id,clicks->rating'
 ...

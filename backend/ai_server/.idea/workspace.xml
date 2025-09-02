@@ -6,7 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/kafka.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/restaurant_data.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/restaurant_data.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/messaging/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/messaging/interface.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/messaging/kafka/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/messaging/kafka/consumer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/kafka_service.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,7 +227,8 @@
       <workItem from="1756317971551" duration="2048000" />
       <workItem from="1756486352430" duration="1114000" />
       <workItem from="1756625413058" duration="1493000" />
-      <workItem from="1756660419482" duration="700000" />
+      <workItem from="1756660419482" duration="1372000" />
+      <workItem from="1756781397547" duration="1968000" />
     </task>
     <servers />
   </component>

@@ -4,6 +4,7 @@ from typing import Generator, Dict, Any
 from sqlalchemy import text
 import pandas as pd
 import requests
+from confluent_kafka import Consumer
 from ai_server.utils.result_processing import rename_columns
 from ai_server.services.database_service import DatabaseService
 from ai_server.config.config import Config
@@ -18,6 +19,7 @@ class DataType(str, Enum):
     NOSQL = "nosql"
     CSV = "csv"
     API = "api"
+    MESSAGING_QUEUE = "messaging_queue"
     CUSTOM = "custom"
 
 
@@ -241,6 +243,63 @@ def _cook_api_paginated(
             raise ValueError(f"Invalid JSON response on page {page}: {e}") from e
 
 
+def _cook_messaging_queue(
+        brokers: str,
+        topic: str,
+        group_id: str = "data_chef_group"
+) -> Generator[Dict[str, Any], None, None]:
+    """
+    Connect to a messaging queue (e.g., Kafka) and yield messages as dictionaries.
+
+    :param brokers: Comma-separated list of broker addresses
+    :param topic: Topic to subscribe to
+    :param group_id: Consumer group ID
+    :return: Generator yielding messages from the queue as dictionaries.
+    :raises ValueError: If connection fails or message processing fails.
+    """
+    conf = {
+        'bootstrap.servers': brokers,
+        'group.id': group_id,
+        'auto.offset.reset': 'earliest'
+    }
+
+    consumer = Consumer(conf)
+    consumer.subscribe([topic])
+
+    try:
+        while True:
+            msg = consumer.poll(1.0)  # Timeout of 1 second
+
+            if msg is None:
+                continue
+            if msg.error():
+                raise ValueError(f"Consumer error: {msg.error()}")
+
+            try:
+                message_value = msg.value(None).decode('utf-8')
+                json_obj = json.loads(message_value)
+
+                # Ensure we always yield a dictionary
+                if isinstance(json_obj, dict):
+                    yield json_obj
+                elif isinstance(json_obj, list):
+                    for item in json_obj:
+                        if isinstance(item, dict):
+                            yield item
+                        else:
+                            yield {"value": item}
+                else:
+                    yield {"value": json_obj}
+
+            except json.JSONDecodeError:
+                continue
+
+    except Exception as e:
+        raise ValueError(f"An error occurred while consuming messages: {e}") from e
+    finally:
+        consumer.close()
+
+
 def _cook_raw_data_source(
         source_type: str, **kwargs
 ) -> Generator[Dict[str, Any], None, None]:
@@ -267,6 +326,12 @@ def _cook_raw_data_source(
             )
         else:
             yield from _cook_api(kwargs["url"])
+    elif source_type == "messaging_queue":
+        yield from _cook_messaging_queue(
+            kwargs["brokers"],
+            kwargs["topic"],
+            kwargs.get("group_id", "data_chef_group")
+        )
     else:
         raise ValueError(f"Unsupported source type: {source_type}")
 
@@ -305,25 +370,24 @@ class DataChefService:
                 value = rename_columns(value, data.rename_columns)
             yield value
 
-    def create_data_chef_csv(self, name: str, path: str, rename_columns: Dict[str, str] = None) -> None:
+    def create_data_chef_csv(self, name: str, path: str, rename_columns: str) -> None:
         """
         Create a CSV data chef configuration.
 
         :param name: Name of the configuration
         :param path: Path to the CSV file
-        :param rename_columns: Optional dictionary for renaming columns
+        :param rename_columns: string of columns to rename in the format "old1:new1,old2:new2"
         """
         cfg = Config().get_config("restaurant_data")
         cfg[name] = {
             "type": DataType.CSV.value,
             "path": path,
+            "rename_columns": rename_columns,
         }
-        if rename_columns:
-            cfg[name]["rename_columns"] = rename_columns
 
         Config().set_config_with_dict("restaurant_data", cfg)
 
-    def create_data_chef_sql(self, name: str, query: str, rename_columns: Dict[str, str] = None) -> None:
+    def create_data_chef_sql(self, name: str, query: str, rename_columns: str) -> None:
         """
         Create an SQL data chef configuration.
 
@@ -336,14 +400,13 @@ class DataChefService:
         cfg[name] = {
             "type": DataType.SQL.value,
             "query": query,
+            "rename_columns": rename_columns,
         }
-        if rename_columns:
-            cfg[name]["rename_columns"] = rename_columns
 
         Config().set_config_with_dict("restaurant_data", cfg)
 
     def create_data_chef_nosql(self, name: str, database: str, collection: str,
-                               rename_columns: Dict[str, str] = None) -> None:
+                               rename_columns: str) -> None:
         """
         Create a NoSQL data chef configuration.
 
@@ -358,25 +421,24 @@ class DataChefService:
             "type": DataType.NOSQL.value,
             "database": database,
             "collection": collection,
+            "rename_columns": rename_columns,
         }
-        if rename_columns:
-            cfg[name]["rename_columns"] = rename_columns
 
         Config().set_config_with_dict("restaurant_data", cfg)
 
-    def create_data_chef_api(self, name: str, url: str, paginated: bool = False,
+    def create_data_chef_api(self, name: str, url: str, rename_columns: str, paginated: bool = False,
                              page_param: str = "page", size_param: str = "size", page_size: int = 100,
-                             rename_columns: Dict[str, str] = None) -> None:
+                             ) -> None:
         """
         Create an API data chef configuration.
 
         :param name:
         :param url:
+        :param rename_columns:
         :param paginated:
         :param page_param:
         :param size_param:
         :param page_size:
-        :param rename_columns:
         :return:
         """
         cfg = Config().get_config("restaurant_data")
@@ -384,12 +446,34 @@ class DataChefService:
             "type": DataType.API.value,
             "url": url,
             "paginated": paginated,
+            "rename_columns": rename_columns,
         }
         if paginated:
             cfg[name]["page_param"] = page_param
             cfg[name]["size_param"] = size_param
             cfg[name]["page_size"] = page_size
-        if rename_columns:
-            cfg[name]["rename_columns"] = rename_columns
+
+        Config().set_config_with_dict("restaurant_data", cfg)
+
+    def create_data_chef_messaging_queue(self, name: str, brokers: str, topic: str,
+                                         rename_columns: str, group_id: str = "data_chef_group") -> None:
+        """
+        Create a messaging queue data chef configuration.
+
+        :param name:
+        :param brokers:
+        :param topic:
+        :param rename_columns:
+        :param group_id:
+        :return:
+        """
+        cfg = Config().get_config("restaurant_data")
+        cfg[name] = {
+            "type": DataType.MESSAGING_QUEUE.value,
+            "brokers": brokers,
+            "topic": topic,
+            "group_id": group_id,
+            "rename_columns": rename_columns,
+        }
 
         Config().set_config_with_dict("restaurant_data", cfg)
