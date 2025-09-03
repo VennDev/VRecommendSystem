@@ -10,4 +10,4 @@ if __name__ == "__main__":
         message="Training with incremental data"
     )
 
-    service.save_model("me_model", True)
+    service.save_model("me_model")

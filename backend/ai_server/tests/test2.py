@@ -16,7 +16,7 @@ if __name__ == "__main__":
     service.initialize_training(
         model_id="my_model",
         model_name="My Recommendation Model",
-        algorithm="als",
+        algorithm="bpr",
         message="Training with incremental data"
     )
 

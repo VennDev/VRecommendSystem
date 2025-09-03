@@ -1,24 +1,14 @@
 import json
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Type
+from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 import loguru
 import pandas as pd
-import numpy as np
 
 # Import models from the models folder
-from ai_server.models.collaborative.als import ALSRecommender
-from ai_server.models.collaborative.bpr import BPRRecommender
-from ai_server.models.collaborative.ncf import NCFRecommender
-from ai_server.models.content.tfidf import TFIDFRecommender
-from ai_server.models.content.feature_based import FeatureBasedRecommender
-from ai_server.models.base_model import BaseRecommender
-
-# Import evaluation utilities
-from ai_server.models.utils.evaluation import RecommenderEvaluator
-from ai_server.models.utils.preprocessing import DataPreprocessor
+from ai_server.models import BaseRecommendationModel, ModelRegistry
 
 # Schemas
 from ai_server.schemas.model_schemas import (
@@ -28,25 +18,27 @@ from ai_server.schemas.model_schemas import (
     ModelStatus,
 )
 
-SAMPLE_INTERACTION_DATA = pd.DataFrame({
-    'user_id': ['u1', 'u1', 'u2', 'u2'],
-    'item_id': ['i1', 'i2', 'i1', 'i3'],
-    'rating': [5, 4, 3, 5]
-})
+SAMPLE_INTERACTION_DATA = pd.DataFrame(
+    {
+        "user_id": ["u1", "u1", "u2", "u2"],
+        "item_id": ["i1", "i2", "i1", "i3"],
+        "rating": [5, 4, 3, 5],
+    }
+)
 
 
 class ModelService:
     """
-    Enhanced service class for managing recommendation models with incremental training support.
-    Handles training, loading, saving, and prediction operations using DataFrames with streaming capability.
+    Enhanced Model Service supporting multiple recommendation model types
+    Uses the BaseRecommendationModel architecture and ModelRegistry
     """
 
     def __init__(self, models_dir: str = "models"):
         self.models_dir = Path(models_dir)
         self.models_dir.mkdir(exist_ok=True)
 
-        # In-memory model cache
-        self.loaded_models: Dict[str, BaseRecommender] = {}
+        # In-memory model cache - now supports any BaseRecommendationModel
+        self.loaded_models: Dict[str, BaseRecommendationModel] = {}
 
         # Model configuration storage
         self.model_configs: Dict[str, Dict[str, Any]] = {}
@@ -54,167 +46,121 @@ class ModelService:
         # Training state for incremental learning
         self.training_states: Dict[str, Dict[str, Any]] = {}
 
-        # Initialize model registry
-        self.model_registry: Dict[str, Type[BaseRecommender]] = {
-            "als": ALSRecommender,
-            "bpr": BPRRecommender,
-            "ncf": NCFRecommender,
-            "tfidf": TFIDFRecommender,
-            "feature": FeatureBasedRecommender,
+        # Supported algorithms mapped to model types and their default parameters
+        self.supported_algorithms = {
+            # LightFM algorithms
+            "lightfm_warp": {"model_type": "lightfm", "loss": "warp"},
+            "lightfm_bpr": {"model_type": "lightfm", "loss": "bpr"},
+            "lightfm_logistic": {"model_type": "lightfm", "loss": "logistic"},
+            "lightfm_warp_kos": {"model_type": "lightfm", "loss": "warp-kos"},
+            # Legacy support (maps to LightFM)
+            "warp": {"model_type": "lightfm", "loss": "warp"},
+            "bpr": {"model_type": "lightfm", "loss": "bpr"},
+            "logistic": {"model_type": "lightfm", "loss": "logistic"},
+            "warp-kos": {"model_type": "lightfm", "loss": "warp-kos"},
         }
 
-    def get_model_class(self, algorithm: str) -> Type[BaseRecommender]:
-        """Get model class by algorithm name."""
-        if algorithm not in self.model_registry:
-            raise ValueError(
-                f"Unknown algorithm: {algorithm}. Available: {list(self.model_registry.keys())}"
-            )
-        return self.model_registry[algorithm]
+    def get_available_algorithms(self) -> List[str]:
+        """Get available algorithms"""
+        return list(self.supported_algorithms.keys())
 
-    def _clean_and_validate_data(self, data: pd.DataFrame, data_type: str = "interaction") -> pd.DataFrame:
-        """
-        Clean and validate data to ensure compatibility with recommendation algorithms.
+    def get_available_model_types(self) -> List[str]:
+        """Get available model types from registry"""
+        return ModelRegistry.list_models()
 
-        Args:
-            data: DataFrame to clean
-            data_type: Type of data ("interaction", "user", "item")
-
-        Returns:
-            Cleaned DataFrame
-        """
+    def get_model_info_by_type(self, model_type: str) -> Dict[str, Any]:
+        """Get information about a specific model type"""
         try:
-            if data.empty:
-                loguru.logger.warning(f"Empty {data_type} data provided")
-                return data
+            model_class = ModelRegistry.get_model(model_type)
+            return {
+                "model_type": model_type,
+                "class_name": model_class.__name__,
+                "description": model_class.__doc__ or "No description available",
+                "module": model_class.__module__,
+            }
+        except ValueError as e:
+            return {"error": str(e)}
 
-            # Make a copy to avoid modifying original data
-            cleaned_data = data.copy()
+    def _clean_and_validate_data(
+        self, data: pd.DataFrame, data_type: str = "interaction"
+    ) -> pd.DataFrame:
+        """Clean and validate input data"""
+        if data.empty:
+            raise ValueError(f"Empty {data_type} data provided")
 
-            # Handle interaction data
-            if data_type == "interaction":
-                required_columns = ["user_id", "item_id"]
+        cleaned_data = data.copy()
 
-                # Check for required columns
-                missing_cols = [col for col in required_columns if col not in cleaned_data.columns]
-                if missing_cols:
-                    raise ValueError(f"Missing required columns for {data_type} data: {missing_cols}")
+        if data_type == "interaction":
+            required_columns = ["user_id", "item_id"]
+            missing_cols = [
+                col for col in required_columns if col not in cleaned_data.columns
+            ]
+            if missing_cols:
+                raise ValueError(f"Missing required columns: {missing_cols}")
 
-                # Ensure user_id and item_id are strings initially for consistency
-                cleaned_data["user_id"] = cleaned_data["user_id"].astype(str)
-                cleaned_data["item_id"] = cleaned_data["item_id"].astype(str)
+            # Ensure string IDs
+            cleaned_data["user_id"] = cleaned_data["user_id"].astype(str)
+            cleaned_data["item_id"] = cleaned_data["item_id"].astype(str)
 
-                # Handle rating column
-                if "rating" in cleaned_data.columns:
-                    # Convert rating to numeric, replacing non-numeric values with default
-                    cleaned_data["rating"] = pd.to_numeric(cleaned_data["rating"], errors="coerce")
-
-                    # Fill NaN ratings with default value (e.g., 1.0 for implicit feedback)
-                    if cleaned_data["rating"].isna().any():
-                        loguru.logger.warning("Found NaN values in rating column, filling with 1.0")
-                        cleaned_data["rating"] = cleaned_data["rating"].fillna(1.0)
-                else:
-                    # Add implicit rating if not present
-                    cleaned_data["rating"] = 1.0
-
-                # Ensure rating is a float type
-                cleaned_data["rating"] = cleaned_data["rating"].astype(np.float32)
-
-                # Handle timestamp if present
-                if "timestamp" in cleaned_data.columns:
-                    # Try to convert to datetime, then to numeric timestamp
-                    try:
-                        if not pd.api.types.is_numeric_dtype(cleaned_data["timestamp"]):
-                            cleaned_data["timestamp"] = pd.to_datetime(cleaned_data["timestamp"])
-                            cleaned_data["timestamp"] = cleaned_data["timestamp"].astype(np.int64) // 10 ** 9
-                        else:
-                            cleaned_data["timestamp"] = cleaned_data["timestamp"].astype(np.float32)
-                    except:
-                        loguru.logger.warning("Could not parse timestamp column, removing it")
-                        cleaned_data = cleaned_data.drop("timestamp", axis=1)
-
-                # Remove any completely duplicate rows
-                initial_rows = len(cleaned_data)
-                cleaned_data = cleaned_data.drop_duplicates()
-                if len(cleaned_data) < initial_rows:
-                    loguru.logger.info(f"Removed {initial_rows - len(cleaned_data)} duplicate interaction rows")
-
-            elif data_type in ["user", "item"]:
-                # Handle feature data
-                id_column = f"{data_type}_id"
-
-                if id_column not in cleaned_data.columns:
-                    raise ValueError(f"Missing required column: {id_column}")
-
-                # Ensure ID column is string
-                cleaned_data[id_column] = cleaned_data[id_column].astype(str)
-
-                # Handle other columns - convert to appropriate numeric types where possible
-                for col in cleaned_data.columns:
-                    if col != id_column:
-                        if cleaned_data[col].dtype == 'object':
-                            # Try to convert to numeric
-                            numeric_series = pd.to_numeric(cleaned_data[col], errors="coerce")
-                            if not numeric_series.isna().all():
-                                # If some values could be converted to numeric, use them
-                                cleaned_data[col] = numeric_series.fillna(0.0)
-                            else:
-                                # If all values are non-numeric, keep as categorical
-                                cleaned_data[col] = cleaned_data[col].astype("category")
-
-            # Remove any rows with NaN in critical columns
-            if data_type == "interaction":
-                critical_columns = ["user_id", "item_id", "rating"]
+            # Handle ratings
+            if "rating" in cleaned_data.columns:
+                cleaned_data["rating"] = pd.to_numeric(
+                    cleaned_data["rating"], errors="coerce"
+                ).fillna(1.0)
             else:
-                critical_columns = [f"{data_type}_id"]
+                cleaned_data["rating"] = 1.0
 
-            initial_rows = len(cleaned_data)
-            cleaned_data = cleaned_data.dropna(subset=critical_columns)
-            if len(cleaned_data) < initial_rows:
-                loguru.logger.info(
-                    f"Removed {initial_rows - len(cleaned_data)} rows with NaN values in critical columns")
+        elif data_type in ["user", "item"]:
+            id_column = f"{data_type}_id"
+            if id_column not in cleaned_data.columns:
+                raise ValueError(f"Missing required column: {id_column}")
+            cleaned_data[id_column] = cleaned_data[id_column].astype(str)
 
-            return cleaned_data
+        # Remove rows with NaN in critical columns
+        critical_columns = (
+            ["user_id", "item_id"]
+            if data_type == "interaction"
+            else [f"{data_type}_id"]
+        )
+        cleaned_data = cleaned_data.dropna(subset=critical_columns)
 
-        except Exception as e:
-            loguru.logger.error(f"Error cleaning {data_type} data: {str(e)}")
-            raise
+        return cleaned_data.drop_duplicates().reset_index(drop=True)
 
     def initialize_training(
-            self,
-            model_id: str,
-            model_name: str,
-            algorithm: str,
-            message: str,
-            hyperparameters: Optional[Dict[str, Any]] = None,
+        self,
+        model_id: str,
+        model_name: str,
+        algorithm: str,
+        message: str,
+        hyperparameters: Optional[Dict[str, Any]] = None,
+        model_type: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """
-        Initialize a training session for incremental learning.
-
-        Args:
-            model_id: Unique identifier for the model
-            model_name: User-friendly name for the model
-            algorithm: Algorithm name (als, bpr, ncf, tfidf, feature)
-            hyperparameters: Model hyperparameters
-            message: Description or message about the model
-
-        Returns:
-            Dictionary with initialization status
-        """
+        """Initialize training session"""
         try:
-            loguru.logger.info(
-                f"Initializing training session for model {model_id} with algorithm {algorithm}"
-            )
+            if algorithm not in self.supported_algorithms:
+                raise ValueError(f"Unsupported algorithm: {algorithm}")
+
+            # Get algorithm configuration
+            algo_config = self.supported_algorithms[algorithm].copy()
+
+            # Determine model type
+            if model_type is None:
+                model_type = algo_config.get("model_type", "lightfm")
+
+            # Merge algorithm defaults with custom hyperparameters
+            model_params = {k: v for k, v in algo_config.items() if k != "model_type"}
+            if hyperparameters:
+                model_params.update(hyperparameters)
 
             # Create model configuration
-            start_time = datetime.now()
             config = {
                 "model_id": model_id,
                 "model_name": model_name,
                 "message": message,
                 "algorithm": algorithm,
-                "hyperparameters": hyperparameters or {},
-                "created_at": start_time.isoformat(),
-                "training_started_at": start_time.isoformat(),
+                "model_type": model_type,
+                "hyperparameters": model_params,
+                "created_at": datetime.now().isoformat(),
                 "status": ModelStatus.TRAINING,
                 "model_path": str(self.models_dir / f"{model_id}.pkl"),
             }
@@ -222,128 +168,100 @@ class ModelService:
             # Store config
             self.model_configs[model_id] = config
 
-            # Initialize model
-            model_class = self.get_model_class(algorithm)
-            model = model_class(**config["hyperparameters"])
-
-            # Cache model in memory for incremental training
+            # Initialize model using ModelRegistry
+            model = ModelRegistry.create_model(
+                model_type, model_id=model_id, **model_params
+            )
             self.loaded_models[model_id] = model
 
             # Initialize training state
             self.training_states[model_id] = {
-                "is_initialized": False,
                 "total_batches": 0,
                 "total_interactions": 0,
-                "last_batch_time": None,
                 "accumulated_data": [],
                 "user_features": None,
                 "item_features": None,
-                "encoders_fitted": False,
             }
 
-            loguru.logger.info(f"Training session initialized for model {model_id}")
+            loguru.logger.info(
+                f"Training initialized for model {model_id} (type: {model_type})"
+            )
 
             return {
                 "model_id": model_id,
                 "status": "initialized",
-                "message": "Training session ready for incremental data",
+                "message": f"Training session ready for incremental data (model type: {model_type})",
             }
 
+        except ValueError as e:
+            loguru.logger.error(f"Error initializing training: {str(e)}")
+            return {"model_id": model_id, "status": "error", "error": str(e)}
         except Exception as e:
-            loguru.logger.error(f"Error initializing training for model {model_id}: {str(e)}")
-            return {
-                "model_id": model_id,
-                "status": "error",
-                "error": str(e),
-            }
+            loguru.logger.exception(f"Unexpected error initializing training: {str(e)}")
+            raise
 
     def train_batch(
-            self,
-            model_id: str,
-            interaction_data: pd.DataFrame,
-            user_features: Optional[pd.DataFrame] = None,
-            item_features: Optional[pd.DataFrame] = None,
-            accumulate_data: bool = True,
+        self,
+        model_id: str,
+        interaction_data: pd.DataFrame,
+        user_features: Optional[pd.DataFrame] = None,
+        item_features: Optional[pd.DataFrame] = None,
+        accumulate_data: bool = True,
     ) -> Dict[str, Any]:
-        """
-        Train a batch of data incrementally.
-
-        Args:
-            model_id: Model identifier
-            interaction_data: Batch of interaction data
-            user_features: Optional user features
-            item_features: Optional item features
-            accumulate_data: Whether to accumulate data for full training later
-
-        Returns:
-            Dictionary with training batch status
-        """
+        """Train a batch of data"""
         try:
             if model_id not in self.loaded_models:
-                raise ValueError(f"Model {model_id} not initialized. Call initialize_training first.")
+                raise ValueError(f"Model {model_id} not initialized")
 
-            if model_id not in self.training_states:
-                raise ValueError(f"Training state not found for model {model_id}")
-
-            # Clean and validate interaction data
-            cleaned_interaction_data = self._clean_and_validate_data(interaction_data, "interaction")
-
-            # Validate interaction data format
-            DataPreprocessor.validate_data_format(cleaned_interaction_data)
-
-            training_state = self.training_states[model_id]
-            # model = self.loaded_models[model_id]
-
-            loguru.logger.info(
-                f"Processing batch {training_state['total_batches'] + 1} for model {model_id} "
-                f"with {len(cleaned_interaction_data)} interactions"
+            # Clean data
+            cleaned_data = self._clean_and_validate_data(
+                interaction_data, "interaction"
             )
 
-            # Clean and store features if provided (first time)
+            training_state = self.training_states[model_id]
+
+            # Store features (first time or update)
             if user_features is not None:
-                cleaned_user_features = self._clean_and_validate_data(user_features, "user")
+                cleaned_user_features = self._clean_and_validate_data(
+                    user_features, "user"
+                )
                 if training_state["user_features"] is None:
-                    training_state["user_features"] = cleaned_user_features.copy()
+                    training_state["user_features"] = cleaned_user_features
                 else:
-                    # Append new user features
-                    existing_users = set(training_state["user_features"]["user_id"])
-                    new_users = cleaned_user_features[~cleaned_user_features["user_id"].isin(existing_users)]
-                    if len(new_users) > 0:
-                        training_state["user_features"] = pd.concat([
-                            training_state["user_features"],
-                            new_users
-                        ], ignore_index=True)
+                    # Merge with existing features
+                    training_state["user_features"] = (
+                        pd.concat(
+                            [training_state["user_features"], cleaned_user_features]
+                        )
+                        .drop_duplicates(subset=["user_id"])
+                        .reset_index(drop=True)
+                    )
 
             if item_features is not None:
-                cleaned_item_features = self._clean_and_validate_data(item_features, "item")
+                cleaned_item_features = self._clean_and_validate_data(
+                    item_features, "item"
+                )
                 if training_state["item_features"] is None:
-                    training_state["item_features"] = cleaned_item_features.copy()
+                    training_state["item_features"] = cleaned_item_features
                 else:
-                    # Append new item features
-                    existing_items = set(training_state["item_features"]["item_id"])
-                    new_items = cleaned_item_features[~cleaned_item_features["item_id"].isin(existing_items)]
-                    if len(new_items) > 0:
-                        training_state["item_features"] = pd.concat([
-                            training_state["item_features"],
-                            new_items
-                        ], ignore_index=True)
+                    training_state["item_features"] = (
+                        pd.concat(
+                            [training_state["item_features"], cleaned_item_features]
+                        )
+                        .drop_duplicates(subset=["item_id"])
+                        .reset_index(drop=True)
+                    )
 
-            # Accumulate data if requested
+            # Accumulate data
             if accumulate_data:
-                training_state["accumulated_data"].append(cleaned_interaction_data.copy())
+                training_state["accumulated_data"].append(cleaned_data)
 
-            # Update training state
+            # Update counters
             training_state["total_batches"] += 1
-            training_state["total_interactions"] += len(cleaned_interaction_data)
-            training_state["last_batch_time"] = datetime.now().isoformat()
-
-            # Update model config
-            self.model_configs[model_id]["last_updated"] = datetime.now().isoformat()
+            training_state["total_interactions"] += len(cleaned_data)
 
             loguru.logger.info(
-                f"Batch processed for model {model_id}. "
-                f"Total batches: {training_state['total_batches']}, "
-                f"Total interactions: {training_state['total_interactions']}"
+                f"Batch {training_state['total_batches']} processed for {model_id}"
             )
 
             return {
@@ -351,29 +269,20 @@ class ModelService:
                 "status": "batch_processed",
                 "total_batches": training_state["total_batches"],
                 "total_interactions": training_state["total_interactions"],
-                "batch_size": len(cleaned_interaction_data),
+                "batch_size": len(cleaned_data),
             }
 
         except Exception as e:
-            loguru.logger.error(f"Error processing batch for model {model_id}: {str(e)}")
-            return {
-                "model_id": model_id,
-                "status": "error",
-                "error": str(e),
-            }
+            loguru.logger.error(f"Error processing batch: {str(e)}")
+            return {"model_id": model_id, "status": "error", "error": str(e)}
 
     def finalize_training(self, model_id: str) -> ModelTrainingResult:
-        """
-        Finalize training using all accumulated data.
-
-        Args:
-            model_id: Model identifier
-
-        Returns:
-            ModelTrainingResult with training completion status
-        """
+        """Finalize training with all accumulated data"""
         try:
-            if model_id not in self.loaded_models or model_id not in self.training_states:
+            if (
+                model_id not in self.loaded_models
+                or model_id not in self.training_states
+            ):
                 raise ValueError(f"Model {model_id} not in training state")
 
             training_state = self.training_states[model_id]
@@ -381,130 +290,62 @@ class ModelService:
             config = self.model_configs[model_id]
 
             if not training_state["accumulated_data"]:
-                raise ValueError(f"No training data accumulated for model {model_id}")
+                raise ValueError("No training data accumulated")
+
+            # Combine all data
+            combined_data = pd.concat(
+                training_state["accumulated_data"], ignore_index=True
+            )
+            combined_data = self._clean_and_validate_data(combined_data, "interaction")
 
             loguru.logger.info(
-                f"Finalizing training for model {model_id} with "
-                f"{training_state['total_batches']} batches and "
-                f"{training_state['total_interactions']} total interactions"
+                f"Training {model_id} with {len(combined_data)} interactions"
             )
 
-            # Combine all accumulated data
-            combined_interaction_data = pd.concat(
-                training_state["accumulated_data"],
-                ignore_index=True
-            ).drop_duplicates()
-
-            # Additional cleaning step before training
-            combined_interaction_data = self._clean_and_validate_data(combined_interaction_data, "interaction")
-
-            loguru.logger.info(
-                f"Combined data shape: {combined_interaction_data.shape} "
-                f"(after removing duplicates and cleaning)"
+            # Train model
+            model.fit(
+                combined_data,
+                training_state["user_features"],
+                training_state["item_features"],
+                epochs=config["hyperparameters"].get("epochs", 10),
             )
 
-            # Log data types for debugging
-            loguru.logger.debug(f"Data types in combined data: {combined_interaction_data.dtypes}")
+            # Update config
+            config["status"] = ModelStatus.COMPLETED
+            config["training_completed_at"] = datetime.now().isoformat()
+            config["model_metrics"] = model.metrics
 
-            # Ensure data types are correct for the algorithm
-            if config["algorithm"] == "als":
-                # ALS specifically needs numeric user/item IDs for sparse matrix operations
-                # We'll handle the encoding in the model itself, but ensure rating is numeric
-                if not pd.api.types.is_numeric_dtype(combined_interaction_data["rating"]):
-                    loguru.logger.warning("Rating column is not numeric, converting...")
-                    combined_interaction_data["rating"] = pd.to_numeric(
-                        combined_interaction_data["rating"],
-                        errors="coerce"
-                    ).fillna(1.0).astype(np.float32)
-
-            # Train the model on all accumulated data
-            start_time = datetime.now()
-
-            try:
-                model.fit(
-                    combined_interaction_data,
-                    training_state["user_features"],
-                    training_state["item_features"]
-                )
-                training_duration = (datetime.now() - start_time).total_seconds()
-
-                # Update configuration
-                config["status"] = ModelStatus.COMPLETED
-                config["training_completed_at"] = datetime.now().isoformat()
-                config["training_duration_seconds"] = training_duration
-                config["model_metrics"] = model.get_metrics()
-                config["total_batches"] = training_state["total_batches"]
-                config["total_interactions"] = training_state["total_interactions"]
-
-                loguru.logger.info(
-                    f"Training completed for model {model_id} in {training_duration:.2f} seconds"
-                )
-
-                result = ModelTrainingResult(
-                    model_id=model_id,
-                    status="success",
-                    metrics=model.get_metrics(),
-                )
-
-            except Exception as training_error:
-                # Log detailed error information
-                loguru.logger.error(f"Training failed for model {model_id}: {str(training_error)}")
-                loguru.logger.error(f"Data shape: {combined_interaction_data.shape}")
-                loguru.logger.error(f"Data columns: {combined_interaction_data.columns.tolist()}")
-                loguru.logger.error(f"Data dtypes: {combined_interaction_data.dtypes}")
-
-                # Update status to failed
-                config["status"] = ModelStatus.FAILED
-                config["error"] = str(training_error)
-                config["training_failed_at"] = datetime.now().isoformat()
-
-                result = ModelTrainingResult(
-                    model_id=model_id,
-                    status="error",
-                    metrics={},
-                )
-
-            # Clean up training state regardless of success/failure
+            # Clean up training state
             del self.training_states[model_id]
 
-            return result
+            loguru.logger.info(f"Training completed for {model_id}")
+
+            return ModelTrainingResult(
+                model_id=model_id, status="success", metrics=model.metrics
+            )
 
         except Exception as e:
-            # Update status to failed
             if model_id in self.model_configs:
                 self.model_configs[model_id]["status"] = ModelStatus.FAILED
                 self.model_configs[model_id]["error"] = str(e)
 
-            # Clean up training state
             if model_id in self.training_states:
                 del self.training_states[model_id]
 
-            loguru.logger.error(f"Error finalizing training for model {model_id}: {str(e)}")
-            return ModelTrainingResult(
-                model_id=model_id,
-                status="error",
-                metrics={},
-            )
+            loguru.logger.error(f"Training failed: {str(e)}")
+            return ModelTrainingResult(model_id=model_id, status="error", metrics={})
 
     def save_model(self, model_id: str) -> Dict[str, Any]:
-        """
-        Save a trained model to disk.
-
-        Args:
-            model_id: Model identifier
-
-        Returns:
-            Dictionary with save status
-        """
+        """Save trained model"""
         try:
             if model_id not in self.loaded_models:
-                raise ValueError(f"Model {model_id} not found in memory")
+                raise ValueError(f"Model {model_id} not found")
 
             model = self.loaded_models[model_id]
             config = self.model_configs[model_id]
 
             if not model.is_fitted:
-                raise ValueError(f"Model {model_id} is not trained yet")
+                raise ValueError(f"Model {model_id} not trained")
 
             # Save model
             model_path = config["model_path"]
@@ -512,52 +353,249 @@ class ModelService:
 
             # Save config
             config["last_saved_at"] = datetime.now().isoformat()
-            config_path = self.models_dir / f"{model_id}.json"
-            with open(config_path, "w", encoding="utf-8") as f:
-                json.dump(config, f, indent=2)
+            config_path = self.models_dir / f"{model_id}_config.json"
+            with open(config_path, "w") as f:
+                json.dump(config, f, indent=2, default=str)
 
-            # Get file size
             file_size_mb = os.path.getsize(model_path) / (1024 * 1024)
 
-            loguru.logger.info(f"Model {model_id} saved successfully ({file_size_mb:.2f} MB)")
+            loguru.logger.info(f"Model {model_id} saved ({file_size_mb:.2f} MB)")
 
             return {
                 "model_id": model_id,
                 "status": "saved",
                 "model_path": model_path,
-                "config_path": str(config_path),
                 "file_size_mb": round(file_size_mb, 2),
             }
 
         except Exception as e:
-            loguru.logger.error(f"Error saving model {model_id}: {str(e)}")
-            return {
-                "model_id": model_id,
-                "status": "error",
-                "error": str(e),
+            loguru.logger.error(f"Error saving model: {str(e)}")
+            return {"model_id": model_id, "status": "error", "error": str(e)}
+
+    def load_model(self, model_id: str) -> BaseRecommendationModel:
+        """Load model from disk"""
+        try:
+            if model_id in self.loaded_models:
+                return self.loaded_models[model_id]
+
+            # Load config
+            config_path = self.models_dir / f"{model_id}_config.json"
+            with open(config_path, "r") as f:
+                config = json.load(f)
+
+            # Get model type from config
+            model_type = config.get(
+                "model_type", "lightfm"
+            )  # Default to lightfm for backward compatibility
+
+            # Load model using the appropriate class
+            model_path = config["model_path"]
+            model_class = ModelRegistry.get_model(model_type)
+            model = model_class.load(model_path)
+
+            # Cache in memory
+            self.loaded_models[model_id] = model
+            self.model_configs[model_id] = config
+
+            loguru.logger.info(f"Loaded model {model_id} (type: {model_type})")
+            return model
+
+        except Exception as e:
+            loguru.logger.error(f"Error loading model: {str(e)}")
+            raise
+
+    def predict_recommendations(
+        self, model_id: str, user_id: str, top_k: int = 10
+    ) -> ModelPredictResult:
+        """Generate recommendations for a user"""
+        try:
+            if model_id not in self.loaded_models:
+                self.load_model(model_id)
+
+            model = self.loaded_models[model_id]
+            predictions_df = model.predict([user_id], n_recommendations=top_k)
+
+            predictions = {
+                user_id: [
+                    {"item_id": row["item_id"], "score": float(row["score"])}
+                    for _, row in predictions_df.iterrows()
+                    if row["user_id"] == user_id
+                ]
             }
 
+            return ModelPredictResult(
+                model_id=model_id,
+                user_id=user_id,
+                predictions=predictions,
+                datetime=datetime.now().isoformat(),
+                status=ModelStatus.COMPLETED,
+            )
+
+        except Exception as e:
+            loguru.logger.error(f"Prediction error: {str(e)}")
+            return ModelPredictResult(
+                model_id=model_id,
+                user_id=user_id,
+                predictions={},
+                datetime=datetime.now().isoformat(),
+                status=ModelStatus.FAILED,
+            )
+
+    def predict_scores(
+        self, model_id: str, user_ids: List[str], item_ids: List[str]
+    ) -> ModelPredictScoresResult:
+        """Predict scores for user-item pairs"""
+        try:
+            if model_id not in self.loaded_models:
+                self.load_model(model_id)
+
+            model = self.loaded_models[model_id]
+
+            # Handle different input lengths
+            if len(user_ids) == 1 and len(item_ids) > 1:
+                user_ids = user_ids * len(item_ids)
+            elif len(item_ids) == 1 and len(user_ids) > 1:
+                item_ids = item_ids * len(user_ids)
+
+            scores = model.predict_score(user_ids, item_ids)
+
+            results = [
+                {"user_id": user_id, "item_id": item_id, "score": score}
+                for user_id, item_id, score in zip(user_ids, item_ids, scores)
+            ]
+
+            return ModelPredictScoresResult(
+                model_id=model_id,
+                results=results,
+                datetime=datetime.now().isoformat(),
+                status=ModelStatus.COMPLETED,
+            )
+
+        except Exception as e:
+            loguru.logger.error(f"Score prediction error: {str(e)}")
+            return ModelPredictScoresResult(
+                model_id=model_id,
+                results=[],
+                datetime=datetime.now().isoformat(),
+                status=ModelStatus.FAILED,
+            )
+
+    def evaluate_model(
+        self, model_id: str, test_data: pd.DataFrame, k_values: List[int] = [5, 10, 20]
+    ) -> Dict[str, Any]:
+        """Evaluate model performance"""
+        try:
+            if model_id not in self.loaded_models:
+                self.load_model(model_id)
+
+            model = self.loaded_models[model_id]
+            cleaned_test_data = self._clean_and_validate_data(test_data, "interaction")
+
+            metrics = model.evaluate(cleaned_test_data, k_values)
+
+            return {
+                "model_id": model_id,
+                "metrics": metrics,
+                "evaluation_timestamp": datetime.now().isoformat(),
+                "test_interactions": len(cleaned_test_data),
+            }
+
+        except Exception as e:
+            loguru.logger.error(f"Evaluation error: {str(e)}")
+            return {"model_id": model_id, "status": "error", "error": str(e)}
+
+    # Keep other methods from original service for compatibility
+    def list_models(self) -> List[Dict[str, Any]]:
+        """List all models"""
+        models = []
+        for config_file in self.models_dir.glob("*_config.json"):
+            try:
+                with open(config_file, "r") as f:
+                    config = json.load(f)
+                models.append(config)
+            except Exception as e:
+                loguru.logger.warning(f"Error reading {config_file}: {e}")
+        return models
+
+    def get_model_info(self, model_id: str) -> Dict[str, Any]:
+        """Get model information"""
+        try:
+            config_path = self.models_dir / f"{model_id}_config.json"
+            with open(config_path, "r") as f:
+                config = json.load(f)
+
+            model_exists = os.path.exists(config["model_path"])
+            in_memory = model_id in self.loaded_models
+            in_training = model_id in self.training_states
+
+            info = {
+                **config,
+                "model_file_exists": model_exists,
+                "loaded_in_memory": in_memory,
+                "in_training_state": in_training,
+                "file_size_mb": 0.0,
+            }
+
+            if model_exists:
+                file_size = os.path.getsize(config["model_path"])
+                info["file_size_mb"] = round(file_size / (1024 * 1024), 2)
+
+            return info
+
+        except Exception as e:
+            loguru.logger.error(f"Error getting model info: {str(e)}")
+            raise
+
+    def delete_model(self, model_id: str) -> Dict[str, Any]:
+        """Delete model and files"""
+        try:
+            # Cancel training if in progress
+            if model_id in self.training_states:
+                del self.training_states[model_id]
+
+            # Remove from memory
+            if model_id in self.loaded_models:
+                del self.loaded_models[model_id]
+
+            if model_id in self.model_configs:
+                del self.model_configs[model_id]
+
+            # Delete files
+            files_deleted = []
+
+            model_path = self.models_dir / f"{model_id}.pkl"
+            if model_path.exists():
+                model_path.unlink()
+                files_deleted.append(str(model_path))
+
+            config_path = self.models_dir / f"{model_id}_config.json"
+            if config_path.exists():
+                config_path.unlink()
+                files_deleted.append(str(config_path))
+
+            loguru.logger.info(f"Deleted model {model_id}")
+            return {
+                "model_id": model_id,
+                "status": "deleted",
+                "files_deleted": files_deleted,
+            }
+
+        except Exception as e:
+            loguru.logger.error(f"Error deleting model: {str(e)}")
+            return {"model_id": model_id, "status": "error", "error": str(e)}
+
     def get_training_status(self, model_id: str) -> Dict[str, Any]:
-        """
-        Get current training status for a model.
-
-        Args:
-            model_id: Model identifier
-
-        Returns:
-            Dictionary with training status information
-        """
+        """Get training status"""
         try:
             if model_id not in self.model_configs:
                 return {
                     "model_id": model_id,
                     "status": "not_found",
-                    "message": "Model not found"
+                    "message": "Model not found",
                 }
 
             config = self.model_configs[model_id]
 
-            # Check if in training state
             if model_id in self.training_states:
                 training_state = self.training_states[model_id]
                 return {
@@ -565,7 +603,6 @@ class ModelService:
                     "status": "training_in_progress",
                     "total_batches": training_state["total_batches"],
                     "total_interactions": training_state["total_interactions"],
-                    "last_batch_time": training_state["last_batch_time"],
                     "has_user_features": training_state["user_features"] is not None,
                     "has_item_features": training_state["item_features"] is not None,
                     "config": config,
@@ -579,49 +616,32 @@ class ModelService:
                 }
 
         except Exception as e:
-            loguru.logger.error(f"Error getting training status for model {model_id}: {str(e)}")
-            return {
-                "model_id": model_id,
-                "status": "error",
-                "error": str(e),
-            }
+            return {"model_id": model_id, "status": "error", "error": str(e)}
 
     def cancel_training(self, model_id: str) -> Dict[str, Any]:
-        """
-        Cancel ongoing training for a model.
-
-        Args:
-            model_id: Model identifier
-
-        Returns:
-            Dictionary with cancellation status
-        """
+        """Cancel training"""
         try:
             if model_id not in self.training_states:
                 return {
                     "model_id": model_id,
                     "status": "not_training",
-                    "message": "Model is not currently in training state"
+                    "message": "Model not in training state",
                 }
 
-            # Clean up training state
             training_state = self.training_states[model_id]
             total_batches = training_state["total_batches"]
             total_interactions = training_state["total_interactions"]
 
             del self.training_states[model_id]
 
-            # Update config status
             if model_id in self.model_configs:
                 self.model_configs[model_id]["status"] = ModelStatus.FAILED
-                self.model_configs[model_id]["cancelled_at"] = datetime.now().isoformat()
-                self.model_configs[model_id]["cancellation_reason"] = "Manual cancellation"
+                self.model_configs[model_id][
+                    "cancelled_at"
+                ] = datetime.now().isoformat()
 
-            # Remove from memory
             if model_id in self.loaded_models:
                 del self.loaded_models[model_id]
-
-            loguru.logger.info(f"Training cancelled for model {model_id}")
 
             return {
                 "model_id": model_id,
@@ -631,41 +651,29 @@ class ModelService:
             }
 
         except Exception as e:
-            loguru.logger.error(f"Error cancelling training for model {model_id}: {str(e)}")
-            return {
-                "model_id": model_id,
-                "status": "error",
-                "error": str(e),
-            }
+            return {"model_id": model_id, "status": "error", "error": str(e)}
 
-    # Keep all original methods for backward compatibility
     def train_save_model(
-            self,
-            model_id: str,
-            model_name: str,
-            algorithm: str,
-            message: str,
-            interaction_data: pd.DataFrame,
-            user_features: Optional[pd.DataFrame] = None,
-            item_features: Optional[pd.DataFrame] = None,
-            hyperparameters: Optional[Dict[str, Any]] = None,
+        self,
+        model_id: str,
+        model_name: str,
+        algorithm: str,
+        message: str,
+        interaction_data: pd.DataFrame,
+        user_features: Optional[pd.DataFrame] = None,
+        item_features: Optional[pd.DataFrame] = None,
+        hyperparameters: Optional[Dict[str, Any]] = None,
     ) -> ModelTrainingResult:
-        """
-        Train a model from DataFrames (original method for backward compatibility).
-        """
+        """Direct training method for backward compatibility"""
         try:
-            loguru.logger.info(
-                f"Starting direct training for model {model_id} with algorithm {algorithm}"
-            )
-
             # Initialize training
             init_result = self.initialize_training(
                 model_id, model_name, algorithm, message, hyperparameters
             )
             if init_result["status"] != "initialized":
-                raise ValueError(f"Failed to initialize training: {init_result}")
+                raise ValueError(f"Failed to initialize: {init_result}")
 
-            # Process as single batch
+            # Process single batch
             batch_result = self.train_batch(
                 model_id, interaction_data, user_features, item_features
             )
@@ -675,474 +683,41 @@ class ModelService:
             # Finalize training
             training_result = self.finalize_training(model_id)
             if training_result.status != "success":
-                raise ValueError(f"Failed to finalize training: {training_result}")
+                raise ValueError(f"Training failed: {training_result}")
 
             # Save model
             save_result = self.save_model(model_id)
             if save_result["status"] != "saved":
                 loguru.logger.warning(f"Model trained but not saved: {save_result}")
 
-            loguru.logger.info(f"Model {model_id} trained and saved successfully!")
-
             return training_result
 
         except Exception as e:
-            loguru.logger.error(f"Error in direct training for model {model_id}: {str(e)}")
-            return ModelTrainingResult(
-                model_id=model_id,
-                status="error",
-                metrics={},
-            )
-
-    def load_model(self, model_id: str) -> BaseRecommender:
-        """Load a trained model from disk."""
-        try:
-            # Check if the model is already loaded in memory
-            if model_id in self.loaded_models:
-                return self.loaded_models[model_id]
-
-            # Load config
-            config_path = self.models_dir / f"{model_id}_config.json"
-            if not config_path.exists():
-                raise FileNotFoundError(
-                    f"Configuration file not found for model {model_id}"
-                )
-
-            with open(config_path, "r", encoding="utf-8") as f:
-                config = json.load(f)
-
-            # Check if a model file exists
-            model_path = config["model_path"]
-            if not os.path.exists(model_path):
-                raise FileNotFoundError(f"Model file not found: {model_path}")
-
-            # Load model
-            model_class = self.get_model_class(config["algorithm"])
-            model = model_class.load(model_path)
-
-            # Cache in memory
-            self.loaded_models[model_id] = model
-            self.model_configs[model_id] = config
-
-            loguru.logger.info(f"Loaded model {model_id}")
-            return model
-
-        except (FileNotFoundError, ValueError) as e:
-            loguru.logger.error(f"Error loading model {model_id}: {str(e)}")
-            raise
-
-    def predict_recommendations(
-            self, model_id: str, user_id: str, top_k: int = 10
-    ) -> ModelPredictResult:
-        """Generate recommendations for a single user."""
-        try:
-            # Load model if not in memory
-            if model_id not in self.loaded_models:
-                self.load_model(model_id)
-
-            model = self.loaded_models[model_id]
-
-            # Generate predictions for single user
-            predictions_df = model.predict([user_id], n_recommendations=top_k)
-
-            # Convert to desired output format
-            user_predictions = predictions_df[predictions_df["user_id"] == user_id]
-            predictions = {
-                user_id: [
-                    {"item_id": row["item_id"], "score": float(row["score"])}
-                    for _, row in user_predictions.iterrows()
-                ]
-            }
-
-            return ModelPredictResult(
-                model_id=model_id,
-                user_id=user_id,
-                predictions=predictions,
-                datetime=datetime.now().isoformat(),
-                status=ModelStatus.COMPLETED,
-            )
-        except (FileNotFoundError, ValueError, KeyError) as e:
-            loguru.logger.error(f"Error predicting with model {model_id}: {str(e)}")
-            return ModelPredictResult(
-                model_id=model_id,
-                user_id=user_id,
-                predictions={},
-                datetime=datetime.now().isoformat(),
-                status=ModelStatus.FAILED,
-            )
+            loguru.logger.error(f"Direct training error: {str(e)}")
+            return ModelTrainingResult(model_id=model_id, status="error", metrics={})
 
     def predict_recommendations_batch(
-            self, model_id: str, user_ids: List[str], top_k: int = 10
+        self, model_id: str, user_ids: List[str], top_k: int = 10
     ) -> List[ModelPredictResult]:
-        """Generate recommendations for multiple users."""
+        """Batch predictions"""
         results = []
         for user_id in user_ids:
             result = self.predict_recommendations(model_id, user_id, top_k)
             results.append(result)
         return results
 
-    def predict_scores(
-            self,
-            model_id: str,
-            user_ids: List[str],
-            item_ids: List[str],
-    ) -> ModelPredictScoresResult:
-        """Predict scores for specific user-item pairs."""
-        try:
-            # Load model if not in memory
-            if model_id not in self.loaded_models:
-                self.load_model(model_id)
-
-            model = self.loaded_models[model_id]
-
-            # Ensure equal length arrays
-            if len(user_ids) == 1 and len(item_ids) > 1:
-                user_ids = user_ids * len(item_ids)
-            elif len(item_ids) == 1 and len(user_ids) > 1:
-                item_ids = item_ids * len(user_ids)
-            elif len(user_ids) != len(item_ids):
-                raise ValueError("user_ids and item_ids must have the same length")
-
-            # Predict scores
-            scores = model.predict_score(user_ids, item_ids)
-
-            # Format results
-            results = [
-                {"user_id": user_id, "item_id": item_id, "score": float(score)}
-                for user_id, item_id, score in zip(user_ids, item_ids, scores)
-            ]
-
-            return ModelPredictScoresResult(
-                model_id=model_id,
-                results=results,
-                datetime=datetime.now().isoformat(),
-                status=ModelStatus.COMPLETED,
-            )
-        except (FileNotFoundError, ValueError, KeyError) as e:
-            loguru.logger.error(
-                f"Error predicting scores with model {model_id}: {str(e)}"
-            )
-            return ModelPredictScoresResult(
-                model_id=model_id,
-                results=[],
-                datetime=datetime.now().isoformat(),
-                status=ModelStatus.FAILED,
-            )
-
-    def evaluate_model(
-            self,
-            model_id: str,
-            test_data: pd.DataFrame,
-            k_values: Optional[List[int]] = None,
-    ) -> Dict[str, Any]:
-        """Evaluate a trained model using test data."""
-        if k_values is None:
-            k_values = [5, 10, 20]
-
-        try:
-            # Load model
-            if model_id not in self.loaded_models:
-                self.load_model(model_id)
-
-            model = self.loaded_models[model_id]
-
-            # Clean test data
-            cleaned_test_data = self._clean_and_validate_data(test_data, "interaction")
-
-            # Generate predictions for test users
-            test_users = cleaned_test_data["user_id"].unique().tolist()
-            predictions_df = model.predict(test_users, n_recommendations=max(k_values))
-
-            # Evaluate using ranking metrics
-            ranking_metrics = RecommenderEvaluator.evaluate_recommendations(
-                predictions_df, cleaned_test_data, k_values
-            )
-
-            # Calculate coverage metrics
-            all_items = set(cleaned_test_data["item_id"].unique())
-            coverage_metrics = RecommenderEvaluator.coverage_metrics(
-                predictions_df, all_items
-            )
-
-            # Combine results
-            evaluation_results = {
-                "model_id": model_id,
-                "ranking_metrics": ranking_metrics,
-                "coverage_metrics": coverage_metrics,
-                "evaluation_timestamp": datetime.now().isoformat(),
-                "test_users": len(test_users),
-                "total_predictions": len(predictions_df),
-                "k_values": k_values,
-            }
-
-            loguru.logger.info(
-                f"Evaluated model {model_id} on test data with {len(test_users)} users"
-            )
-            return evaluation_results
-
-        except (FileNotFoundError, ValueError, KeyError) as e:
-            loguru.logger.error(f"Error evaluating model {model_id}: {str(e)}")
-            return {"model_id": model_id, "status": "error", "error": str(e)}
-
-    def list_models(self) -> List[Dict[str, Any]]:
-        """List all available models."""
-        models = []
-
-        # Check for config files in models directory
-        for config_file in self.models_dir.glob("*_config.json"):
-            try:
-                with open(config_file, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-
-                model_info = {
-                    "model_id": config["model_id"],
-                    "model_name": config.get("model_name", ""),
-                    "algorithm": config["algorithm"],
-                    "status": config["status"],
-                    "created_at": config.get("created_at"),
-                    "training_time": config.get("training_time"),
-                    "actual_training_duration": config.get("training_duration_seconds"),
-                    "metrics": config.get("model_metrics", {}),
-                    "total_batches": config.get("total_batches", 0),
-                    "total_interactions": config.get("total_interactions", 0),
-                }
-
-                models.append(model_info)
-
-            except (json.JSONDecodeError, OSError) as e:
-                loguru.logger.warning(f"Error reading config {config_file}: {str(e)}")
-        return models
-
-    def get_model_info(self, model_id: str) -> Dict[str, Any]:
-        """Get detailed information about a model."""
-        try:
-            config_path = self.models_dir / f"{model_id}_config.json"
-            if not config_path.exists():
-                raise FileNotFoundError(f"Model {model_id} not found")
-
-            with open(config_path, "r", encoding="utf-8") as f:
-                config = json.load(f)
-
-            # Check if a model file exists
-            model_exists = os.path.exists(config["model_path"])
-
-            # Get model in memory status
-            in_memory = model_id in self.loaded_models
-            in_training = model_id in self.training_states
-
-            model_info = {
-                **config,
-                "model_file_exists": model_exists,
-                "loaded_in_memory": in_memory,
-                "in_training_state": in_training,
-                "file_size_mb": 0.0,
-            }
-
-            # Get file size if exists
-            if model_exists:
-                file_size = os.path.getsize(config["model_path"])
-                model_info["file_size_mb"] = round(file_size / (1024 * 1024), 2)
-
-            # Add training state info if in training
-            if in_training:
-                training_state = self.training_states[model_id]
-                model_info["training_state"] = {
-                    "total_batches": training_state["total_batches"],
-                    "total_interactions": training_state["total_interactions"],
-                    "last_batch_time": training_state["last_batch_time"],
-                }
-
-            return model_info
-
-        except Exception as e:
-            loguru.logger.error(f"Error getting model info {model_id}: {str(e)}")
-            raise
-
-    def delete_model(self, model_id: str) -> Dict[str, Any]:
-        """Delete a model and its associated files."""
-        try:
-            # Cancel training if in progress
-            if model_id in self.training_states:
-                self.cancel_training(model_id)
-
-            # Remove from memory cache
-            if model_id in self.loaded_models:
-                del self.loaded_models[model_id]
-
-            if model_id in self.model_configs:
-                del self.model_configs[model_id]
-
-            # Delete files
-            files_deleted = []
-
-            # Delete model file
-            model_path = self.models_dir / f"{model_id}.pkl"
-            if model_path.exists():
-                model_path.unlink()
-                files_deleted.append(str(model_path))
-
-            # Delete config file
-            config_path = self.models_dir / f"{model_id}_config.json"
-            if config_path.exists():
-                config_path.unlink()
-                files_deleted.append(str(config_path))
-
-            loguru.logger.info(f"Deleted model {model_id}")
-            return {
-                "model_id": model_id,
-                "status": "deleted",
-                "files_deleted": files_deleted,
-            }
-
-        except (FileNotFoundError, ValueError, KeyError) as e:
-            loguru.logger.error(f"Error deleting model {model_id}: {str(e)}")
-            return {"model_id": model_id, "status": "error", "error": str(e)}
-
-    def get_available_algorithms(self) -> List[str]:
-        """Get a list of available algorithms."""
-        return list(self.model_registry.keys())
-
     def clear_memory_cache(self) -> int:
-        """Clear all models from memory cache."""
+        """Clear memory cache"""
         count = len(self.loaded_models)
         self.loaded_models.clear()
-        loguru.logger.info(f"Cleared {count} models from memory cache")
+        loguru.logger.info(f"Cleared {count} models from memory")
         return count
 
     def get_memory_usage_info(self) -> Dict[str, Any]:
-        """Get information about memory usage."""
-        import sys
-
-        memory_info = {
+        """Get memory usage info"""
+        return {
             "loaded_models_count": len(self.loaded_models),
             "training_sessions_count": len(self.training_states),
             "loaded_model_ids": list(self.loaded_models.keys()),
             "training_model_ids": list(self.training_states.keys()),
         }
-
-        # Get approximate memory usage for each loaded model
-        model_memory = {}
-        for model_id, model in self.loaded_models.items():
-            try:
-                # Estimate of model memory usage
-                model_size = sys.getsizeof(model)
-                if hasattr(model, 'user_factors') and model.user_factors is not None:
-                    model_size += model.user_factors.nbytes
-                if hasattr(model, 'item_factors') and model.item_factors is not None:
-                    model_size += model.item_factors.nbytes
-
-                model_memory[model_id] = round(model_size / (1024 * 1024), 2)  # MB
-            except:
-                model_memory[model_id] = "unknown"
-
-        memory_info["model_memory_mb"] = model_memory
-
-        return memory_info
-
-    def cleanup_failed_training_sessions(self) -> Dict[str, Any]:
-        """Clean up any failed or stale training sessions."""
-        cleaned_sessions = []
-
-        for model_id in list(self.training_states.keys()):
-            try:
-                # Check if session has been inactive for too long (e.g., 24 hours)
-                training_state = self.training_states[model_id]
-                if training_state.get("last_batch_time"):
-                    from datetime import datetime, timedelta
-                    last_batch = datetime.fromisoformat(training_state["last_batch_time"])
-                    if datetime.now() - last_batch > timedelta(hours=24):
-                        self.cancel_training(model_id)
-                        cleaned_sessions.append(model_id)
-            except Exception as e:
-                loguru.logger.warning(f"Error checking training session {model_id}: {str(e)}")
-
-        return {
-            "cleaned_sessions": cleaned_sessions,
-            "count": len(cleaned_sessions),
-        }
-
-    def export_model_metadata(self, model_id: str) -> Dict[str, Any]:
-        """Export model metadata for backup or migration."""
-        try:
-            if model_id not in self.model_configs:
-                raise ValueError(f"Model {model_id} not found")
-
-            config = self.model_configs[model_id].copy()
-
-            # Add current status info
-            metadata = {
-                "config": config,
-                "export_timestamp": datetime.now().isoformat(),
-                "in_memory": model_id in self.loaded_models,
-                "in_training": model_id in self.training_states,
-            }
-
-            # Add training state if in training
-            if model_id in self.training_states:
-                training_state = self.training_states[model_id].copy()
-                # Remove large data objects for export
-                if "accumulated_data" in training_state:
-                    training_state["accumulated_data_batches"] = len(training_state["accumulated_data"])
-                    del training_state["accumulated_data"]
-                if "user_features" in training_state:
-                    training_state["has_user_features"] = training_state["user_features"] is not None
-                    del training_state["user_features"]
-                if "item_features" in training_state:
-                    training_state["has_item_features"] = training_state["item_features"] is not None
-                    del training_state["item_features"]
-
-                metadata["training_state"] = training_state
-
-            return metadata
-
-        except Exception as e:
-            loguru.logger.error(f"Error exporting metadata for model {model_id}: {str(e)}")
-            raise
-
-    def get_training_progress(self, model_id: str) -> Dict[str, Any]:
-        """Get detailed training progress information."""
-        if model_id not in self.training_states:
-            return {
-                "model_id": model_id,
-                "status": "not_in_training",
-                "message": "Model is not currently in training state"
-            }
-
-        training_state = self.training_states[model_id]
-        config = self.model_configs.get(model_id, {})
-
-        # Calculate training statistics
-        progress_info = {
-            "model_id": model_id,
-            "status": "training_in_progress",
-            "algorithm": config.get("algorithm", "unknown"),
-            "model_name": config.get("model_name", ""),
-            "training_started_at": config.get("training_started_at"),
-            "total_batches": training_state["total_batches"],
-            "total_interactions": training_state["total_interactions"],
-            "last_batch_time": training_state["last_batch_time"],
-            "has_user_features": training_state["user_features"] is not None,
-            "has_item_features": training_state["item_features"] is not None,
-        }
-
-        # Calculate average batch size and processing rate
-        if training_state["total_batches"] > 0:
-            progress_info["avg_batch_size"] = training_state["total_interactions"] / training_state["total_batches"]
-
-        # Calculate time-based metrics if we have timestamps
-        if config.get("training_started_at") and training_state["last_batch_time"]:
-            try:
-                start_time = datetime.fromisoformat(config["training_started_at"])
-                last_batch_time = datetime.fromisoformat(training_state["last_batch_time"])
-
-                duration = (last_batch_time - start_time).total_seconds()
-                progress_info["training_duration_seconds"] = duration
-
-                if duration > 0:
-                    progress_info["interactions_per_second"] = training_state["total_interactions"] / duration
-                    progress_info["batches_per_minute"] = (training_state["total_batches"] / duration) * 60
-
-            except Exception as e:
-                loguru.logger.warning(f"Error calculating time metrics: {str(e)}")
-
-        return progress_info
