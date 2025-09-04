@@ -1,16 +1,14 @@
 {
   "model_id": "my_model",
-  "model_type": "LightFMModel",
-  "saved_at": "2025-09-03T19:57:12.003224",
+  "model_type": "SVDRecommendationModel",
+  "saved_at": "2025-09-05T01:38:23.015683",
   "file_path": "models\\my_model.pkl",
   "hyperparameters": {
-    "loss": "bpr",
-    "learning_rate": 0.05,
-    "item_alpha": 0.0,
-    "user_alpha": 0.0,
-    "no_components": 10,
-    "max_sampled": 10,
-    "random_state": 42
+    "n_components": 2,
+    "algorithm": "randomized",
+    "n_iter": 5,
+    "random_state": 42,
+    "tol": 0.0
   },
   "training_stats": {
     "n_users": 2,
@@ -26,12 +24,12 @@
     "max_rating": 5.0
   },
   "metrics": {
-    "training_time": 0.028995,
+    "training_time": 0.018985,
+    "explained_variance_ratio": 0.9999999999999997,
     "n_users": 2,
     "n_items": 3,
     "n_interactions": 4,
     "sparsity": 0.33333333333333337,
-    "has_user_features": false,
-    "has_item_features": false
+    "n_components": 2
   }
 }

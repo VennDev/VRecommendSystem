@@ -1,6 +1,8 @@
 import json
 from enum import Enum
 from typing import Generator, Dict, Any
+
+import loguru
 from sqlalchemy import text
 import pandas as pd
 import requests
@@ -345,6 +347,7 @@ class DataChefService:
         pass
 
     def cook(self, name: str) -> Generator[Dict[str, Any], None, None]:
+        loguru.logger.info(name)
         """
         Cook data based on the configuration name provided.
 

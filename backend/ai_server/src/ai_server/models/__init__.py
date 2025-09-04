@@ -6,10 +6,12 @@ for the recommendation system.
 """
 
 from .base_model import BaseRecommendationModel, ModelRegistry
-from .lightfm_model import LightFMModel
+from .svd_model import SVDRecommendationModel
+from .nmf_model import NMFRecommendationModel
 
 __all__ = [
     'BaseRecommendationModel',
     'ModelRegistry',
-    'LightFMModel'
+    'SVDRecommendationModel',
+    'NMFRecommendationModel'
 ]

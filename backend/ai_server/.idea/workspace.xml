@@ -5,28 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/ai_server/models/lightfm_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/my_model.pkl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/my_model_config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/my_model_metadata.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/models/nmf_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/models/svd_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/my_model.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/local.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/local.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/my_model.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/handlers/recommend_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/handlers/recommend_handler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/base_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/models/base_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/collaborative/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/collaborative/als.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/collaborative/bpr.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/collaborative/ncf.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/content/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/content/feature_based.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/content/tfidf.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/utils/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/utils/evaluation.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/models/utils/preprocessing.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/models/lightfm_model.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/services/model_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/model_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/models/my_model.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tasks/my_model.json" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/my_model.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tasks/task_a.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/models/my_model.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/tests/models/my_model.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/models/my_model_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/tests/models/my_model_config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/models/my_model_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/tests/models/my_model_metadata.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test3.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test3.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -241,7 +239,9 @@
       <workItem from="1756625413058" duration="1493000" />
       <workItem from="1756660419482" duration="1372000" />
       <workItem from="1756781397547" duration="9422000" />
-      <workItem from="1756896814602" duration="7441000" />
+      <workItem from="1756896814602" duration="8450000" />
+      <workItem from="1756920793429" duration="6728000" />
+      <workItem from="1757002410519" duration="7366000" />
     </task>
     <servers />
   </component>

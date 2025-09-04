@@ -2,23 +2,31 @@
   "model_id": "my_model",
   "model_name": "My Recommendation Model",
   "message": "Training with incremental data",
-  "algorithm": "bpr",
-  "model_type": "lightfm",
+  "algorithm": "svd",
+  "model_type": "svd",
   "hyperparameters": {
-    "loss": "bpr"
+    "n_components": 2,
+    "algorithm": "randomized"
   },
-  "created_at": "2025-09-03T19:57:11.961226",
+  "created_at": "2025-09-05T01:38:22.987839",
   "status": "completed",
   "model_path": "models\\my_model.pkl",
-  "training_completed_at": "2025-09-03T19:57:12.002222",
+  "training_completed_at": "2025-09-05T01:38:23.013668",
   "model_metrics": {
-    "training_time": 0.028995,
+    "training_time": 0.018985,
+    "explained_variance_ratio": 0.9999999999999997,
     "n_users": 2,
     "n_items": 3,
     "n_interactions": 4,
     "sparsity": 0.33333333333333337,
+    "n_components": 2
+  },
+  "final_stats": {
+    "total_interactions": 4,
+    "unique_users": 2,
+    "unique_items": 3,
     "has_user_features": false,
     "has_item_features": false
   },
-  "last_saved_at": "2025-09-03T19:57:12.004224"
+  "last_saved_at": "2025-09-05T01:38:23.015683"
 }
