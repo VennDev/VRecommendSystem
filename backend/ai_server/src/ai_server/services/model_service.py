@@ -718,7 +718,7 @@ class ModelService:
                 config_path.unlink()
                 files_deleted.append(str(config_path))
 
-            # Check for metadata file
+            # Check for a metadata file
             metadata_path = self.models_dir / f"{model_id}_metadata.json"
             if metadata_path.exists():
                 metadata_path.unlink()

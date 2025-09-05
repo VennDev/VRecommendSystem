@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  ai-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${HOST_PORT:-9999}:${CONTAINER_PORT:-9999}"
+    environment:
+      - HOST_PORT=${HOST_PORT:-9999}
+      - CONTAINER_PORT=${CONTAINER_PORT:-9999}
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - ai-server-network
+
+networks:
+  ai-server-network:
+    driver: bridge
