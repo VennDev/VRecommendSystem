@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  ai-server:
+  vrecommendation_ai:
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,8 +12,8 @@ services:
       - .env
     restart: unless-stopped
     networks:
-      - ai-server-network
+      - vrecommendation_ai_network
 
 networks:
-  ai-server-network:
+  vrecommendation_ai_network:
     driver: bridge

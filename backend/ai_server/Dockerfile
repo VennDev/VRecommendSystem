@@ -1,5 +1,5 @@
-# Use Python 3.9 as base image
-FROM python:3.9-slim
+# Use Python 3.9.23 as base image
+FROM python:3.9.23-slim
 
 # Set working directory
 WORKDIR /app
@@ -14,17 +14,29 @@ RUN apt-get update && apt-get install -y \
 # Install Poetry
 RUN pip install poetry
 
-# Configure Poetry: Don't create virtual environment, install dependencies globally
+# Configure Poetry: Don't create virtual environment
 RUN poetry config virtualenvs.create false
 
 # Copy Poetry configuration files
-COPY pyproject.toml poetry.lock* ./
+COPY pyproject.toml ./
+
+# Copy source code
+COPY src/ ./src/
+
+# Copy config
+COPY config/ ./config/
+
+# Copy models
+COPY models/ ./models/
+
+# Copy tasks
+COPY tasks/ ./tasks/
+
+# Copy logs
+COPY logs/ ./logs/
 
 # Install dependencies
-RUN poetry install --no-dev
-
-# Copy application code
-COPY . .
+RUN poetry install --only=main
 
 # Expose port
 EXPOSE 9999

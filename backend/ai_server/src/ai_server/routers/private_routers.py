@@ -224,6 +224,21 @@ def restart_scheduler(timeout: float) -> dict:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/list_schedulers")
+async def list_schedulers() -> list[dict]:
+    """
+    List all available schedulers.
+
+    :return: A list of available schedulers
+    """
+    try:
+        scheduler = scheduler_service.SchedulerService()
+        schedulers = list(await scheduler.list_tasks())
+        return schedulers
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/create_data_chef_from_csv/{data_chef_id}/{file_path}/{rename_columns}")
 def create_data_chef_from_csv(data_chef_id: str, file_path: str, rename_columns: str) -> dict:
     """
@@ -354,5 +369,20 @@ def create_data_chef_from_message_queue(
             group_id=group_id
         )
         return {"message": f"Data chef {data_chef_id} created successfully from message queue."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/list_data_chefs")
+def list_data_chefs() -> list[dict]:
+    """
+    List all available data chefs.
+
+    :return: A list of available data chefs
+    """
+    try:
+        data_chef = data_chef_service.DataChefService()
+        data_chefs = data_chef.list_data_chefs()
+        return list(data_chefs)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

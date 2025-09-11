@@ -195,7 +195,7 @@ def _execute_training_in_background(
                 # Don't raise here, training was successful even if save failed
 
         except Exception as finalize_error:
-            loguru.logger.error(f"CRITICAL: Error during finalization for {model_name}: {str(finalize_error)}")
+            loguru.logger.critical(f"Error during finalization for {model_name}: {str(finalize_error)}")
             loguru.logger.exception("Full finalization error traceback:")
 
             # Try to update training status to fail

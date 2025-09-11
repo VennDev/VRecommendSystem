@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Generator, Dict, Any
 
 import loguru
+from omegaconf import OmegaConf
 from sqlalchemy import text
 import pandas as pd
 import requests
@@ -480,3 +481,13 @@ class DataChefService:
         }
 
         Config().set_config_with_dict("restaurant_data", cfg)
+
+    def list_data_chefs(self) -> dict:
+        """
+        List all data chef configurations.
+
+        :return: Dictionary of all data chef configurations.
+        """
+        return OmegaConf.to_object(
+            Config().get_config("restaurant_data")
+        )
