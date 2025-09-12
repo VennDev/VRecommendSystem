@@ -1,10 +1,17 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
+from pydantic import BaseModel
+from typing import Dict, Any
 
 from ai_server.services.model_service import ModelService, SAMPLE_INTERACTION_DATA
 from ai_server.services.scheduler_service import SchedulerService
 from ai_server.services import scheduler_service, data_chef_service
 
 router = APIRouter()
+
+
+class DataChefEditRequest(BaseModel):
+    """Request model for editing data chef values"""
+    values: Dict[str, Any]
 
 
 @router.post("/create_model/{model_id}/{model_name}/{algorithm}/{message}")
@@ -31,6 +38,21 @@ def create_model(model_id: str, model_name: str, algorithm: str, message: str) -
         service.save_model(model_id)
 
         return {"message": f"Model {model_id} created and saved successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/list_models")
+async def list_models() -> dict:
+    """
+    List all available models.
+
+    :return: A list of available models
+    """
+    try:
+        service = ModelService()
+        models = await service.list_models()
+        return models
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -78,7 +100,7 @@ def remove_model_task(task_name: str) -> dict:
 
 
 @router.get("/list_tasks")
-async def list_tasks() -> list[dict]:
+async def list_tasks() -> dict:
     """
     List all scheduled tasks.
 
@@ -86,7 +108,7 @@ async def list_tasks() -> list[dict]:
     """
     try:
         scheduler = SchedulerService()
-        tasks = list(await scheduler.list_tasks())
+        tasks = await scheduler.list_tasks()
         return tasks
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -224,21 +246,6 @@ def restart_scheduler(timeout: float) -> dict:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/list_schedulers")
-async def list_schedulers() -> list[dict]:
-    """
-    List all available schedulers.
-
-    :return: A list of available schedulers
-    """
-    try:
-        scheduler = scheduler_service.SchedulerService()
-        schedulers = list(await scheduler.list_tasks())
-        return schedulers
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 @router.post("/create_data_chef_from_csv/{data_chef_id}/{file_path}/{rename_columns}")
 def create_data_chef_from_csv(data_chef_id: str, file_path: str, rename_columns: str) -> dict:
     """
@@ -304,7 +311,7 @@ def create_data_chef_from_nosql(data_chef_id: str, database: str, collection: st
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get(
+@router.post(
     "/create_data_chef_from_api/{data_chef_id}/{api_endpoint}/{rename_columns}/{paginated}/{pagination_param}/{size_param}/{size_value}")
 def create_data_chef_from_api(
         data_chef_id: str,
@@ -342,7 +349,7 @@ def create_data_chef_from_api(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/create_data_chef_from_message_queue/{data_chef_id}/{brokers}/{topic}/{rename_columns}/{group_id}")
+@router.post("/create_data_chef_from_message_queue/{data_chef_id}/{brokers}/{topic}/{rename_columns}/{group_id}")
 def create_data_chef_from_message_queue(
         data_chef_id: str,
         brokers: str,
@@ -374,7 +381,7 @@ def create_data_chef_from_message_queue(
 
 
 @router.get("/list_data_chefs")
-def list_data_chefs() -> list[dict]:
+def list_data_chefs() -> dict:
     """
     List all available data chefs.
 
@@ -383,6 +390,55 @@ def list_data_chefs() -> list[dict]:
     try:
         data_chef = data_chef_service.DataChefService()
         data_chefs = data_chef.list_data_chefs()
-        return list(data_chefs)
+        return data_chefs
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_data_chef/{data_chef_id}")
+def get_data_chef(data_chef_id: str) -> dict:
+    """
+    Get details of a specific data chef.
+
+    :param data_chef_id: ID of the data chef to retrieve
+    :return: Details of the specified data chef
+    """
+    try:
+        data_chef = data_chef_service.DataChefService()
+        details = data_chef.get_data_chef(data_chef_id)
+        return details
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/delete_data_chef/{data_chef_id}")
+def delete_data_chef(data_chef_id: str) -> dict:
+    """
+    Delete a specific data chef.
+
+    :param data_chef_id: ID of the data chef to delete
+    :return: A confirmation message
+    """
+    try:
+        data_chef = data_chef_service.DataChefService()
+        data_chef.delete_data_chef(data_chef_id)
+        return {"message": f"Data chef {data_chef_id} deleted successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/edit_data_chef/{data_chef_id}")
+def edit_data_chef(data_chef_id: str, request: DataChefEditRequest) -> dict:
+    """
+    Edit a specific data chef.
+
+    :param data_chef_id: ID of the data chef to edit
+    :param request: Request containing the new values for the data chef
+    :return: A confirmation message
+    """
+    try:
+        data_chef = data_chef_service.DataChefService()
+        data_chef.edit_data_chef(data_chef_id, request.values)
+        return {"message": f"Data chef {data_chef_id} edited successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

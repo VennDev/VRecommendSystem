@@ -211,7 +211,8 @@ class SchedulerService:
         for task_file in self.scheduler_dir.glob("*.json"):
             with open(task_file, 'r') as f:
                 task_config = json.load(f)
-                tasks[task_config['task_name']] = task_config
+                name_file = task_file.stem
+                tasks[name_file] = task_config
             await asyncio.sleep(0)  # Yield control to the event loop
         return tasks
 

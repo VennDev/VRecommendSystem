@@ -1,7 +1,1 @@
-{
-  "model_id": "my_model",
-  "interactions_data_chef_id": "data_a",
-  "item_features_data_chef_id": null,
-  "user_features_data_chef_id": null,
-  "interval": 10
-}
+{"model_id": "my_model", "interactions_data_chef_id": "data_a", "item_features_data_chef_id": null, "user_features_data_chef_id": null, "interval": 10, "task_name": "my_model"}

@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 from pathlib import Path
@@ -639,9 +640,9 @@ class ModelService:
             return {"model_id": model_id, "status": "error", "error": str(e)}
 
     # Model management methods
-    def list_models(self) -> List[Dict[str, Any]]:
+    async def list_models(self) -> Dict[str, Dict[str, Any]]:
         """List all models"""
-        models = []
+        models = {}
         for config_file in self.models_dir.glob("*_config.json"):
             try:
                 with open(config_file, "r") as f:
@@ -652,7 +653,11 @@ class ModelService:
                 config["model_file_exists"] = model_file_exists
                 config["loaded_in_memory"] = config["model_id"] in self.loaded_models
 
-                models.append(config)
+                # Use model_id as a key
+                model_id = config.get("model_id", config_file.stem.replace("_config", ""))
+                models[model_id] = config
+
+                await asyncio.sleep(0)  # Yield control for async compatibility
             except Exception as e:
                 loguru.logger.warning(f"Error reading {config_file}: {e}")
         return models

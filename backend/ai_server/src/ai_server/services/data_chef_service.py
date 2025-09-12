@@ -491,3 +491,49 @@ class DataChefService:
         return OmegaConf.to_object(
             Config().get_config("restaurant_data")
         )
+
+    def edit_data_chef(self, name: str, config_dict: dict) -> None:
+        """
+        Edit an existing data chef configuration.
+
+        :param name: Name of the configuration to edit.
+        :param config_dict: Dictionary of configuration parameters to update.
+        :raises ValueError: If the configuration does not exist.
+        """
+        cfg = Config().get_config("restaurant_data")
+        if name not in cfg:
+            raise ValueError(f"Configuration for {name} not found in DataChefService")
+
+        # Update the existing configuration with new values
+        for key, value in config_dict.items():
+            cfg[name][key] = value
+
+        Config().set_config_with_dict("restaurant_data", cfg)
+
+    def delete_data_chef(self, name: str) -> None:
+        """
+        Delete a data chef configuration.
+
+        :param name:
+        :return:
+        """
+        cfg = Config().get_config("restaurant_data")
+        if name not in cfg:
+            raise ValueError(f"Configuration for {name} not found in DataChefService")
+
+        del cfg[name]
+        Config().set_config_with_dict("restaurant_data", cfg)
+
+    def get_data_chef(self, name: str) -> Dict[str, Any]:
+        """
+        Get a specific data chef configuration.
+
+        :param name:
+        :return: Dictionary of the specified data chef configuration.
+        :raises ValueError: If the configuration does not exist.
+        """
+        cfg = Config().get_config("restaurant_data")
+        if name not in cfg:
+            raise ValueError(f"Configuration for {name} not found in DataChefService")
+
+        return OmegaConf.to_object(cfg[name])
