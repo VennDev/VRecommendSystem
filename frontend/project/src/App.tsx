@@ -4,7 +4,7 @@ import DataChefsPage from "./components/DataChefsPage";
 import Layout from "./components/Layout";
 import LoginPage from "./components/LoginPage";
 import ModelsPage from "./components/ModelsPage";
-import SchedulersPage from "./components/SchedulersPage";
+import SchedulerPage from "./components/SchedulerPage";
 import TasksPage from "./components/TasksPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -36,8 +36,8 @@ const AppContent: React.FC = () => {
         return <ModelsPage />;
       case "tasks":
         return <TasksPage />;
-      case "schedulers":
-        return <SchedulersPage />;
+      case "scheduler":
+        return <SchedulerPage />;
       case "data-chefs":
         return <DataChefsPage />;
       default:
