@@ -6,7 +6,95 @@ interface ApiResponse<T> {
   error?: string;
 }
 
-// Updated interfaces based on backend data structures
+// Request interfaces for API calls
+interface CreateModelRequest {
+  model_id: string;
+  model_name: string;
+  algorithm: string;
+  message: string;
+}
+
+interface AddModelTaskRequest {
+  task_name: string;
+  model_id: string;
+  data_chef_id: string;
+  interval: number;
+}
+
+interface RemoveModelTaskRequest {
+  task_name: string;
+}
+
+interface RenameTaskRequest {
+  old_name: string;
+  new_name: string;
+}
+
+interface UpdateTaskModelIdRequest {
+  task_name: string;
+  model_id: string;
+}
+
+interface UpdateTaskDataChefIdRequest {
+  task_name: string;
+  data_chef_id: string;
+}
+
+interface UpdateTaskIntervalRequest {
+  task_name: string;
+  interval: number;
+}
+
+interface StopSchedulerRequest {
+  timeout: number;
+}
+
+interface RestartSchedulerRequest {
+  timeout: number;
+}
+
+interface CreateDataChefFromCsvRequest {
+  data_chef_id: string;
+  file_path: string;
+  rename_columns: string;
+}
+
+interface CreateDataChefFromSqlRequest {
+  data_chef_id: string;
+  query: string;
+  rename_columns: string;
+}
+
+interface CreateDataChefFromNosqlRequest {
+  data_chef_id: string;
+  database: string;
+  collection: string;
+  rename_columns: string;
+}
+
+interface CreateDataChefFromApiRequest {
+  data_chef_id: string;
+  api_endpoint: string;
+  rename_columns: string;
+  paginated?: boolean;
+  pagination_param?: string;
+  size_param?: string;
+  size_value?: number;
+}
+
+interface CreateDataChefFromMessageQueueRequest {
+  data_chef_id: string;
+  brokers: string;
+  topic: string;
+  rename_columns: string;
+  group_id: string;
+}
+
+interface DataChefEditRequest {
+  values: Record<string, any>;
+}
+
+// Response interfaces based on backend data structures
 interface Task {
   model_id: string;
   interactions_data_chef_id: string;
@@ -95,12 +183,17 @@ class ApiService {
     algorithm: string,
     message: string
   ) {
-    return this.request(
-      `/create_model/${modelId}/${modelName}/${algorithm}/${message}`,
-      {
-        method: "POST",
-      }
-    );
+    const requestBody: CreateModelRequest = {
+      model_id: modelId,
+      model_name: modelName,
+      algorithm,
+      message,
+    };
+
+    return this.request(`/create_model`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
   }
 
   async listModels() {
@@ -124,17 +217,27 @@ class ApiService {
     dataChefId: string,
     interval: number
   ) {
-    return this.request(
-      `/add_model_task/${taskName}/${modelId}/${dataChefId}/${interval}`,
-      {
-        method: "POST",
-      }
-    );
+    const requestBody: AddModelTaskRequest = {
+      task_name: taskName,
+      model_id: modelId,
+      data_chef_id: dataChefId,
+      interval,
+    };
+
+    return this.request(`/add_model_task`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
   }
 
   async removeModelTask(taskName: string) {
-    return this.request(`/remove_model_task/${taskName}`, {
+    const requestBody: RemoveModelTaskRequest = {
+      task_name: taskName,
+    };
+
+    return this.request(`/remove_model_task`, {
       method: "POST",
+      body: JSON.stringify(requestBody),
     });
   }
 
@@ -142,61 +245,98 @@ class ApiService {
     return this.request<Task[]>(`/list_tasks`);
   }
 
-  async setTaskName(oldName: string, newName: string) {
-    return this.request(`/set_task_name/${oldName}/${newName}`, {
+  async renameTask(oldName: string, newName: string) {
+    const requestBody: RenameTaskRequest = {
+      old_name: oldName,
+      new_name: newName,
+    };
+
+    return this.request(`/rename_task`, {
       method: "POST",
+      body: JSON.stringify(requestBody),
     });
   }
 
-  async setTaskModelId(taskName: string, modelId: string) {
-    return this.request(`/set_task_model_id/${taskName}/${modelId}`, {
+  async updateTaskModelId(taskName: string, modelId: string) {
+    const requestBody: UpdateTaskModelIdRequest = {
+      task_name: taskName,
+      model_id: modelId,
+    };
+
+    return this.request(`/update_task_model_id`, {
       method: "POST",
+      body: JSON.stringify(requestBody),
     });
   }
 
-  async setTaskInteractionsDataChefId(taskName: string, dataChefId: string) {
-    return this.request(
-      `/set_task_interactions_data_chef_id/${taskName}/${dataChefId}`,
-      {
-        method: "POST",
-      }
-    );
-  }
+  async updateTaskInteractionsDataChefId(taskName: string, dataChefId: string) {
+    const requestBody: UpdateTaskDataChefIdRequest = {
+      task_name: taskName,
+      data_chef_id: dataChefId,
+    };
 
-  async setTaskItemFeaturesDataChefId(taskName: string, dataChefId: string) {
-    return this.request(
-      `/set_task_item_features_data_chef_id/${taskName}/${dataChefId}`,
-      {
-        method: "POST",
-      }
-    );
-  }
-
-  async setTaskUserFeaturesDataChefId(taskName: string, dataChefId: string) {
-    return this.request(
-      `/set_task_user_features_data_chef_id/${taskName}/${dataChefId}`,
-      {
-        method: "POST",
-      }
-    );
-  }
-
-  async setTaskInterval(taskName: string, interval: number) {
-    return this.request(`/set_task_interval/${taskName}/${interval}`, {
+    return this.request(`/update_task_interactions_data_chef_id`, {
       method: "POST",
+      body: JSON.stringify(requestBody),
+    });
+  }
+
+  async updateTaskItemFeaturesDataChefId(taskName: string, dataChefId: string) {
+    const requestBody: UpdateTaskDataChefIdRequest = {
+      task_name: taskName,
+      data_chef_id: dataChefId,
+    };
+
+    return this.request(`/update_task_item_features_data_chef_id`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
+  }
+
+  async updateTaskUserFeaturesDataChefId(taskName: string, dataChefId: string) {
+    const requestBody: UpdateTaskDataChefIdRequest = {
+      task_name: taskName,
+      data_chef_id: dataChefId,
+    };
+
+    return this.request(`/update_task_user_features_data_chef_id`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
+  }
+
+  async updateTaskInterval(taskName: string, interval: number) {
+    const requestBody: UpdateTaskIntervalRequest = {
+      task_name: taskName,
+      interval,
+    };
+
+    return this.request(`/update_task_interval`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
     });
   }
 
   // Scheduler Management
   async stopScheduler(timeout: number) {
-    return this.request(`/stop_scheduler/${timeout}`, {
+    const requestBody: StopSchedulerRequest = {
+      timeout,
+    };
+
+    return this.request(`/stop_scheduler`, {
       method: "POST",
+      body: JSON.stringify(requestBody),
     });
   }
 
   async restartScheduler(timeout: number) {
-    return this.request(`/restart_scheduler/${timeout}`, {
+    const requestBody: RestartSchedulerRequest = {
+      timeout,
+    };
+
+    return this.request(`/restart_scheduler`, {
       method: "POST",
+      body: JSON.stringify(requestBody),
     });
   }
 
@@ -210,12 +350,16 @@ class ApiService {
     filePath: string,
     renameColumns: string
   ) {
-    return this.request(
-      `/create_data_chef_from_csv/${dataChefId}/${filePath}/${renameColumns}`,
-      {
-        method: "POST",
-      }
-    );
+    const requestBody: CreateDataChefFromCsvRequest = {
+      data_chef_id: dataChefId,
+      file_path: filePath,
+      rename_columns: renameColumns,
+    };
+
+    return this.request(`/create_data_chef_from_csv`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
   }
 
   async createDataChefFromSql(
@@ -223,12 +367,16 @@ class ApiService {
     query: string,
     renameColumns: string
   ) {
-    return this.request(
-      `/create_data_chef_from_sql/${dataChefId}/${query}/${renameColumns}`,
-      {
-        method: "POST",
-      }
-    );
+    const requestBody: CreateDataChefFromSqlRequest = {
+      data_chef_id: dataChefId,
+      query,
+      rename_columns: renameColumns,
+    };
+
+    return this.request(`/create_data_chef_from_sql`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
   }
 
   async createDataChefFromNoSql(
@@ -237,12 +385,17 @@ class ApiService {
     collection: string,
     renameColumns: string
   ) {
-    return this.request(
-      `/create_data_chef_from_nosql/${dataChefId}/${database}/${collection}/${renameColumns}`,
-      {
-        method: "POST",
-      }
-    );
+    const requestBody: CreateDataChefFromNosqlRequest = {
+      data_chef_id: dataChefId,
+      database,
+      collection,
+      rename_columns: renameColumns,
+    };
+
+    return this.request(`/create_data_chef_from_nosql`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
   }
 
   async createDataChefFromApi(
@@ -254,12 +407,20 @@ class ApiService {
     sizeParam = "size",
     sizeValue = 100
   ) {
-    return this.request(
-      `/create_data_chef_from_api/${dataChefId}/${apiEndpoint}/${renameColumns}/${paginated}/${paginationParam}/${sizeParam}/${sizeValue}`,
-      {
-        method: "POST",
-      }
-    );
+    const requestBody: CreateDataChefFromApiRequest = {
+      data_chef_id: dataChefId,
+      api_endpoint: apiEndpoint,
+      rename_columns: renameColumns,
+      paginated,
+      pagination_param: paginationParam,
+      size_param: sizeParam,
+      size_value: sizeValue,
+    };
+
+    return this.request(`/create_data_chef_from_api`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
   }
 
   async createDataChefFromMessageQueue(
@@ -269,12 +430,18 @@ class ApiService {
     renameColumns: string,
     groupId: string
   ) {
-    return this.request(
-      `/create_data_chef_from_message_queue/${dataChefId}/${brokers}/${topic}/${renameColumns}/${groupId}`,
-      {
-        method: "POST",
-      }
-    );
+    const requestBody: CreateDataChefFromMessageQueueRequest = {
+      data_chef_id: dataChefId,
+      brokers,
+      topic,
+      rename_columns: renameColumns,
+      group_id: groupId,
+    };
+
+    return this.request(`/create_data_chef_from_message_queue`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
   }
 
   async listDataChefs() {
@@ -285,10 +452,14 @@ class ApiService {
     return this.request<DataChef>(`/get_data_chef/${dataChefId}`);
   }
 
-  async editDataChef(dataChefId: string, configData: Partial<DataChef>) {
+  async editDataChef(dataChefId: string, configData: Record<string, any>) {
+    const requestBody: DataChefEditRequest = {
+      values: configData,
+    };
+
     return this.request(`/edit_data_chef/${dataChefId}`, {
       method: "PUT",
-      body: JSON.stringify(configData),
+      body: JSON.stringify(requestBody),
     });
   }
 
