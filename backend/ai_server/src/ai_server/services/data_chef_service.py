@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Generator, Dict, Any
 
 import loguru
-from omegaconf import OmegaConf
+from omegaconf import OmegaConf, DictConfig
 from sqlalchemy import text
 import pandas as pd
 import requests
@@ -374,6 +374,34 @@ class DataChefService:
                 value = rename_columns(value, data.rename_columns)
             yield value
 
+    def _merge_config(self, name: str, new_data: dict) -> None:
+        """
+        Helper method to properly merge configuration data.
+
+        :param name: Name of the configuration
+        :param new_data: New data to merge
+        """
+        # Get existing config
+        existing_cfg = Config().get_config("restaurant_data")
+
+        # Convert to regular dict if it's a DictConfig
+        if isinstance(existing_cfg, DictConfig):
+            existing_dict = OmegaConf.to_object(existing_cfg)
+        else:
+            existing_dict = existing_cfg if existing_cfg else {}
+
+        # Create a new config with the specific entry
+        new_config = {name: new_data}
+
+        # Merge configurations properly
+        merged_config = OmegaConf.merge(
+            OmegaConf.create(existing_dict),
+            OmegaConf.create(OmegaConf.to_container(new_config, resolve=True))
+        )
+
+        # Save the merged configuration
+        Config().set_config_with_dict("restaurant_data", OmegaConf.to_object(merged_config))
+
     def create_data_chef_csv(self, name: str, path: str, rename_columns: str) -> None:
         """
         Create a CSV data chef configuration.
@@ -382,14 +410,12 @@ class DataChefService:
         :param path: Path to the CSV file
         :param rename_columns: string of columns to rename in the format "old1:new1,old2:new2"
         """
-        cfg = Config().get_config("restaurant_data")
-        cfg[name] = {
+        new_data = {
             "type": DataType.CSV.value,
             "path": path,
             "rename_columns": rename_columns,
         }
-
-        Config().set_config_with_dict("restaurant_data", cfg)
+        self._merge_config(name, new_data)
 
     def create_data_chef_sql(self, name: str, query: str, rename_columns: str) -> None:
         """
@@ -400,14 +426,12 @@ class DataChefService:
         :param rename_columns:
         :return:
         """
-        cfg = Config().get_config("restaurant_data")
-        cfg[name] = {
+        new_data = {
             "type": DataType.SQL.value,
             "query": query,
             "rename_columns": rename_columns,
         }
-
-        Config().set_config_with_dict("restaurant_data", cfg)
+        self._merge_config(name, new_data)
 
     def create_data_chef_nosql(self, name: str, database: str, collection: str,
                                rename_columns: str) -> None:
@@ -420,15 +444,13 @@ class DataChefService:
         :param rename_columns:
         :return:
         """
-        cfg = Config().get_config("restaurant_data")
-        cfg[name] = {
+        new_data = {
             "type": DataType.NOSQL.value,
             "database": database,
             "collection": collection,
             "rename_columns": rename_columns,
         }
-
-        Config().set_config_with_dict("restaurant_data", cfg)
+        self._merge_config(name, new_data)
 
     def create_data_chef_api(self, name: str, url: str, rename_columns: str, paginated: bool = False,
                              page_param: str = "page", size_param: str = "size", page_size: int = 100,
@@ -445,19 +467,18 @@ class DataChefService:
         :param page_size:
         :return:
         """
-        cfg = Config().get_config("restaurant_data")
-        cfg[name] = {
+        new_data = {
             "type": DataType.API.value,
             "url": url,
             "paginated": paginated,
             "rename_columns": rename_columns,
         }
         if paginated:
-            cfg[name]["page_param"] = page_param
-            cfg[name]["size_param"] = size_param
-            cfg[name]["page_size"] = page_size
+            new_data["page_param"] = page_param
+            new_data["size_param"] = size_param
+            new_data["page_size"] = page_size
 
-        Config().set_config_with_dict("restaurant_data", cfg)
+        self._merge_config(name, new_data)
 
     def create_data_chef_messaging_queue(self, name: str, brokers: str, topic: str,
                                          rename_columns: str, group_id: str = "data_chef_group") -> None:
@@ -471,16 +492,14 @@ class DataChefService:
         :param group_id:
         :return:
         """
-        cfg = Config().get_config("restaurant_data")
-        cfg[name] = {
+        new_data = {
             "type": DataType.MESSAGING_QUEUE.value,
             "brokers": brokers,
             "topic": topic,
             "group_id": group_id,
             "rename_columns": rename_columns,
         }
-
-        Config().set_config_with_dict("restaurant_data", cfg)
+        self._merge_config(name, new_data)
 
     def list_data_chefs(self) -> dict:
         """
@@ -488,9 +507,10 @@ class DataChefService:
 
         :return: Dictionary of all data chef configurations.
         """
-        return OmegaConf.to_object(
-            Config().get_config("restaurant_data")
-        )
+        cfg = Config().get_config("restaurant_data")
+        if cfg is None:
+            return {}
+        return OmegaConf.to_object(cfg)
 
     def edit_data_chef(self, name: str, config_dict: dict) -> None:
         """
@@ -500,15 +520,32 @@ class DataChefService:
         :param config_dict: Dictionary of configuration parameters to update.
         :raises ValueError: If the configuration does not exist.
         """
-        cfg = Config().get_config("restaurant_data")
-        if name not in cfg:
+        # Get existing config
+        existing_cfg = Config().get_config("restaurant_data")
+
+        if existing_cfg is None or name not in existing_cfg:
             raise ValueError(f"Configuration for {name} not found in DataChefService")
 
-        # Update the existing configuration with new values
-        for key, value in config_dict.items():
-            cfg[name][key] = value
+        # Convert to dict if needed
+        if isinstance(existing_cfg, DictConfig):
+            existing_dict = OmegaConf.to_object(existing_cfg)
+        else:
+            existing_dict = existing_cfg
 
-        Config().set_config_with_dict("restaurant_data", cfg)
+        # Get the existing entry for this name
+        existing_entry = existing_dict[name]
+
+        # Merge the existing entry with new values
+        updated_entry = OmegaConf.merge(
+            OmegaConf.create(existing_entry),
+            OmegaConf.create(config_dict)
+        )
+
+        # Update the specific entry in the config
+        existing_dict[name] = OmegaConf.to_object(updated_entry)
+
+        # Save the updated configuration
+        Config().set_config_with_dict("restaurant_data", existing_dict)
 
     def delete_data_chef(self, name: str) -> None:
         """
@@ -517,12 +554,22 @@ class DataChefService:
         :param name:
         :return:
         """
-        cfg = Config().get_config("restaurant_data")
-        if name not in cfg:
+        existing_cfg = Config().get_config("restaurant_data")
+
+        if existing_cfg is None or name not in existing_cfg:
             raise ValueError(f"Configuration for {name} not found in DataChefService")
 
-        del cfg[name]
-        Config().set_config_with_dict("restaurant_data", cfg)
+        # Convert to dict if needed
+        if isinstance(existing_cfg, DictConfig):
+            existing_dict = OmegaConf.to_object(existing_cfg)
+        else:
+            existing_dict = existing_cfg
+
+        # Delete the entry
+        del existing_dict[name]
+
+        # Save the updated configuration
+        Config().set_config_with_dict("restaurant_data", existing_dict)
 
     def get_data_chef(self, name: str) -> Dict[str, Any]:
         """
@@ -533,7 +580,8 @@ class DataChefService:
         :raises ValueError: If the configuration does not exist.
         """
         cfg = Config().get_config("restaurant_data")
-        if name not in cfg:
+
+        if cfg is None or name not in cfg:
             raise ValueError(f"Configuration for {name} not found in DataChefService")
 
-        return OmegaConf.to_object(cfg[name])
+        return OmegaConf.to_container(cfg[name], resolve=True)

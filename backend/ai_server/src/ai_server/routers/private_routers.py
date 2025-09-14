@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from ai_server.services.model_service import ModelService, SAMPLE_INTERACTION_DATA
 from ai_server.services.scheduler_service import SchedulerService
@@ -9,35 +9,131 @@ from ai_server.services import scheduler_service, data_chef_service
 router = APIRouter()
 
 
+# Request Models
+class CreateModelRequest(BaseModel):
+    """Request model for creating a new model"""
+    model_id: str
+    model_name: str
+    algorithm: str
+    message: str
+
+
+class AddModelTaskRequest(BaseModel):
+    """Request model for adding a model task"""
+    task_name: str
+    model_id: str
+    data_chef_id: str
+    interval: int
+
+
+class RemoveModelTaskRequest(BaseModel):
+    """Request model for removing a model task"""
+    task_name: str
+
+
+class RenameTaskRequest(BaseModel):
+    """Request model for renaming a task"""
+    old_name: str
+    new_name: str
+
+
+class UpdateTaskModelIdRequest(BaseModel):
+    """Request model for updating task model ID"""
+    task_name: str
+    model_id: str
+
+
+class UpdateTaskDataChefIdRequest(BaseModel):
+    """Request model for updating task data chef IDs"""
+    task_name: str
+    data_chef_id: str
+
+
+class UpdateTaskIntervalRequest(BaseModel):
+    """Request model for updating task interval"""
+    task_name: str
+    interval: int
+
+
+class StopSchedulerRequest(BaseModel):
+    """Request model for stopping scheduler"""
+    timeout: float
+
+
+class RestartSchedulerRequest(BaseModel):
+    """Request model for restarting scheduler"""
+    timeout: float
+
+
+class CreateDataChefFromCsvRequest(BaseModel):
+    """Request model for creating data chef from CSV"""
+    data_chef_id: str
+    file_path: str
+    rename_columns: str
+
+
+class CreateDataChefFromSqlRequest(BaseModel):
+    """Request model for creating data chef from SQL"""
+    data_chef_id: str
+    query: str
+    rename_columns: str
+
+
+class CreateDataChefFromNosqlRequest(BaseModel):
+    """Request model for creating data chef from NoSQL"""
+    data_chef_id: str
+    database: str
+    collection: str
+    rename_columns: str
+
+
+class CreateDataChefFromApiRequest(BaseModel):
+    """Request model for creating data chef from API"""
+    data_chef_id: str
+    api_endpoint: str
+    rename_columns: str
+    paginated: bool = False
+    pagination_param: str = "page"
+    size_param: str = "size"
+    size_value: int = 100
+
+
+class CreateDataChefFromMessageQueueRequest(BaseModel):
+    """Request model for creating data chef from message queue"""
+    data_chef_id: str
+    brokers: str
+    topic: str
+    rename_columns: str
+    group_id: str
+
+
 class DataChefEditRequest(BaseModel):
     """Request model for editing data chef values"""
     values: Dict[str, Any]
 
 
-@router.post("/create_model/{model_id}/{model_name}/{algorithm}/{message}")
-def create_model(model_id: str, model_name: str, algorithm: str, message: str) -> dict:
+# Model Endpoints
+@router.post("/create_model")
+def create_model(request: CreateModelRequest) -> dict:
     """
     Create and train a new recommendation model.
 
-    :param model_id: ID of the model to be created
-    :param model_name: Name of the model
-    :param algorithm: Algorithm to be used for training
-    :param message: Message or description for the model
-    :return: a Confirmation message
+    :param request: Request containing model creation parameters
+    :return: A confirmation message
     """
     try:
         service = ModelService()
         service.initialize_training(
-            model_id=model_id,
-            model_name=model_name,
-            algorithm=algorithm,
-            message=message
+            model_id=request.model_id,
+            model_name=request.model_name,
+            algorithm=request.algorithm,
+            message=request.message
         )
-        service.train_batch(model_id, SAMPLE_INTERACTION_DATA)
-        service.finalize_training(model_id)
-        service.save_model(model_id)
+        service.train_batch(request.model_id, SAMPLE_INTERACTION_DATA)
+        service.finalize_training(request.model_id)
+        service.save_model(request.model_id)
 
-        return {"message": f"Model {model_id} created and saved successfully."}
+        return {"message": f"Model {request.model_id} created and saved successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -57,44 +153,40 @@ async def list_models() -> dict:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/add_model_task/{task_name}/{model_id}/{data_chef_id}/{interval}")
-def add_model_task(task_name: str, model_id: str, data_chef_id: str, interval: int) -> dict:
+# Task Management Endpoints
+@router.post("/add_model_task")
+def add_model_task(request: AddModelTaskRequest) -> dict:
     """
     Add a new model training task to the scheduler.
 
-    :param task_name: Name of the task
-    :param model_id: ID of the model to be trained
-    :param data_chef_id: ID of the data chef to be used
-    :param interval: Interval in seconds for the task to run
-    :return: a Confirmation message
+    :param request: Request containing task parameters
+    :return: A confirmation message
     """
-
     try:
         scheduler = SchedulerService()
         scheduler.add_model_task(
-            task_name=task_name,
-            model_id=model_id,
-            interactions_data_chef_id=data_chef_id,
-            interval=interval
+            task_name=request.task_name,
+            model_id=request.model_id,
+            interactions_data_chef_id=request.data_chef_id,
+            interval=request.interval
         )
-        return {"message": f"Task {task_name} added successfully."}
+        return {"message": f"Task {request.task_name} added successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/remove_model_task/{task_name}")
-def remove_model_task(task_name: str) -> dict:
+@router.post("/remove_model_task")
+def remove_model_task(request: RemoveModelTaskRequest) -> dict:
     """
     Remove a model training task from the scheduler.
 
-    :param task_name: Name of the task to be removed from
-    :return: a Confirmation message
+    :param request: Request containing task name to remove
+    :return: A confirmation message
     """
-
     try:
         scheduler = SchedulerService()
-        scheduler.remove_model_task(task_name)
-        return {"message": f"Task {task_name} removed successfully."}
+        scheduler.remove_model_task(request.task_name)
+        return {"message": f"Task {request.task_name} removed successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -114,272 +206,242 @@ async def list_tasks() -> dict:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/set_task_name/{old_name}/{new_name}")
-def set_task_name(old_name: str, new_name: str) -> dict:
+@router.post("/rename_task")
+def rename_task(request: RenameTaskRequest) -> dict:
     """
     Rename a scheduled task.
 
-    :param old_name: Current name of the task
-    :param new_name: New name for the task
-    :return: a Confirmation message
+    :param request: Request containing old and new task names
+    :return: A confirmation message
     """
     try:
         scheduler = SchedulerService()
-        scheduler.set_task_name(old_name, new_name)
-        return {"message": f"Task renamed from {old_name} to {new_name} successfully."}
+        scheduler.set_task_name(request.old_name, request.new_name)
+        return {"message": f"Task renamed from {request.old_name} to {request.new_name} successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/set_task_model_id/{task_name}/{model_id}")
-def set_task_model_id(task_name: str, model_id: str) -> dict:
+@router.post("/update_task_model_id")
+def update_task_model_id(request: UpdateTaskModelIdRequest) -> dict:
     """
     Update the model ID for a scheduled task.
 
-    :param task_name: Name of the task to be updated
-    :param model_id: New model ID to be set
-    :return: a Confirmation message
+    :param request: Request containing task name and new model ID
+    :return: A confirmation message
     """
     try:
         scheduler = SchedulerService()
-        scheduler.set_model_id(task_name, model_id)
-        return {"message": f"Task {task_name} model_id updated to {model_id} successfully."}
+        scheduler.set_model_id(request.task_name, request.model_id)
+        return {"message": f"Task {request.task_name} model_id updated to {request.model_id} successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/set_task_interactions_data_chef_id/{task_name}/{data_chef_id}")
-def set_task_data_chef_id(task_name: str, data_chef_id: str) -> dict:
+@router.post("/update_task_interactions_data_chef_id")
+def update_task_interactions_data_chef_id(request: UpdateTaskDataChefIdRequest) -> dict:
     """
     Update the interaction data chef ID for a scheduled task.
 
-    :param task_name: Name of the task to be updated
-    :param data_chef_id: New data chef ID to be set
-    :return: a Confirmation message
+    :param request: Request containing task name and new data chef ID
+    :return: A confirmation message
     """
     try:
         scheduler = SchedulerService()
-        scheduler.set_interactions_data_chef_id(task_name, data_chef_id)
-        return {"message": f"Task {task_name} interactions_data_chef_id updated to {data_chef_id} successfully."}
+        scheduler.set_interactions_data_chef_id(request.task_name, request.data_chef_id)
+        return {
+            "message": f"Task {request.task_name} interactions_data_chef_id updated to {request.data_chef_id} successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/set_task_item_features_data_chef_id/{task_name}/{data_chef_id}")
-def set_task_item_features_data_chef_id(task_name: str, data_chef_id: str) -> dict:
+@router.post("/update_task_item_features_data_chef_id")
+def update_task_item_features_data_chef_id(request: UpdateTaskDataChefIdRequest) -> dict:
     """
     Update the item features data chef ID for a scheduled task.
 
-    :param task_name: Name of the task to be updated
-    :param data_chef_id: New data chef ID to be set
+    :param request: Request containing task name and new data chef ID
     :return: A confirmation message
     """
     try:
         scheduler = SchedulerService()
-        scheduler.set_item_features_data_chef_id(task_name, data_chef_id)
-        return {"message": f"Task {task_name} item_features_data_chef_id updated to {data_chef_id} successfully."}
+        scheduler.set_item_features_data_chef_id(request.task_name, request.data_chef_id)
+        return {
+            "message": f"Task {request.task_name} item_features_data_chef_id updated to {request.data_chef_id} successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/set_task_user_features_data_chef_id/{task_name}/{data_chef_id}")
-def set_task_user_features_data_chef_id(task_name: str, data_chef_id: str) -> dict:
+@router.post("/update_task_user_features_data_chef_id")
+def update_task_user_features_data_chef_id(request: UpdateTaskDataChefIdRequest) -> dict:
     """
     Update the user features data chef ID for a scheduled task.
 
-    :param task_name:
-    :param data_chef_id:
+    :param request: Request containing task name and new data chef ID
     :return: A confirmation message
     """
     try:
         scheduler = SchedulerService()
-        scheduler.set_user_features_data_chef_id(task_name, data_chef_id)
-        return {"message": f"Task {task_name} user_features_data_chef_id updated to {data_chef_id} successfully."}
+        scheduler.set_user_features_data_chef_id(request.task_name, request.data_chef_id)
+        return {
+            "message": f"Task {request.task_name} user_features_data_chef_id updated to {request.data_chef_id} successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/set_task_interval/{task_name}/{interval}")
-def set_task_interval(task_name: str, interval: int) -> dict:
+@router.post("/update_task_interval")
+def update_task_interval(request: UpdateTaskIntervalRequest) -> dict:
     """
     Update the interval for a scheduled task.
 
-    :param task_name: Name of the task to be updated
-    :param interval: New interval in seconds to be set
-    :return: a Confirmation message
+    :param request: Request containing task name and new interval
+    :return: A confirmation message
     """
     try:
         scheduler = SchedulerService()
-        scheduler.set_interval(task_name, interval)
-        return {"message": f"Task {task_name} interval updated to {interval} seconds successfully."}
+        scheduler.set_interval(request.task_name, request.interval)
+        return {"message": f"Task {request.task_name} interval updated to {request.interval} seconds successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/stop_scheduler/{timeout}")
-def stop_scheduler(timeout: float) -> dict:
+# Scheduler Management Endpoints
+@router.post("/stop_scheduler")
+def stop_scheduler(request: StopSchedulerRequest) -> dict:
     """
     Stop the scheduler.
 
+    :param request: Request containing timeout value
     :return: A confirmation message
     """
     try:
         scheduler = scheduler_service.get_scheduler_manager()
-        scheduler.stop(timeout)
-        return {"message": "Scheduler started successfully."}
+        scheduler.stop(request.timeout)
+        return {"message": "Scheduler stopped successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/restart_scheduler/{timeout}")
-def restart_scheduler(timeout: float) -> dict:
+@router.post("/restart_scheduler")
+def restart_scheduler(request: RestartSchedulerRequest) -> dict:
     """
     Restart the scheduler.
 
+    :param request: Request containing timeout value
     :return: A confirmation message
     """
     try:
         scheduler = scheduler_service.get_scheduler_manager()
-        scheduler.restart(timeout)
+        scheduler.restart(request.timeout)
         return {"message": "Scheduler restarted successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/create_data_chef_from_csv/{data_chef_id}/{file_path}/{rename_columns}")
-def create_data_chef_from_csv(data_chef_id: str, file_path: str, rename_columns: str) -> dict:
+# Data Chef Creation Endpoints
+@router.post("/create_data_chef_from_csv")
+def create_data_chef_from_csv(request: CreateDataChefFromCsvRequest) -> dict:
     """
     Create a new data chef from a CSV file.
 
-    :param data_chef_id: ID of the data chef to be created
-    :param file_path: Path to the CSV file
-    :param rename_columns: Column renaming mapping in the format "old_key1->new_key1,old_key2->new_key2"
+    :param request: Request containing CSV data chef parameters
     :return: A confirmation message
     """
     try:
         data_chef_service.DataChefService().create_data_chef_csv(
-            name=data_chef_id,
-            path=file_path,
-            rename_columns=rename_columns
+            name=request.data_chef_id,
+            path=request.file_path,
+            rename_columns=request.rename_columns
         )
-        return {"message": f"Data chef {data_chef_id} created successfully from {file_path}."}
+        return {"message": f"Data chef {request.data_chef_id} created successfully from {request.file_path}."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/create_data_chef_from_sql/{data_chef_id}/{query}/{rename_columns}")
-def create_data_chef_from_sql(data_chef_id: str, query: str, rename_columns: str) -> dict:
+@router.post("/create_data_chef_from_sql")
+def create_data_chef_from_sql(request: CreateDataChefFromSqlRequest) -> dict:
     """
     Create a new data chef from an SQL query.
 
-    :param data_chef_id: ID of the data chef to be created
-    :param query: SQL query to fetch data
-    :param rename_columns: Column renaming mapping in the format "old_key1->new_key1,old_key2->new_key2"
+    :param request: Request containing SQL data chef parameters
     :return: A confirmation message
     """
     try:
         data_chef_service.DataChefService().create_data_chef_sql(
-            name=data_chef_id,
-            query=query,
-            rename_columns=rename_columns
+            name=request.data_chef_id,
+            query=request.query,
+            rename_columns=request.rename_columns
         )
-        return {"message": f"Data chef {data_chef_id} created successfully from SQL query."}
+        return {"message": f"Data chef {request.data_chef_id} created successfully from SQL query."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/create_data_chef_from_nosql/{data_chef_id}/{database}/{collection}/{rename_columns}")
-def create_data_chef_from_nosql(data_chef_id: str, database: str, collection: str, rename_columns: str) -> dict:
+@router.post("/create_data_chef_from_nosql")
+def create_data_chef_from_nosql(request: CreateDataChefFromNosqlRequest) -> dict:
     """
     Create a new data chef from a NoSQL database collection.
 
-    :param data_chef_id: ID of the data chef to be created
-    :param database: Name of the NoSQL database
-    :param collection: Name of the collection within the database
-    :param rename_columns: Column renaming mapping in the format "old_key1->new_key1,old_key2->new_key2"
+    :param request: Request containing NoSQL data chef parameters
     :return: A confirmation message
     """
     try:
         data_chef_service.DataChefService().create_data_chef_nosql(
-            name=data_chef_id,
-            database=database,
-            collection=collection,
-            rename_columns=rename_columns
+            name=request.data_chef_id,
+            database=request.database,
+            collection=request.collection,
+            rename_columns=request.rename_columns
         )
-        return {"message": f"Data chef {data_chef_id} created successfully from NoSQL collection."}
+        return {"message": f"Data chef {request.data_chef_id} created successfully from NoSQL collection."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post(
-    "/create_data_chef_from_api/{data_chef_id}/{api_endpoint}/{rename_columns}/{paginated}/{pagination_param}/{size_param}/{size_value}")
-def create_data_chef_from_api(
-        data_chef_id: str,
-        api_endpoint: str,
-        rename_columns: str,
-        paginated: bool = False,
-        pagination_param: str = "page",
-        size_param: str = "size",
-        size_value: int = 100
-) -> dict:
+@router.post("/create_data_chef_from_api")
+def create_data_chef_from_api(request: CreateDataChefFromApiRequest) -> dict:
     """
     Create a new data chef from a REST API endpoint.
 
-    :param data_chef_id: ID of the data chef to be created
-    :param api_endpoint: URL of the REST API endpoint
-    :param rename_columns: Column renaming mapping in the format "old_key1->new_key1,old_key2->new_key2"
-    :param paginated: Whether the API is paginated (default is False)
-    :param pagination_param: Name of the pagination parameter (default is "page")
-    :param size_param: Name of the page size parameter (default is "size")
-    :param size_value: Value for the page size parameter (default is 100)
+    :param request: Request containing API data chef parameters
     :return: A confirmation message
     """
     try:
         data_chef_service.DataChefService().create_data_chef_api(
-            name=data_chef_id,
-            url=api_endpoint,
-            rename_columns=rename_columns,
-            paginated=paginated,
-            page_param=pagination_param,
-            size_param=size_param,
-            page_size=size_value
+            name=request.data_chef_id,
+            url=request.api_endpoint,
+            rename_columns=request.rename_columns,
+            paginated=request.paginated,
+            page_param=request.pagination_param,
+            size_param=request.size_param,
+            page_size=request.size_value
         )
-        return {"message": f"Data chef {data_chef_id} created successfully from API endpoint."}
+        return {"message": f"Data chef {request.data_chef_id} created successfully from API endpoint."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/create_data_chef_from_message_queue/{data_chef_id}/{brokers}/{topic}/{rename_columns}/{group_id}")
-def create_data_chef_from_message_queue(
-        data_chef_id: str,
-        brokers: str,
-        topic: str,
-        rename_columns: str,
-        group_id: str
-) -> dict:
+@router.post("/create_data_chef_from_message_queue")
+def create_data_chef_from_message_queue(request: CreateDataChefFromMessageQueueRequest) -> dict:
     """
     Create a new data chef from a message queue (e.g., Kafka).
 
-    :param data_chef_id: ID of the data chef to be created
-    :param brokers: Comma-separated list of broker addresses
-    :param topic: Topic to consume messages from
-    :param rename_columns: Column renaming mapping in the format "old_key1->new_key1,old_key2->new_key2"
-    :param group_id: Consumer group ID
+    :param request: Request containing message queue data chef parameters
     :return: A confirmation message
     """
     try:
         data_chef_service.DataChefService().create_data_chef_messaging_queue(
-            name=data_chef_id,
-            brokers=brokers,
-            topic=topic,
-            rename_columns=rename_columns,
-            group_id=group_id
+            name=request.data_chef_id,
+            brokers=request.brokers,
+            topic=request.topic,
+            rename_columns=request.rename_columns,
+            group_id=request.group_id
         )
-        return {"message": f"Data chef {data_chef_id} created successfully from message queue."}
+        return {"message": f"Data chef {request.data_chef_id} created successfully from message queue."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# Data Chef Management Endpoints
 @router.get("/list_data_chefs")
 def list_data_chefs() -> dict:
     """

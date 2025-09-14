@@ -6,32 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/2025-08-22 00" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/2025-08-22 01" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/2025-08-23 16" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/2025-08-24 01" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/2025-08-25 00" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/config/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/model_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/model_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tasks/my_model.json" beforeDir="false" afterPath="$PROJECT_DIR$/tasks/my_model.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../api_server/config/local.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/config/local.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../api_server/internal/routes/public_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/internal/routes/public_routes.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../api_server/pkg/setting/section.go" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/pkg/setting/section.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../api_server/pkg/utils/start_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/pkg/utils/start_server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/project/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/DataChefsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/DataChefsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/Layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/ModelsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/ModelsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/SchedulersPage.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/TasksPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/TasksPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/services/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/services/api.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -262,7 +246,9 @@
       <workItem from="1757472489055" duration="4007000" />
       <workItem from="1757605392046" duration="5824000" />
       <workItem from="1757624170507" duration="7964000" />
-      <workItem from="1757701104018" duration="6223000" />
+      <workItem from="1757701104018" duration="7237000" />
+      <workItem from="1757804600425" duration="459000" />
+      <workItem from="1757808257620" duration="9775000" />
     </task>
     <servers />
   </component>
