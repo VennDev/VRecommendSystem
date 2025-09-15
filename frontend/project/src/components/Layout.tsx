@@ -9,7 +9,6 @@ import {
   Menu,
   Moon,
   Sun,
-  User,
   X,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -36,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({
     { id: "models", name: "Models", icon: Cpu },
     { id: "tasks", name: "Tasks", icon: Calendar },
     { id: "scheduler", name: "Scheduler", icon: Clock },
-    { id: "data-chefs", name: "Data Chefs", icon: Database },
+    { id: "data-chefs", name: "Restaurant Data", icon: Database },
   ];
 
   return (
@@ -77,7 +76,14 @@ const Layout: React.FC<LayoutProps> = ({
                 } group flex items-center px-2 py-2 text-base font-medium rounded-l-md w-full mb-1 transition-all duration-200 btn btn-ghost justify-start`}
               >
                 <Icon className="mr-4 h-6 w-6" />
-                {item.name}
+                {item.id === "data-chefs" ? (
+                  <>
+                    <span>{item.name}</span>
+                    <br />
+                  </>
+                ) : (
+                  item.name
+                )}
               </button>
             );
           })}
