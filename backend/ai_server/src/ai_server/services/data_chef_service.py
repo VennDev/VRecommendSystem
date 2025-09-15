@@ -356,22 +356,23 @@ class DataChefService:
         :return: Generator yielding dictionaries from the data source.
         :raises ValueError: If the configuration is not found or if the data type is invalid
         """
-        cfg = Config().get_config("restaurant_data")
+        cfg = Config().get_config_safe("restaurant_data")
         data = cfg.get(name, None)
         if data is None:
             raise ValueError(f"Configuration for {name} not found in DataChefService")
 
         try:
-            type_enum = DataType(data.type.lower())
-        except ValueError as e:
+            type_enum = DataType(data["type"].lower())
+        except (ValueError, KeyError) as e:
+            data_type = data.get("type", "unknown") if isinstance(data, dict) else getattr(data, "type", "unknown")
             raise ValueError(
-                f"Invalid data type: {data.type}. Must be one of {[t.value for t in DataType]}."
+                f"Invalid data type: {data_type}. Must be one of {[t.value for t in DataType]}."
             ) from e
 
         for value in _cook_raw_data_source(type_enum, **data):
             # Rename columns if specified in the configuration
             if "rename_columns" in data:
-                value = rename_columns(value, data.rename_columns)
+                value = rename_columns(value, data["rename_columns"])
             yield value
 
     def _merge_config(self, name: str, new_data: dict) -> None:
@@ -382,7 +383,7 @@ class DataChefService:
         :param new_data: New data to merge
         """
         # Get existing config
-        existing_cfg = Config().get_config("restaurant_data")
+        existing_cfg = Config().get_config_safe("restaurant_data")
 
         # Convert to regular dict if it's a DictConfig
         if isinstance(existing_cfg, DictConfig):
@@ -390,17 +391,11 @@ class DataChefService:
         else:
             existing_dict = existing_cfg if existing_cfg else {}
 
-        # Create a new config with the specific entry
-        new_config = {name: new_data}
+        # Update with new data
+        existing_dict[name] = new_data
 
-        # Merge configurations properly
-        merged_config = OmegaConf.merge(
-            OmegaConf.create(existing_dict),
-            OmegaConf.create(OmegaConf.to_container(new_config, resolve=True))
-        )
-
-        # Save the merged configuration
-        Config().set_config_with_dict("restaurant_data", OmegaConf.to_object(merged_config))
+        # Save the updated configuration
+        Config().set_config_with_dict("restaurant_data", existing_dict)
 
     def create_data_chef_csv(self, name: str, path: str, rename_columns: str) -> None:
         """
@@ -507,10 +502,10 @@ class DataChefService:
 
         :return: Dictionary of all data chef configurations.
         """
-        cfg = Config().get_config("restaurant_data")
-        if cfg is None:
-            return {}
-        return OmegaConf.to_object(cfg)
+        cfg = Config().get_config_safe("restaurant_data")
+        if isinstance(cfg, DictConfig):
+            return OmegaConf.to_object(cfg)
+        return cfg if cfg else {}
 
     def edit_data_chef(self, name: str, config_dict: dict) -> None:
         """
@@ -521,28 +516,19 @@ class DataChefService:
         :raises ValueError: If the configuration does not exist.
         """
         # Get existing config
-        existing_cfg = Config().get_config("restaurant_data")
-
-        if existing_cfg is None or name not in existing_cfg:
-            raise ValueError(f"Configuration for {name} not found in DataChefService")
+        existing_cfg = Config().get_config_safe("restaurant_data")
 
         # Convert to dict if needed
         if isinstance(existing_cfg, DictConfig):
             existing_dict = OmegaConf.to_object(existing_cfg)
         else:
-            existing_dict = existing_cfg
+            existing_dict = existing_cfg if existing_cfg else {}
 
-        # Get the existing entry for this name
-        existing_entry = existing_dict[name]
+        if name not in existing_dict:
+            raise ValueError(f"Configuration for {name} not found in DataChefService")
 
-        # Merge the existing entry with new values
-        updated_entry = OmegaConf.merge(
-            OmegaConf.create(existing_entry),
-            OmegaConf.create(config_dict)
-        )
-
-        # Update the specific entry in the config
-        existing_dict[name] = OmegaConf.to_object(updated_entry)
+        # Update the existing entry with new values
+        existing_dict[name].update(config_dict)
 
         # Save the updated configuration
         Config().set_config_with_dict("restaurant_data", existing_dict)
@@ -554,16 +540,16 @@ class DataChefService:
         :param name:
         :return:
         """
-        existing_cfg = Config().get_config("restaurant_data")
-
-        if existing_cfg is None or name not in existing_cfg:
-            raise ValueError(f"Configuration for {name} not found in DataChefService")
+        existing_cfg = Config().get_config_safe("restaurant_data")
 
         # Convert to dict if needed
         if isinstance(existing_cfg, DictConfig):
             existing_dict = OmegaConf.to_object(existing_cfg)
         else:
-            existing_dict = existing_cfg
+            existing_dict = existing_cfg if existing_cfg else {}
+
+        if name not in existing_dict:
+            raise ValueError(f"Configuration for {name} not found in DataChefService")
 
         # Delete the entry
         del existing_dict[name]
@@ -579,9 +565,15 @@ class DataChefService:
         :return: Dictionary of the specified data chef configuration.
         :raises ValueError: If the configuration does not exist.
         """
-        cfg = Config().get_config("restaurant_data")
+        cfg = Config().get_config_safe("restaurant_data")
 
-        if cfg is None or name not in cfg:
+        # Convert to dict if needed
+        if isinstance(cfg, DictConfig):
+            config_dict = OmegaConf.to_object(cfg)
+        else:
+            config_dict = cfg if cfg else {}
+
+        if name not in config_dict:
             raise ValueError(f"Configuration for {name} not found in DataChefService")
 
-        return OmegaConf.to_container(cfg[name], resolve=True)
+        return config_dict[name]

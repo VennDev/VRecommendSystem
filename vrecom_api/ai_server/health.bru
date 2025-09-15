@@ -1,0 +1,15 @@
+meta {
+  name: health
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://0.0.0.0:9999/api/v1/health
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

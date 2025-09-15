@@ -3,7 +3,6 @@ package utils
 import (
 	"context"
 	"github.com/venndev/vrecommendation/global"
-	"github.com/venndev/vrecommendation/internal/services"
 	"os"
 	"os/signal"
 	"syscall"
@@ -50,15 +49,6 @@ func StartServerWithGracefulShutdown(app *fiber.App) {
 	<-quit
 
 	global.Logger.Info("Shutting down server...")
-
-	// Close the event service
-	eventService := services.GetEventService()
-	err := eventService.Close()
-	if err != nil {
-		global.Logger.Error("Failed to close event service", err)
-	} else {
-		global.Logger.Info("Event service closed successfully")
-	}
 
 	// Graceful shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
