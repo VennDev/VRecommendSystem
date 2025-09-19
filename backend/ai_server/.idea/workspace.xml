@@ -6,16 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/restaurant_data.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/restaurant_data.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/my_model.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model.pkl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/my_model_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/my_model_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model_metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/config/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api_server/config/local.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/config/local.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api_server/internal/routes/public_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/internal/routes/public_routes.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api_server/pkg/setting/section.go" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/pkg/setting/section.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api_server/pkg/utils/start_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/pkg/utils/start_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -250,6 +241,9 @@
       <workItem from="1757804600425" duration="459000" />
       <workItem from="1757808257620" duration="11314000" />
       <workItem from="1757865652278" duration="8058000" />
+      <workItem from="1758042194136" duration="2322000" />
+      <workItem from="1758129355924" duration="2079000" />
+      <workItem from="1758184524676" duration="3721000" />
     </task>
     <servers />
   </component>
