@@ -8,9 +8,13 @@ from sqlalchemy import text
 import pandas as pd
 import requests
 from confluent_kafka import Consumer
+
+from ai_server.config import config
 from ai_server.utils.result_processing import rename_columns
 from ai_server.services.database_service import DatabaseService
 from ai_server.config.config import Config
+
+BATCH_SIZE = config.Config().get_config().datachef.batch_size
 
 
 class DataType(str, Enum):
@@ -43,7 +47,7 @@ def _cook_sql(query: str) -> Generator[Dict[str, Any], None, None]:
             columns = list(result.keys())
 
             while True:
-                chunk = result.fetchmany(1000)
+                chunk = result.fetchmany(BATCH_SIZE)
                 if not chunk:
                     break
 
@@ -76,7 +80,7 @@ def _cook_nosql(
         raise ValueError(f"Collection {collection} not found in database {database}")
 
     try:
-        batch_size = 1000
+        batch_size = BATCH_SIZE
         skip_count = 0
 
         while True:
@@ -108,7 +112,7 @@ def _cook_csv(path: str) -> Generator[Dict[str, Any], None, None]:
     :raises ValueError: If file didn't find or invalid CSV.
     """
     try:
-        for chunk in pd.read_csv(path, chunksize=1000):
+        for chunk in pd.read_csv(path, chunksize=BATCH_SIZE):
             # Convert to records (list of dicts) then yield each dict
             records = chunk.to_dict(orient="records")
             for record in records:
