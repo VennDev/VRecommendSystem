@@ -5,10 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/ai_server/services/metrics_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/initialize/prometheus.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/metrics/data_chef.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/metrics/model_metrics.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ai_server/metrics/scheduler_metrics.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/local.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/local.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/metrics_service.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -246,7 +250,8 @@
       <workItem from="1758042194136" duration="2322000" />
       <workItem from="1758129355924" duration="2079000" />
       <workItem from="1758184524676" duration="3721000" />
-      <workItem from="1758344525227" duration="1224000" />
+      <workItem from="1758344525227" duration="1424000" />
+      <workItem from="1758353296163" duration="3905000" />
     </task>
     <servers />
   </component>

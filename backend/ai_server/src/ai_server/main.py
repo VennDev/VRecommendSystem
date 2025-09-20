@@ -3,7 +3,9 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from ai_server.initialize import logger, scheduler, config, routers
+from ai_server.initialize import (
+    logger, scheduler, config, routers, prometheus
+)
 
 
 def main():
@@ -44,6 +46,9 @@ def main():
 
     # Initialize routers
     routers.init(app)
+
+    # Initialize prometheus
+    prometheus.init(app)
 
     # Run the app with Uvicorn
     uvicorn.run(app, host=cfg.host, port=cfg.port)
