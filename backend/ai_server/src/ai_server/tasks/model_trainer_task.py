@@ -87,9 +87,6 @@ def _execute_training_in_background(
     """
     The actual training logic that runs in background thread
     """
-    # Increment the running tasks metric
-    scheduler_metrics.TOTAL_RUNNING_TASKS.inc()
-
     model_name = config.get("model_name", "Unknown Model")
     model_id = config.get("model_id")
     service = None

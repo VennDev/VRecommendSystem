@@ -8,6 +8,7 @@ import loguru
 from scheduler import Scheduler
 
 from ai_server.config.config import Config
+from ai_server.metrics import scheduler_metrics
 from ai_server.tasks.model_trainer_task import ModelTrainerTask
 
 
@@ -47,6 +48,9 @@ class SchedulerManager:
 
         # Inject the ModelTrainerTask into the scheduler
         ModelTrainerTask().inject(self.scheduler)
+
+        # Increment the running tasks metric
+        scheduler_metrics.TOTAL_RUNNING_TASKS.inc()
 
         # Create stop event
         self.stop_event = threading.Event()
