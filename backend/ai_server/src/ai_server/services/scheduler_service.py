@@ -248,6 +248,7 @@ class SchedulerService:
     def set_model_id(self, task_name: str, model_id: str) -> None:
         """
         Update the model ID for a scheduled task.
+
         :param task_name: Name of the task to update.
         :param model_id: New model ID to set.
         """
@@ -269,6 +270,7 @@ class SchedulerService:
     def set_interactions_data_chef_id(self, task_name: str, data_chef_id: str) -> None:
         """
         Update the data chef ID for a scheduled task.
+
         :param task_name: Name of the task to update.
         :param data_chef_id: New data chef ID to set.
         """
@@ -290,6 +292,7 @@ class SchedulerService:
     def set_item_features_data_chef_id(self, task_name: str, data_chef_id: str) -> None:
         """
         Update the item features data chef ID for a scheduled task.
+
         :param task_name: Name of the task to update.
         :param data_chef_id: New item features data chef ID to set.
         """
@@ -311,6 +314,7 @@ class SchedulerService:
     def set_user_features_data_chef_id(self, task_name: str, data_chef_id: str) -> None:
         """
         Update the user features data chef ID for a scheduled task.
+
         :param task_name: Name of the task to update.
         :param data_chef_id: New user features data chef ID to set.
         """
@@ -332,6 +336,7 @@ class SchedulerService:
     def set_interval(self, task_name: str, interval: int) -> None:
         """
         Update the interval for a scheduled task.
+
         :param task_name:
         :param interval:
         :return:

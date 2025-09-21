@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/data_chef_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/my_model_config.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/my_model_metadata.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -249,7 +250,7 @@
       <workItem from="1758344525227" duration="1424000" />
       <workItem from="1758353296163" duration="7201000" />
       <workItem from="1758403258157" duration="1827000" />
-      <workItem from="1758440989038" duration="898000" />
+      <workItem from="1758440989038" duration="1802000" />
     </task>
     <servers />
   </component>

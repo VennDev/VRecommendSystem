@@ -234,7 +234,6 @@ def _execute_training_in_background(
 
         # Don't re-raise here to prevent thread from crashing the main process
         loguru.logger.error(f"Thread for {model_name} will terminate due to error")
-
     finally:
         # Decrement the running tasks metric
         scheduler_metrics.TOTAL_RUNNING_TASKS.dec()
@@ -345,7 +344,6 @@ class ModelTrainerTask(BaseTask):
             scheduler_metrics.TOTAL_COUNT_RUN_TASKS.inc(scheduled_count)
 
             loguru.logger.info(f"Successfully scheduled {scheduled_count} out of {len(json_files)} JSON files")
-
         except Exception as e:
             loguru.logger.error(f"Error in inject method: {e}")
             loguru.logger.exception("Full inject error traceback:")
