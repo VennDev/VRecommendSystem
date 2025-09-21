@@ -581,3 +581,16 @@ class DataChefService:
             raise ValueError(f"Configuration for {name} not found in DataChefService")
 
         return config_dict[name]
+
+    def get_total_data_chefs(self) -> int:
+        """
+        Get the total number of data chef configurations.
+
+        :return: Total count of data chef configurations.
+        """
+        cfg = Config().get_config_safe("restaurant_data")
+        if isinstance(cfg, DictConfig):
+            config_dict = OmegaConf.to_object(cfg)
+        else:
+            config_dict = cfg if cfg else {}
+        return len(config_dict)
