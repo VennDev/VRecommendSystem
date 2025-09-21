@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/ai_server/initialize/prometheus.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/metrics/data_chef.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/metrics/model_metrics.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ai_server/metrics/scheduler_metrics.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/metrics_service.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/initialize/prometheus.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/initialize/prometheus.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/metrics/scheduler_metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/metrics/scheduler_metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +76,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.Color Scheme Font",
+    "settings.editor.selected.configurable": "configurable.group.appearance",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -251,7 +247,8 @@
       <workItem from="1758129355924" duration="2079000" />
       <workItem from="1758184524676" duration="3721000" />
       <workItem from="1758344525227" duration="1424000" />
-      <workItem from="1758353296163" duration="3905000" />
+      <workItem from="1758353296163" duration="7201000" />
+      <workItem from="1758403258157" duration="964000" />
     </task>
     <servers />
   </component>

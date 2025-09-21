@@ -10,7 +10,7 @@ TOTAL_COUNT_RUN_TASKS = Counter(
     'Total number of tasks that have been run'
 )
 
-RUNTIME = Counter(
+TASK_RUNTIME_SECONDS = Counter(
     'task_runtime_seconds',
     'Total runtime of tasks in seconds'
 )

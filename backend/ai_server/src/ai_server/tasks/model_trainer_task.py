@@ -10,6 +10,7 @@ from pathlib import Path
 
 from scheduler import Scheduler
 
+from ai_server.metrics import scheduler_metrics
 from ai_server.services.data_chef_service import DataChefService
 from ai_server.services.model_service import ModelService
 from ai_server.utils.result_processing import dict_to_dataframe
@@ -26,6 +27,9 @@ def _train_model_task_async(
     """
     Non-blocking training task that spawns training in separate thread
     """
+    # Increment the running tasks metric
+    scheduler_metrics.TOTAL_RUNNING_TASKS.inc()
+
     model_name = config.get("model_name", "Unknown Model")
     model_id = config.get("model_id")
 
@@ -63,6 +67,11 @@ def _train_model_task_async(
                 loguru.logger.info(f"Training thread for {model_name} completed")
         except Exception as e:
             loguru.logger.error(f"Error monitoring thread for {model_name}: {e}")
+        finally:
+            # Ensure the metric is decremented in case of monitoring issues
+            scheduler_metrics.TOTAL_RUNNING_TASKS.dec()
+
+            loguru.logger.info(f"Monitor thread for {model_name} is finishing")
 
     monitor_thread_instance = threading.Thread(target=monitor_thread, daemon=True, name=f"Monitor-{model_id}")
     monitor_thread_instance.start()
@@ -78,6 +87,9 @@ def _execute_training_in_background(
     """
     The actual training logic that runs in background thread
     """
+    # Increment the running tasks metric
+    scheduler_metrics.TOTAL_RUNNING_TASKS.inc()
+
     model_name = config.get("model_name", "Unknown Model")
     model_id = config.get("model_id")
     service = None
@@ -224,6 +236,9 @@ def _execute_training_in_background(
         loguru.logger.error(f"Thread for {model_name} will terminate due to error")
 
     finally:
+        # Decrement the running tasks metric
+        scheduler_metrics.TOTAL_RUNNING_TASKS.dec()
+
         loguru.logger.info(f"Training thread for {model_name} is finishing")
 
 
@@ -325,6 +340,9 @@ class ModelTrainerTask(BaseTask):
                     loguru.logger.error(f"Error parsing JSON file {json_file}: {e}")
                 except Exception as e:
                     loguru.logger.error(f"Error processing file {json_file}: {e}")
+
+            # Update metrics
+            scheduler_metrics.TOTAL_COUNT_RUN_TASKS.inc(scheduled_count)
 
             loguru.logger.info(f"Successfully scheduled {scheduled_count} out of {len(json_files)} JSON files")
 

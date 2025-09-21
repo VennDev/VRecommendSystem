@@ -9,7 +9,6 @@ def init(app: FastAPI) -> None:
     Initialize Prometheus monitoring for the FastAPI app.
     This function sets up the Prometheus ASGI app and integrates it with the FastAPI app.
     """
-
     # Create the Prometheus ASGI app
     prometheus_app = make_asgi_app()
 
