@@ -2,9 +2,11 @@ from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
 
+from ai_server.metrics import scheduler_metrics, model_metrics, data_chef_metrics
 from ai_server.services.model_service import ModelService, SAMPLE_INTERACTION_DATA
 from ai_server.services.scheduler_service import SchedulerService
 from ai_server.services import scheduler_service, data_chef_service
+from ai_server.utils import metric_utils
 
 router = APIRouter()
 
@@ -516,6 +518,106 @@ def get_total_data_chefs() -> dict:
     try:
         data_chef = data_chef_service.DataChefService()
         total = data_chef.get_total_data_chefs()
+        return {"data": total}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+##### Metrics Endpoints #####
+
+@router.get("/get_total_running_tasks")
+def get_total_running_tasks() -> dict:
+    """
+    Get the total number of currently running tasks.
+
+    :return: Total count of running tasks
+    """
+    try:
+        total = metric_utils.get_metric_value(scheduler_metrics.TOTAL_RUNNING_TASKS)
+        return {"data": total}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_total_count_run_tasks")
+def get_total_count_run_tasks() -> dict:
+    """
+    Get the total number of tasks that have been run.
+
+    :return: Total count of run tasks
+    """
+    try:
+        total = metric_utils.get_metric_value(scheduler_metrics.TOTAL_COUNT_RUN_TASKS)
+        return {"data": total}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_total_activated_tasks")
+def get_total_activated_tasks() -> dict:
+    """
+    Get the total number of tasks that have been activated.
+
+    :return: Total count of activated tasks
+    """
+    try:
+        total = metric_utils.get_metric_value(scheduler_metrics.TOTAL_ACTIVATED_TASKS)
+        return {"data": total}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_task_runtime_seconds")
+def get_task_runtime_seconds() -> dict:
+    """
+    Get the total runtime of tasks in seconds.
+
+    :return: Total runtime of tasks in seconds
+    """
+    try:
+        total = metric_utils.get_metric_value(scheduler_metrics.TASK_RUNTIME_SECONDS)
+        return {"data": total}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_total_activating_models")
+def get_total_activating_models() -> dict:
+    """
+    Get the total number of models being activated.
+
+    :return: Total count of activating models
+    """
+    try:
+        total = metric_utils.get_metric_value(model_metrics.TOTAL_ACTIVATING_MODELS)
+        return {"data": total}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_total_training_models")
+def get_total_training_models() -> dict:
+    """
+    Get the total number of models being trained.
+
+    :return: Total count of training models
+    """
+    try:
+        total = metric_utils.get_metric_value(model_metrics.TOTAL_TRAINING_MODELS)
+        return {"data": total}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_total_data_chefs")
+def get_total_data_chefs() -> dict:
+    """
+    Get the total number of data chefs.
+
+    :return: Total count of data chefs
+    """
+    try:
+        total = metric_utils.get_metric_value(data_chef_metrics.TOTAL_DATA_CHEFS)
         return {"data": total}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

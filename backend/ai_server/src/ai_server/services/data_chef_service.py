@@ -14,7 +14,9 @@ from ai_server.utils.result_processing import rename_columns
 from ai_server.services.database_service import DatabaseService
 from ai_server.config.config import Config
 
-BATCH_SIZE = config.Config().get_config().datachef.batch_size
+
+def get_batch_size() -> int:
+    return config.Config().get_config().datachef.batch_size
 
 
 class DataType(str, Enum):
@@ -47,7 +49,7 @@ def _cook_sql(query: str) -> Generator[Dict[str, Any], None, None]:
             columns = list(result.keys())
 
             while True:
-                chunk = result.fetchmany(BATCH_SIZE)
+                chunk = result.fetchmany(get_batch_size())
                 if not chunk:
                     break
 
@@ -80,7 +82,7 @@ def _cook_nosql(
         raise ValueError(f"Collection {collection} not found in database {database}")
 
     try:
-        batch_size = BATCH_SIZE
+        batch_size = get_batch_size()
         skip_count = 0
 
         while True:
@@ -112,7 +114,7 @@ def _cook_csv(path: str) -> Generator[Dict[str, Any], None, None]:
     :raises ValueError: If file didn't find or invalid CSV.
     """
     try:
-        for chunk in pd.read_csv(path, chunksize=BATCH_SIZE):
+        for chunk in pd.read_csv(path, chunksize=get_batch_size()):
             # Convert to records (list of dicts) then yield each dict
             records = chunk.to_dict(orient="records")
             for record in records:

@@ -25,6 +25,7 @@ COPY src/ ./src/
 
 # Copy config
 COPY config/ ./config/
+COPY config/ /app/config/
 
 # Copy models
 COPY models/ ./models/

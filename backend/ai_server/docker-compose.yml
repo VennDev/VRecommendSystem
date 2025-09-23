@@ -29,6 +29,10 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "${PROMETHEUS_HOST_PORT:-9090}:${PROMETHEUS_CONTAINER_PORT:-9090}"
+    env_file:
+      - .env
+    networks:
+      - vrecommendation_ai_network
 
 networks:
   vrecommendation_ai_network:
