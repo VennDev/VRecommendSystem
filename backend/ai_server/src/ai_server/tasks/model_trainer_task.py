@@ -279,6 +279,9 @@ class ModelTrainerTask(BaseTask):
             scheduled_count = 0
             for json_file in json_files:
                 try:
+                    # Increment the activated tasks metric
+                    scheduler_metrics.TOTAL_ACTIVATED_TASKS.inc()
+
                     with open(json_file, "r", encoding="utf-8") as file:
                         config = json.load(file)
 
@@ -340,9 +343,6 @@ class ModelTrainerTask(BaseTask):
                     loguru.logger.error(f"Error parsing JSON file {json_file}: {e}")
                 except Exception as e:
                     loguru.logger.error(f"Error processing file {json_file}: {e}")
-
-            # Update metrics
-            scheduler_metrics.TOTAL_ACTIVATED_TASKS.inc(scheduled_count)
 
             loguru.logger.info(f"Successfully scheduled {scheduled_count} out of {len(json_files)} JSON files")
         except Exception as e:
