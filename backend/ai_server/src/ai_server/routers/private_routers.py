@@ -508,21 +508,6 @@ def edit_data_chef(data_chef_id: str, request: DataChefEditRequest) -> dict:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/get_total_data_chefs")
-def get_total_data_chefs() -> dict:
-    """
-    Get the total number of data chefs.
-
-    :return: Total count of data chefs
-    """
-    try:
-        data_chef = data_chef_service.DataChefService()
-        total = data_chef.get_total_data_chefs()
-        return {"data": total}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 ##### Metrics Endpoints #####
 
 @router.get("/get_total_running_tasks")
