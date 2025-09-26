@@ -9,9 +9,12 @@
       <change beforePath="$PROJECT_DIR$/models/my_model.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model_metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/metrics/data_chef_metrics.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/Dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/DataChefsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/DataChefsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/SchedulerPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/SchedulerPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/services/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/services/api.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,30 +62,30 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python tests.Python tests in test1.py.executor": "Run",
-    "Python.test1.executor": "Run",
-    "Python.test2.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "full.screen.before.presentation.mode": "false",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python tests.Python tests in test1.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test2.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;full.screen.before.presentation.mode&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\VennDev\OneDrive\Desktop\VRecommendation\backend\ai_server\src\ai_server\models\collaborative_filtering" />
@@ -255,7 +258,9 @@
       <workItem from="1758440989038" duration="6452000" />
       <workItem from="1758556684980" duration="6725000" />
       <workItem from="1758620793269" duration="2766000" />
-      <workItem from="1758665092798" duration="1476000" />
+      <workItem from="1758665092798" duration="3376000" />
+      <workItem from="1758777861859" duration="7680000" />
+      <workItem from="1758863817636" duration="168000" />
     </task>
     <servers />
   </component>

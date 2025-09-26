@@ -28,7 +28,6 @@ def _train_model_task_async(
     Non-blocking training task that spawns training in separate thread
     """
     # Increment the running tasks metric
-    scheduler_metrics.TOTAL_RUNNING_TASKS.inc()
     scheduler_metrics.TOTAL_COUNT_RUN_TASKS.inc()
 
     # Increment the total count of running models
@@ -233,9 +232,6 @@ def _execute_training_in_background(
         # Don't re-raise here to prevent thread from crashing the main process
         loguru.logger.error(f"Thread for {model_name} will terminate due to error")
     finally:
-        # Decrement the running tasks metric
-        scheduler_metrics.TOTAL_RUNNING_TASKS.dec()
-
         # Decrement the total count of running models
         model_metrics.TOTAL_TRAINING_MODELS.dec()
 
@@ -248,6 +244,7 @@ class ModelTrainerTask(BaseTask):
         Scheduler task that reads JSON configuration files from models folder
         and schedules training tasks based on interval values.
         """
+        scheduler_metrics.TOTAL_RUNNING_TASKS.inc()
         try:
             # Get the path to models folder (outside src folder, at project root)
             current_file_path = Path(__file__)

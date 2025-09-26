@@ -1,6 +1,7 @@
 import asyncio
 import json
 import threading
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -8,6 +9,7 @@ import loguru
 from scheduler import Scheduler
 
 from ai_server.config.config import Config
+from ai_server.metrics import scheduler_metrics
 from ai_server.tasks.model_trainer_task import ModelTrainerTask
 
 
@@ -27,11 +29,15 @@ class SchedulerManager:
         Start the scheduler in a loop that can be stopped.
         """
         while not stop_event.is_set():
+            last_time = datetime.now()
             scheduler.exec_jobs()
             # Use the stop_event.wait() instead of threading.Event().wait()
             # This allows the loop to be interrupted when stop_event is set
             if stop_event.wait(timeout=1.0):
                 break
+
+            elapsed = (datetime.now() - last_time).total_seconds()
+            scheduler_metrics.TASK_RUNTIME_SECONDS.set(elapsed)
 
     def init(self) -> bool:
         """
