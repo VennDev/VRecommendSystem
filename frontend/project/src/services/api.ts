@@ -468,6 +468,18 @@ class ApiService {
       method: "DELETE",
     });
   }
+
+  async getTotalCountRunTasks() {
+    return this.request<ApiResponse<number>>(`/get_total_count_run_tasks`);
+  }
+
+  async getTotalRunningTasks() {
+    return this.request<ApiResponse<number>>(`/get_total_running_tasks`);
+  }
+
+  async getTaskRuntime() {
+    return this.request<ApiResponse<number>>(`/get_task_runtime_seconds`);
+  }
 }
 
 export const apiService = new ApiService();

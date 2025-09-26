@@ -4,6 +4,9 @@ import { apiService } from "../services/api";
 
 const SchedulerPage: React.FC = () => {
   const [schedulers, setSchedulers] = useState<any[]>([]);
+  const [activeTasks, setActiveTasks] = useState<number>(0);
+  const [totalRunTasks, setTotalRunTasks] = useState<number>(0);
+  const [runtimeScheduler, setRuntimeScheduler] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
@@ -17,6 +20,27 @@ const SchedulerPage: React.FC = () => {
       // if (response.data) {
       //   setSchedulers(response.data);
       // }
+      const [countResponse, tasksResponse, runtimeResponse] = await Promise.all(
+        [
+          apiService.getTotalCountRunTasks(),
+          apiService.listTasks(),
+          apiService.getTaskRuntime(),
+        ]
+      );
+
+      if (countResponse.data) {
+        setTotalRunTasks(countResponse.data.data ? countResponse.data.data : 0);
+      }
+
+      if (runtimeResponse.data) {
+        setRuntimeScheduler(
+          runtimeResponse.data.data ? runtimeResponse.data.data : 0
+        );
+      }
+
+      if (tasksResponse.data) {
+        setActiveTasks(Object.keys(tasksResponse.data || {}).length || 0);
+      }
     } catch (error) {
       console.error("Failed to fetch schedulers:", error);
     } finally {
@@ -120,21 +144,23 @@ const SchedulerPage: React.FC = () => {
       <div className="mt-8 card bg-base-100 shadow-sm">
         <div className="card-body">
           <h2 className="card-title text-base-content mb-4">System Metrics</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary mb-1">98.5%</div>
-              <div className="text-sm text-base-content/70">Success Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-success mb-1">6</div>
+              <div className="text-2xl font-bold text-success mb-1">
+                {activeTasks}
+              </div>
               <div className="text-sm text-base-content/70">Active Tasks</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-secondary mb-1">143</div>
+              <div className="text-2xl font-bold text-secondary mb-1">
+                {totalRunTasks}
+              </div>
               <div className="text-sm text-base-content/70">Total Runs</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-accent mb-1">3.2s</div>
+              <div className="text-2xl font-bold text-accent mb-1">
+                {runtimeScheduler}s
+              </div>
               <div className="text-sm text-base-content/70">Avg Runtime</div>
             </div>
           </div>

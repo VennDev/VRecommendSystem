@@ -518,9 +518,9 @@ const DataChefsPage: React.FC = () => {
                 <div className="bg-secondary/10 p-2 rounded-lg text-secondary">
                   {getTypeIcon(chef.type)}
                 </div>
-                <div className={`badge ${getStatusColor(chef.status)}`}>
+                {/* <div className={`badge ${getStatusColor(chef.status)}`}>
                   {chef.status}
-                </div>
+                </div> */}
               </div>
 
               <h3 className="card-title text-base-content mb-2">{chef.name}</h3>
