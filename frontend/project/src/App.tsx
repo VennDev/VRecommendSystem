@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
+import CallbackPage from "./components/CallbackPage";
 import DataChefsPage from "./components/DataChefsPage";
 import Layout from "./components/Layout";
 import LoginPage from "./components/LoginPage";
@@ -11,7 +13,6 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 
 const AppContent: React.FC = () => {
   const { user, isLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState("dashboard");
 
   if (isLoading) {
     return (
@@ -24,30 +25,39 @@ const AppContent: React.FC = () => {
     );
   }
 
-  if (!user) {
-    return <LoginPage />;
-  }
+  return (
+    <Routes>
+      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
+      <Route path="/auth/callback" element={<CallbackPage />} />
+      <Route path="/dashboard" element={user ? <DashboardLayout><Dashboard /></DashboardLayout> : <Navigate to="/login" replace />} />
+      <Route path="/models" element={user ? <DashboardLayout><ModelsPage /></DashboardLayout> : <Navigate to="/login" replace />} />
+      <Route path="/tasks" element={user ? <DashboardLayout><TasksPage /></DashboardLayout> : <Navigate to="/login" replace />} />
+      <Route path="/scheduler" element={user ? <DashboardLayout><SchedulerPage /></DashboardLayout> : <Navigate to="/login" replace />} />
+      <Route path="/data-chefs" element={user ? <DashboardLayout><DataChefsPage /></DashboardLayout> : <Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
+    </Routes>
+  );
+};
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "dashboard":
-        return <Dashboard />;
-      case "models":
-        return <ModelsPage />;
-      case "tasks":
-        return <TasksPage />;
-      case "scheduler":
-        return <SchedulerPage />;
-      case "data-chefs":
-        return <DataChefsPage />;
-      default:
-        return <Dashboard />;
-    }
+const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [activeTab, setActiveTab] = useState(() => {
+    const path = window.location.pathname;
+    if (path.includes('/models')) return 'models';
+    if (path.includes('/tasks')) return 'tasks';
+    if (path.includes('/scheduler')) return 'scheduler';
+    if (path.includes('/data-chefs')) return 'data-chefs';
+    return 'dashboard';
+  });
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    // Navigate to the corresponding route
+    window.history.pushState(null, '', `/${tab === 'dashboard' ? 'dashboard' : tab}`);
   };
 
   return (
-    <Layout activeTab={activeTab} onTabChange={setActiveTab}>
-      {renderContent()}
+    <Layout activeTab={activeTab} onTabChange={handleTabChange}>
+      {children}
     </Layout>
   );
 };

@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const CallbackPage: React.FC = () => {
-  const navigate = useNavigate();
   const { checkAuthStatus } = useAuth();
 
   useEffect(() => {
@@ -15,11 +13,11 @@ const CallbackPage: React.FC = () => {
       await checkAuthStatus();
 
       // Redirect to dashboard
-      navigate("/dashboard", { replace: true });
+      window.location.href = "/dashboard";
     };
 
     handleCallback();
-  }, [navigate, checkAuthStatus]);
+  }, [checkAuthStatus]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">

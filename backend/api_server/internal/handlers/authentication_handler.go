@@ -144,12 +144,12 @@ func CallbackHandler(c fiber.Ctx) error {
 			"name":     user.Name,
 			"email":    user.Email,
 			"provider": user.Provider,
-			"avatar":   user.AvatarURL,
+			"picture":  user.AvatarURL,
 		},
 	})
 
-	// Option 2: Redirect to frontend (uncomment if needed)
-	// return c.Redirect().To("http://localhost:5173?auth=success")
+	// Option 2: Redirect to frontend callback page
+	// return c.Redirect().To("http://localhost:5173/auth/callback")
 }
 
 func LogoutHandler(c fiber.Ctx) error {

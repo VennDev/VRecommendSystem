@@ -1,27 +1,9 @@
 import { Bot, Shield, Zap } from "lucide-react";
 import React, { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage: React.FC = () => {
-  const { login, user } = useAuth();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  useEffect(() => {
-    // Check if redirected back from OAuth with success
-    if (searchParams.get("auth") === "success") {
-      // Remove the query param and redirect to dashboard
-      navigate("/dashboard", { replace: true });
-    }
-  }, [searchParams, navigate]);
-
-  useEffect(() => {
-    // If already logged in, redirect to dashboard
-    if (user) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [user, navigate]);
+  const { login } = useAuth();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center p-4">

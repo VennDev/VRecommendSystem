@@ -12,7 +12,7 @@ interface AuthUser {
   id: string;
   name: string;
   email: string;
-  avatar: string;
+  picture: string;
   provider: string;
 }
 
@@ -207,7 +207,7 @@ class ApiService {
   // Auth methods
   async checkAuthStatus(): Promise<ApiResponse<AuthUser>> {
     try {
-      const response = await fetch(`${AUTH_BASE_URL}/auth/user`, {
+      const response = await fetch(`${AUTH_BASE_URL}/api/v1/auth/user`, {
         credentials: "include",
       });
 
@@ -226,7 +226,7 @@ class ApiService {
 
   async logout(): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${AUTH_BASE_URL}/auth/logout`, {
+      const response = await fetch(`${AUTH_BASE_URL}/api/v1/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
