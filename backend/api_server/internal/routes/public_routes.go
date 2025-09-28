@@ -13,4 +13,10 @@ func PublicRouters(a *fiber.App) {
 
 	// This route is used to get recommendations based on user interactions
 	route.Get("/recommend", handlers.Recommend)
+
+	// Authentication routes
+	route.Get("/auth/:provider", handlers.BeginAuthHandler)
+	route.Get("/auth/:provider/callback", handlers.CallbackHandler)
+	route.Post("/auth/logout", handlers.LogoutHandler)
+	route.Get("/auth/user", handlers.GetUserHandler)
 }
