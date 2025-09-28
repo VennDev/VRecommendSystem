@@ -1,10 +1,17 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface User {
   id: string;
   email: string;
   name: string;
-  picture: string;
+  avatar: string;
+  provider: string;
 }
 
 interface AuthContextType {
@@ -19,7 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -33,29 +40,45 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setIsLoading(false);
+    checkAuthStatus();
   }, []);
 
-  const login = () => {
-    // Mock Google login - in real app, use Google OAuth
-    const mockUser: User = {
-      id: '1',
-      email: 'user@example.com',
-      name: 'John Doe',
-      picture: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?w=400&h=400&fit=crop&crop=face'
-    };
-    setUser(mockUser);
-    localStorage.setItem('user', JSON.stringify(mockUser));
+  const checkAuthStatus = async () => {
+    try {
+      const response = await fetch("http://localhost:2030/auth/user", {
+        credentials: "include", // Important for session cookies
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.user) {
+          setUser(data.user);
+        }
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+  const login = () => {
+    // Redirect to Google OAuth
+    window.location.href = "http://localhost:2030/auth/google";
+  };
+
+  const logout = async () => {
+    try {
+      await fetch("http://localhost:2030/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      setUser(null);
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Still clear user on frontend even if API fails
+      setUser(null);
+    }
   };
 
   return (

@@ -17,6 +17,7 @@ const Dashboard: React.FC = () => {
     runningTasks: 0,
     dataChefs: 0,
     activeModels: 0,
+    isServerOnline: false,
   });
 
   const [recentActivity] = useState([
@@ -57,11 +58,13 @@ const Dashboard: React.FC = () => {
         dataChefResponse,
         runningTasksResponse,
         listModelsResponse,
+        serverStatusResponse,
       ] = await Promise.all([
         apiService.listTasks(),
         apiService.listDataChefs(),
         apiService.getTotalRunningTasks(),
         apiService.listModels(),
+        apiService.aiServerIsOnline(),
       ]);
 
       setStats({
@@ -69,6 +72,7 @@ const Dashboard: React.FC = () => {
         runningTasks: runningTasksResponse.data?.data || 0,
         dataChefs: Object.keys(dataChefResponse.data || {}).length || 0,
         activeModels: Object.keys(listModelsResponse.data || {}).length || 0, // Mock data
+        isServerOnline: serverStatusResponse.data?.status == "ok" || false,
       });
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
@@ -202,23 +206,31 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center space-x-3">
                   <div className="h-3 w-3 bg-success rounded-full"></div>
                   <span className="text-sm font-medium text-base-content">
-                    API Server
+                    AI Server
                   </span>
                 </div>
-                <span className="badge badge-success badge-sm">Online</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-success/10">
-                <div className="flex items-center space-x-3">
-                  <div className="h-3 w-3 bg-success rounded-full"></div>
-                  <span className="text-sm font-medium text-base-content">
-                    Database
+                {stats.isServerOnline ? (
+                  <span className="badge badge-success badge-sm">
+                    Connected
                   </span>
-                </div>
-                <span className="badge badge-success badge-sm">Connected</span>
+                ) : (
+                  <span className="badge badge-error badge-sm">
+                    Disconnected
+                  </span>
+                )}
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg bg-warning/10">
                 <div className="flex items-center space-x-3">
-                  <div className="h-3 w-3 bg-warning rounded-full"></div>
+                  <div className="h-3 w-3 bg-success rounded-full"></div>
+                  <span className="text-sm font-medium text-base-content">
+                    API Server
+                  </span>
+                </div>
+                <span className="badge badge-error badge-sm">Disconnected</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-warning/10">
+                <div className="flex items-center space-x-3">
+                  <div className="h-3 w-3 bg-success rounded-full"></div>
                   <span className="text-sm font-medium text-base-content">
                     Model Training
                   </span>

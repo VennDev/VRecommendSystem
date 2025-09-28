@@ -168,7 +168,7 @@ const SchedulerPage: React.FC = () => {
       </div>
 
       {/* Alerts */}
-      <div className="mt-8 alert alert-warning">
+      {/* <div className="mt-8 alert alert-warning">
         <div className="flex items-start space-x-3">
           <AlertCircle className="h-5 w-5 flex-shrink-0" />
           <div>
@@ -179,7 +179,7 @@ const SchedulerPage: React.FC = () => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

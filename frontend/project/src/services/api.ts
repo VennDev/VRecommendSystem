@@ -1,4 +1,26 @@
-const API_BASE_URL = "http://localhost:9999/api/v1"; // Update with your actual API base URL
+const API_BASE_URL = "http://localhost:9999/api/v1";
+const AUTH_BASE_URL = "http://localhost:2030"; // Your Go server URL
+
+interface ApiResponse<T> {
+  data?: T;
+  message?: string;
+  error?: string;
+}
+
+// Auth related interfaces
+interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  provider: string;
+}
+
+interface AuthResponse {
+  success: boolean;
+  message: string;
+  user?: AuthUser;
+}
 
 interface ApiResponse<T> {
   data?: T;
@@ -155,6 +177,7 @@ class ApiService {
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
+        credentials: "include", // Include cookies for auth
         headers: {
           "Content-Type": "application/json",
           ...options.headers,
@@ -164,7 +187,12 @@ class ApiService {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || "API request failed");
+        // Handle auth errors
+        if (response.status === 401) {
+          window.location.href = "/login";
+          return { error: "Authentication required" };
+        }
+        throw new Error(data.detail || data.error || "API request failed");
       }
 
       return { data };
@@ -172,6 +200,46 @@ class ApiService {
       return {
         error:
           error instanceof Error ? error.message : "Unknown error occurred",
+      };
+    }
+  }
+
+  // Auth methods
+  async checkAuthStatus(): Promise<ApiResponse<AuthUser>> {
+    try {
+      const response = await fetch(`${AUTH_BASE_URL}/auth/user`, {
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return { data: data.user };
+      }
+
+      return { error: "Not authenticated" };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : "Auth check failed",
+      };
+    }
+  }
+
+  async logout(): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${AUTH_BASE_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return { data };
+      }
+
+      return { error: "Logout failed" };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : "Logout failed",
       };
     }
   }
@@ -479,6 +547,10 @@ class ApiService {
 
   async getTaskRuntime() {
     return this.request<ApiResponse<number>>(`/get_task_runtime_seconds`);
+  }
+
+  async aiServerIsOnline() {
+    return this.request<ApiResponse<boolean>>(`/health`);
   }
 }
 
