@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { buildAuthUrl, API_ENDPOINTS } from "../config/api";
 
 interface User {
   id: string;
@@ -47,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkAuthStatus = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:2030/auth/user", {
+      const response = await fetch(buildAuthUrl(API_ENDPOINTS.AUTH.CHECK_STATUS), {
         credentials: "include", // Important for session cookies
       });
 
@@ -74,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch("http://localhost:2030/api/v1/auth/logout", {
+      await fetch(buildAuthUrl(API_ENDPOINTS.AUTH.LOGOUT), {
         method: "POST",
         credentials: "include",
       });

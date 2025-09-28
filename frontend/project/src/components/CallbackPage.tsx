@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const CallbackPage: React.FC = () => {
   const { checkAuthStatus } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -13,7 +15,7 @@ const CallbackPage: React.FC = () => {
       await checkAuthStatus();
 
       // Redirect to dashboard
-      window.location.href = "/dashboard";
+      navigate("/dashboard", { replace: true });
     };
 
     handleCallback();

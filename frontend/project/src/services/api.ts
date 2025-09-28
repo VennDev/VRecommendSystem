@@ -1,5 +1,6 @@
-const API_BASE_URL = "http://localhost:9999/api/v1";
-const AUTH_BASE_URL = "http://localhost:2030"; // Your Go server URL
+import { API_ENDPOINTS, buildAiUrl, buildAuthUrl, getApiConfig } from '../config/api';
+
+const config = getApiConfig();
 
 interface ApiResponse<T> {
   data?: T;
@@ -20,12 +21,6 @@ interface AuthResponse {
   success: boolean;
   message: string;
   user?: AuthUser;
-}
-
-interface ApiResponse<T> {
-  data?: T;
-  message?: string;
-  error?: string;
 }
 
 // Request interfaces for API calls
@@ -172,14 +167,18 @@ interface DataChef {
 class ApiService {
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    useAuthServer = false
   ): Promise<ApiResponse<T>> {
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const baseUrl = useAuthServer ? config.AUTH_BASE_URL : config.AI_BASE_URL;
+      const url = `${baseUrl}${endpoint}`;
+      
+      const response = await fetch(url, {
+        ...config.REQUEST_OPTIONS,
         ...options,
-        credentials: "include", // Include cookies for auth
         headers: {
-          "Content-Type": "application/json",
+          ...config.DEFAULT_HEADERS,
           ...options.headers,
         },
       });
@@ -207,8 +206,8 @@ class ApiService {
   // Auth methods
   async checkAuthStatus(): Promise<ApiResponse<AuthUser>> {
     try {
-      const response = await fetch(`${AUTH_BASE_URL}/api/v1/auth/user`, {
-        credentials: "include",
+      const response = await fetch(buildAuthUrl(API_ENDPOINTS.AUTH.CHECK_STATUS), {
+        ...config.REQUEST_OPTIONS,
       });
 
       if (response.ok) {
@@ -226,9 +225,9 @@ class ApiService {
 
   async logout(): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch(`${AUTH_BASE_URL}/api/v1/auth/logout`, {
+      const response = await fetch(buildAuthUrl(API_ENDPOINTS.AUTH.LOGOUT), {
         method: "POST",
-        credentials: "include",
+        ...config.REQUEST_OPTIONS,
       });
 
       if (response.ok) {
@@ -258,22 +257,22 @@ class ApiService {
       message,
     };
 
-    return this.request(`/create_model`, {
+    return this.request(API_ENDPOINTS.AI.CREATE_MODEL, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
   }
 
   async listModels() {
-    return this.request<Model[]>(`/list_models`);
+    return this.request<Model[]>(API_ENDPOINTS.AI.LIST_MODELS);
   }
 
   async getModelInfo(modelId: string) {
-    return this.request<Model>(`/get_model_info/${modelId}`);
+    return this.request<Model>(API_ENDPOINTS.AI.GET_MODEL_INFO(modelId));
   }
 
   async deleteModel(modelId: string) {
-    return this.request(`/delete_model/${modelId}`, {
+    return this.request(API_ENDPOINTS.AI.DELETE_MODEL(modelId), {
       method: "DELETE",
     });
   }
@@ -292,7 +291,7 @@ class ApiService {
       interval,
     };
 
-    return this.request(`/add_model_task`, {
+    return this.request(API_ENDPOINTS.AI.ADD_MODEL_TASK, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
@@ -303,83 +302,83 @@ class ApiService {
       task_name: taskName,
     };
 
-    return this.request(`/remove_model_task`, {
+    return this.request(API_ENDPOINTS.AI.REMOVE_MODEL_TASK, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
   }
 
   async listTasks() {
-    return this.request<Task[]>(`/list_tasks`);
+    return this.request<Task[]>(API_ENDPOINTS.AI.LIST_TASKS);
   }
 
-  async renameTask(oldName: string, newName: string) {
+  async setTaskName(oldName: string, newName: string) {
     const requestBody: RenameTaskRequest = {
       old_name: oldName,
       new_name: newName,
     };
 
-    return this.request(`/rename_task`, {
+    return this.request(API_ENDPOINTS.AI.RENAME_TASK, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
   }
 
-  async updateTaskModelId(taskName: string, modelId: string) {
+  async setTaskModelId(taskName: string, modelId: string) {
     const requestBody: UpdateTaskModelIdRequest = {
       task_name: taskName,
       model_id: modelId,
     };
 
-    return this.request(`/update_task_model_id`, {
+    return this.request(API_ENDPOINTS.AI.UPDATE_TASK_MODEL_ID, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
   }
 
-  async updateTaskInteractionsDataChefId(taskName: string, dataChefId: string) {
+  async setTaskInteractionsDataChefId(taskName: string, dataChefId: string) {
     const requestBody: UpdateTaskDataChefIdRequest = {
       task_name: taskName,
       data_chef_id: dataChefId,
     };
 
-    return this.request(`/update_task_interactions_data_chef_id`, {
+    return this.request(API_ENDPOINTS.AI.UPDATE_TASK_INTERACTIONS_DATA_CHEF_ID, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
   }
 
-  async updateTaskItemFeaturesDataChefId(taskName: string, dataChefId: string) {
+  async setTaskItemFeaturesDataChefId(taskName: string, dataChefId: string) {
     const requestBody: UpdateTaskDataChefIdRequest = {
       task_name: taskName,
       data_chef_id: dataChefId,
     };
 
-    return this.request(`/update_task_item_features_data_chef_id`, {
+    return this.request(API_ENDPOINTS.AI.UPDATE_TASK_ITEM_FEATURES_DATA_CHEF_ID, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
   }
 
-  async updateTaskUserFeaturesDataChefId(taskName: string, dataChefId: string) {
+  async setTaskUserFeaturesDataChefId(taskName: string, dataChefId: string) {
     const requestBody: UpdateTaskDataChefIdRequest = {
       task_name: taskName,
       data_chef_id: dataChefId,
     };
 
-    return this.request(`/update_task_user_features_data_chef_id`, {
+    return this.request(API_ENDPOINTS.AI.UPDATE_TASK_USER_FEATURES_DATA_CHEF_ID, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
   }
 
-  async updateTaskInterval(taskName: string, interval: number) {
+  async setTaskInterval(taskName: string, interval: number) {
     const requestBody: UpdateTaskIntervalRequest = {
       task_name: taskName,
       interval,
     };
 
-    return this.request(`/update_task_interval`, {
+    return this.request(API_ENDPOINTS.AI.UPDATE_TASK_INTERVAL, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
@@ -391,7 +390,7 @@ class ApiService {
       timeout,
     };
 
-    return this.request(`/stop_scheduler`, {
+    return this.request(API_ENDPOINTS.AI.STOP_SCHEDULER, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
@@ -402,14 +401,10 @@ class ApiService {
       timeout,
     };
 
-    return this.request(`/restart_scheduler`, {
+    return this.request(API_ENDPOINTS.AI.RESTART_SCHEDULER, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
-  }
-
-  async listSchedulers() {
-    return this.request<Task[]>(`/list_schedulers`);
   }
 
   // Data Chef Management
@@ -424,7 +419,7 @@ class ApiService {
       rename_columns: renameColumns,
     };
 
-    return this.request(`/create_data_chef_from_csv`, {
+    return this.request(API_ENDPOINTS.AI.CREATE_DATA_CHEF_FROM_CSV, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
@@ -441,7 +436,7 @@ class ApiService {
       rename_columns: renameColumns,
     };
 
-    return this.request(`/create_data_chef_from_sql`, {
+    return this.request(API_ENDPOINTS.AI.CREATE_DATA_CHEF_FROM_SQL, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
@@ -460,7 +455,7 @@ class ApiService {
       rename_columns: renameColumns,
     };
 
-    return this.request(`/create_data_chef_from_nosql`, {
+    return this.request(API_ENDPOINTS.AI.CREATE_DATA_CHEF_FROM_NOSQL, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
@@ -485,7 +480,7 @@ class ApiService {
       size_value: sizeValue,
     };
 
-    return this.request(`/create_data_chef_from_api`, {
+    return this.request(API_ENDPOINTS.AI.CREATE_DATA_CHEF_FROM_API, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
@@ -506,18 +501,18 @@ class ApiService {
       group_id: groupId,
     };
 
-    return this.request(`/create_data_chef_from_message_queue`, {
+    return this.request(API_ENDPOINTS.AI.CREATE_DATA_CHEF_FROM_MESSAGE_QUEUE, {
       method: "POST",
       body: JSON.stringify(requestBody),
     });
   }
 
   async listDataChefs() {
-    return this.request<Record<string, any>>(`/list_data_chefs`);
+    return this.request<Record<string, any>>(API_ENDPOINTS.AI.LIST_DATA_CHEFS);
   }
 
   async getDataChef(dataChefId: string) {
-    return this.request<DataChef>(`/get_data_chef/${dataChefId}`);
+    return this.request<DataChef>(API_ENDPOINTS.AI.GET_DATA_CHEF(dataChefId));
   }
 
   async editDataChef(dataChefId: string, configData: Record<string, any>) {
@@ -525,32 +520,37 @@ class ApiService {
       values: configData,
     };
 
-    return this.request(`/edit_data_chef/${dataChefId}`, {
+    return this.request(API_ENDPOINTS.AI.EDIT_DATA_CHEF(dataChefId), {
       method: "PUT",
       body: JSON.stringify(requestBody),
     });
   }
 
   async deleteDataChef(dataChefId: string) {
-    return this.request(`/delete_data_chef/${dataChefId}`, {
+    return this.request(API_ENDPOINTS.AI.DELETE_DATA_CHEF(dataChefId), {
       method: "DELETE",
     });
   }
 
   async getTotalCountRunTasks() {
-    return this.request<ApiResponse<number>>(`/get_total_count_run_tasks`);
+    return this.request<ApiResponse<number>>(API_ENDPOINTS.AI.GET_TOTAL_COUNT_RUN_TASKS);
   }
 
   async getTotalRunningTasks() {
-    return this.request<ApiResponse<number>>(`/get_total_running_tasks`);
+    return this.request<ApiResponse<number>>(API_ENDPOINTS.AI.GET_TOTAL_RUNNING_TASKS);
   }
 
   async getTaskRuntime() {
-    return this.request<ApiResponse<number>>(`/get_task_runtime_seconds`);
+    return this.request<ApiResponse<number>>(API_ENDPOINTS.AI.GET_TASK_RUNTIME_SECONDS);
   }
 
   async aiServerIsOnline() {
-    return this.request<ApiResponse<boolean>>(`/health`);
+    return this.request<ApiResponse<boolean>>(API_ENDPOINTS.AI.HEALTH);
+  }
+
+  // Recommendation methods
+  async getRecommendations(userId: string, modelId: string, n?: number) {
+    return this.request(API_ENDPOINTS.AI.RECOMMEND(userId, modelId, n));
   }
 }
 
