@@ -5,15 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae0e6fb3-9ee8-4f81-b206-a0b73f966691" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.agent.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.ask.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.ask2agent.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.edit.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../api_server/internal/handlers/authentication_handler.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model_metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/services/scheduler_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/tasks/model_trainer_task.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api_server/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api_server/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api_server/go.work.sum" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/go.work.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api_server/internal/routes/public_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../api_server/internal/routes/public_routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/project/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/project/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/Dashboard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/DataChefsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/DataChefsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/LoginPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/LoginPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../frontend/project/src/components/SchedulerPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/components/SchedulerPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/contexts/AuthContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/contexts/AuthContext.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../frontend/project/src/services/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/services/api.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -261,6 +271,10 @@
       <workItem from="1758665092798" duration="3376000" />
       <workItem from="1758777861859" duration="7680000" />
       <workItem from="1758863817636" duration="168000" />
+      <workItem from="1758864037185" duration="2623000" />
+      <workItem from="1758929892935" duration="58000" />
+      <workItem from="1758929971631" duration="4648000" />
+      <workItem from="1759038586468" duration="2280000" />
     </task>
     <servers />
   </component>
