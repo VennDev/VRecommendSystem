@@ -59,33 +59,49 @@ func BeginAuthHandler(c fiber.Ctx) error {
 		})
 	}
 
-	// Redirect to OAuth provider
 	var authURL string
-	var err error
+	var authErr error
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Set provider in request context for gothic
-		r = r.WithContext(r.Context())
 		q := r.URL.Query()
 		q.Add("provider", provider)
 		r.URL.RawQuery = q.Encode()
 
-		authURL, err = gothic.GetAuthURL(w, r)
-		if err != nil {
-			return
-		}
+		authURL, authErr = gothic.GetAuthURL(w, r)
 	})
 
-	if adaptErr := adaptor.HTTPHandler(handler)(c); adaptErr != nil {
+	httpReq, err := adaptor.ConvertRequest(c, false)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to initialize authentication",
+			"error": "Failed to convert request",
 		})
 	}
 
-	if err != nil {
-		fmt.Println("GetAuthURL error:", err)
+	w := &fiberResponseWriter{
+		ctx:     c,
+		headers: make(http.Header),
+	}
+
+	// Execute handler
+	handler.ServeHTTP(w, httpReq)
+
+	for key, values := range w.headers {
+		for _, value := range values {
+			c.Set(key, value)
+		}
+	}
+
+	if authErr != nil {
+		fmt.Println("GetAuthURL error:", authErr)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to get auth URL",
+			"error":   "Failed to get auth URL",
+			"details": authErr.Error(),
+		})
+	}
+
+	if authURL == "" {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Auth URL is empty",
 		})
 	}
 
@@ -102,7 +118,7 @@ func CallbackHandler(c fiber.Ctx) error {
 	}
 
 	var user goth.User
-	var err error
+	var authErr error
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Set provider in request context for gothic
@@ -110,25 +126,40 @@ func CallbackHandler(c fiber.Ctx) error {
 		q.Add("provider", provider)
 		r.URL.RawQuery = q.Encode()
 
-		user, err = gothic.CompleteUserAuth(w, r)
+		user, authErr = gothic.CompleteUserAuth(w, r)
 	})
 
-	if adaptErr := adaptor.HTTPHandler(handler)(c); adaptErr != nil {
+	httpReq, err := adaptor.ConvertRequest(c, false)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to process authentication",
+			"error": "Failed to convert request",
 		})
 	}
 
-	if err != nil {
-		fmt.Printf("Authentication error for provider %s: %v\n", provider, err)
+	w := &fiberResponseWriter{
+		ctx:     c,
+		headers: make(http.Header),
+	}
 
-		if err.Error() == "user has not completed auth flow" {
+	// Execute handler
+	handler.ServeHTTP(w, httpReq)
+
+	for key, values := range w.headers {
+		for _, value := range values {
+			c.Set(key, value)
+		}
+	}
+
+	if authErr != nil {
+		fmt.Printf("Authentication error for provider %s: %v\n", provider, authErr)
+
+		if authErr.Error() == "user has not completed auth flow" {
 			return BeginAuthHandler(c)
 		}
 
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error":   "Authentication failed",
-			"details": err.Error(),
+			"details": authErr.Error(),
 		})
 	}
 
@@ -155,23 +186,32 @@ func CallbackHandler(c fiber.Ctx) error {
 func LogoutHandler(c fiber.Ctx) error {
 	provider := c.Query("provider", "google")
 
-	var err error
+	var logoutErr error
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
 		q.Add("provider", provider)
 		r.URL.RawQuery = q.Encode()
 
-		err = gothic.Logout(w, r)
+		logoutErr = gothic.Logout(w, r)
 	})
 
-	if adaptErr := adaptor.HTTPHandler(handler)(c); adaptErr != nil {
+	httpReq, err := adaptor.ConvertRequest(c, false)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to logout",
+			"error": "Failed to convert request",
 		})
 	}
 
-	if err != nil {
-		fmt.Println("Logout error:", err)
+	w := &fiberResponseWriter{
+		ctx:     c,
+		headers: make(http.Header),
+	}
+
+	// Execute handler
+	handler.ServeHTTP(w, httpReq)
+
+	if logoutErr != nil {
+		fmt.Println("Logout error:", logoutErr)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Logout failed",
 		})
@@ -194,4 +234,24 @@ func GetUserHandler(c fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"user": user,
 	})
+}
+
+type fiberResponseWriter struct {
+	ctx        fiber.Ctx
+	statusCode int
+	headers    http.Header
+	body       []byte
+}
+
+func (w *fiberResponseWriter) Header() http.Header {
+	return w.headers
+}
+
+func (w *fiberResponseWriter) Write(b []byte) (int, error) {
+	w.body = append(w.body, b...)
+	return len(b), nil
+}
+
+func (w *fiberResponseWriter) WriteHeader(statusCode int) {
+	w.statusCode = statusCode
 }

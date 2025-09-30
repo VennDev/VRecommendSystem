@@ -29,7 +29,7 @@ func InitApp() *fiber.App {
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:3000"}, // support both Vite dev server ports
 		AllowMethods:     []string{"GET,POST,PUT,DELETE,OPTIONS"},
 		AllowHeaders:     []string{"Origin, Content-Type, Accept, Authorization"},
-		AllowCredentials: true, // bắt buộc khi dùng cookie/session
+		AllowCredentials: true,
 	}))
 
 	return app

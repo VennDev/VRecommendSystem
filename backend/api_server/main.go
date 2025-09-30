@@ -26,6 +26,9 @@ func main() {
 	logger := initialize.InitLogger()
 	defer logger.Close()
 
+	// Initialize OAuth
+	initialize.InitOAuth()
+
 	// Initialize App
 	app := initialize.InitApp()
 
