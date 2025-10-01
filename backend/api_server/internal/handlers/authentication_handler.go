@@ -70,6 +70,7 @@ func BeginAuthHandler(c fiber.Ctx) error {
 		authURL, authErr = gothic.GetAuthURL(w, r)
 	})
 
+	// Convert HTTP handler sang Fiber handler và execute
 	httpReq, err := adaptor.ConvertRequest(c, false)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -88,6 +89,12 @@ func BeginAuthHandler(c fiber.Ctx) error {
 	for key, values := range w.headers {
 		for _, value := range values {
 			c.Set(key, value)
+		}
+	}
+
+	if cookies := w.headers["Set-Cookie"]; len(cookies) > 0 {
+		for _, cookie := range cookies {
+			c.Append("Set-Cookie", cookie)
 		}
 	}
 
@@ -129,6 +136,7 @@ func CallbackHandler(c fiber.Ctx) error {
 		user, authErr = gothic.CompleteUserAuth(w, r)
 	})
 
+	// Convert HTTP handler sang Fiber handler
 	httpReq, err := adaptor.ConvertRequest(c, false)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
