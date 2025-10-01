@@ -15,6 +15,7 @@ const Dashboard: React.FC = () => {
   });
 
   const [serverHealth, setServerHealth] = useState<ServerHealth[]>([]);
+  const [schedulerStatus, setSchedulerStatus] = useState<{is_running: boolean; status: string} | null>(null);
 
   const [recentActivity] = useState([
     {
@@ -46,9 +47,13 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchDashboardData();
     checkServerHealth();
+    checkSchedulerStatus();
 
     // Check server health every 30 seconds
-    const healthCheckInterval = setInterval(checkServerHealth, 30000);
+    const healthCheckInterval = setInterval(() => {
+      checkServerHealth();
+      checkSchedulerStatus();
+    }, 30000);
 
     return () => clearInterval(healthCheckInterval);
   }, []);
@@ -56,6 +61,17 @@ const Dashboard: React.FC = () => {
   const checkServerHealth = async () => {
     const health = await healthCheckService.checkAllServers();
     setServerHealth(health);
+  };
+
+  const checkSchedulerStatus = async () => {
+    try {
+      const response = await apiService.getSchedulerStatus();
+      if (response.data) {
+        setSchedulerStatus(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to check scheduler status:', error);
+    }
   };
 
   const fetchDashboardData = async () => {
@@ -294,6 +310,35 @@ const Dashboard: React.FC = () => {
                 <div className="text-center py-4 text-base-content/60">
                   <Server className="h-8 w-8 mx-auto mb-2 opacity-50" />
                   <p className="text-sm">Checking server status...</p>
+                </div>
+              )}
+
+              {/* Scheduler Status */}
+              {schedulerStatus && (
+                <div
+                  className={`flex items-center justify-between p-3 rounded-lg mt-4 ${
+                    schedulerStatus.is_running
+                      ? 'bg-success/10'
+                      : 'bg-warning/10'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Clock className={`h-5 w-5 ${
+                      schedulerStatus.is_running
+                        ? 'text-success'
+                        : 'text-warning'
+                    }`} />
+                    <span className="text-sm font-medium text-base-content">
+                      Task Scheduler
+                    </span>
+                  </div>
+                  <span className={`badge badge-sm ${
+                    schedulerStatus.is_running
+                      ? 'badge-success'
+                      : 'badge-warning'
+                  }`}>
+                    {schedulerStatus.status}
+                  </span>
                 </div>
               )}
             </div>

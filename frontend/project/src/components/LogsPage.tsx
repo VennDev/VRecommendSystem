@@ -1,6 +1,7 @@
 import { Download, FileText, RefreshCw, Server } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { activityLogger } from "../services/activityLogger";
+import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 
 interface ActivityLog {
@@ -14,16 +15,25 @@ interface ActivityLog {
   created_at: string;
 }
 
+interface ServerLog {
+  timestamp: string;
+  message: string;
+  level: string;
+}
+
 const LogsPage: React.FC = () => {
   const { user } = useAuth();
   const [logs, setLogs] = useState<ActivityLog[]>([]);
+  const [serverLogs, setServerLogs] = useState<ServerLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [serverLogsLoading, setServerLogsLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
     if (user) {
       fetchLogs();
     }
+    fetchServerLogs();
   }, [user]);
 
   const fetchLogs = async () => {
@@ -37,6 +47,20 @@ const LogsPage: React.FC = () => {
       console.error("Failed to fetch logs:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchServerLogs = async () => {
+    setServerLogsLoading(true);
+    try {
+      const response = await apiService.getServerLogs(100);
+      if (response.data) {
+        setServerLogs(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch server logs:", error);
+    } finally {
+      setServerLogsLoading(false);
     }
   };
 
@@ -211,46 +235,78 @@ const LogsPage: React.FC = () => {
 
       {/* Server Logs Section */}
       <div className="mt-8">
-        <h2 className="text-2xl font-bold text-base-content mb-4">
-          Server Logs
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="card bg-base-100 shadow-sm">
-            <div className="card-body">
-              <h3 className="card-title text-lg flex items-center gap-2">
-                <Server className="h-5 w-5" />
-                AI Server Logs
-              </h3>
-              <p className="text-sm text-base-content/70 mb-4">
-                Real-time logs from the AI model training server
-              </p>
-              <div className="alert alert-info">
-                <FileText className="h-5 w-5" />
-                <span className="text-sm">
-                  Server logs are available on the backend. Check the terminal
-                  or log files at <code>backend/ai_server/logs/</code>
-                </span>
-              </div>
-            </div>
-          </div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-base-content">
+            Server Logs
+          </h2>
+          <button
+            onClick={fetchServerLogs}
+            className="btn btn-secondary btn-sm gap-2"
+            disabled={serverLogsLoading}
+          >
+            <RefreshCw className={`h-4 w-4 ${serverLogsLoading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+        </div>
 
-          <div className="card bg-base-100 shadow-sm">
-            <div className="card-body">
-              <h3 className="card-title text-lg flex items-center gap-2">
-                <Server className="h-5 w-5" />
-                API Server Logs
-              </h3>
-              <p className="text-sm text-base-content/70 mb-4">
-                Real-time logs from the API gateway server
-              </p>
-              <div className="alert alert-info">
-                <FileText className="h-5 w-5" />
-                <span className="text-sm">
-                  Server logs are available on the backend. Check the terminal
-                  output or configure logging to a centralized service.
-                </span>
+        <div className="card bg-base-100 shadow-sm">
+          <div className="card-body">
+            <h3 className="card-title text-lg flex items-center gap-2 mb-4">
+              <Server className="h-5 w-5" />
+              AI Server Logs
+            </h3>
+
+            {serverLogsLoading ? (
+              <div className="text-center py-8">
+                <div className="loading loading-spinner loading-md"></div>
+                <p className="text-base-content/70 mt-2">Loading server logs...</p>
               </div>
-            </div>
+            ) : (
+              <>
+                {serverLogs.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <div className="bg-base-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+                      <div className="font-mono text-xs space-y-1">
+                        {serverLogs.map((log, index) => (
+                          <div
+                            key={index}
+                            className="flex items-start gap-3 hover:bg-base-300 px-2 py-1 rounded"
+                          >
+                            <span
+                              className={`badge badge-xs mt-1 ${
+                                log.level === 'ERROR'
+                                  ? 'badge-error'
+                                  : log.level === 'WARNING'
+                                  ? 'badge-warning'
+                                  : 'badge-info'
+                              }`}
+                            >
+                              {log.level}
+                            </span>
+                            <span className="text-base-content/60 whitespace-nowrap">
+                              {new Date(log.timestamp).toLocaleString()}
+                            </span>
+                            <span className="text-base-content flex-1">
+                              {log.message}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="alert alert-info">
+                    <FileText className="h-5 w-5" />
+                    <div>
+                      <p className="font-semibold">No logs available</p>
+                      <p className="text-sm">
+                        Server is running but no logs have been recorded yet. Logs will appear here when the server processes requests.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

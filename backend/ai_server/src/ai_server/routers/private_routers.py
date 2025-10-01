@@ -607,3 +607,79 @@ def get_total_training_models() -> dict:
         return {"data": total}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_scheduler_status")
+def get_scheduler_status() -> dict:
+    """
+    Get the current status of the scheduler.
+
+    :return: Scheduler status information
+    """
+    try:
+        scheduler = scheduler_service.get_scheduler_manager()
+        is_running = scheduler.scheduler.running if hasattr(scheduler, 'scheduler') else False
+
+        return {
+            "data": {
+                "is_running": is_running,
+                "status": "running" if is_running else "stopped"
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_server_logs")
+def get_server_logs(limit: int = 50) -> dict:
+    """
+    Get recent server logs.
+
+    :param limit: Maximum number of log entries to return
+    :return: List of recent log entries
+    """
+    try:
+        import logging
+        import os
+        from datetime import datetime
+
+        logs = []
+
+        # Try to read from log file if it exists
+        log_dir = os.path.join(os.getcwd(), "logs")
+        if os.path.exists(log_dir):
+            log_files = sorted([f for f in os.listdir(log_dir) if f.endswith('.log')], reverse=True)
+
+            for log_file in log_files[:1]:  # Read only the most recent log file
+                log_path = os.path.join(log_dir, log_file)
+                try:
+                    with open(log_path, 'r') as f:
+                        lines = f.readlines()
+                        for line in lines[-limit:]:
+                            if line.strip():
+                                logs.append({
+                                    "timestamp": datetime.now().isoformat(),
+                                    "message": line.strip(),
+                                    "level": "INFO"
+                                })
+                except Exception as e:
+                    pass
+
+        # If no logs from file, return system info
+        if not logs:
+            logs = [
+                {
+                    "timestamp": datetime.now().isoformat(),
+                    "message": "AI Server is running",
+                    "level": "INFO"
+                },
+                {
+                    "timestamp": datetime.now().isoformat(),
+                    "message": f"Scheduler status: {'running' if scheduler_service.get_scheduler_manager().scheduler.running else 'stopped'}",
+                    "level": "INFO"
+                }
+            ]
+
+        return {"data": logs}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

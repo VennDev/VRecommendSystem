@@ -571,6 +571,18 @@ class ApiService {
     return this.request<ApiResponse<boolean>>(API_ENDPOINTS.AI.HEALTH);
   }
 
+  async getSchedulerStatus() {
+    return this.request<ApiResponse<{is_running: boolean; status: string}>>(
+      API_ENDPOINTS.AI.GET_SCHEDULER_STATUS
+    );
+  }
+
+  async getServerLogs(limit: number = 50) {
+    return this.request<ApiResponse<Array<{timestamp: string; message: string; level: string}>>>(
+      `${API_ENDPOINTS.AI.GET_SERVER_LOGS}?limit=${limit}`
+    );
+  }
+
   // Recommendation methods
   async getRecommendations(userId: string, modelId: string, n?: number) {
     return this.request(API_ENDPOINTS.AI.RECOMMEND(userId, modelId, n));

@@ -85,6 +85,8 @@ export const API_ENDPOINTS = {
     GET_TASK_RUNTIME_SECONDS: '/get_task_runtime_seconds',
     GET_TOTAL_ACTIVATING_MODELS: '/get_total_activating_models',
     GET_TOTAL_TRAINING_MODELS: '/get_total_training_models',
+    GET_SCHEDULER_STATUS: '/get_scheduler_status',
+    GET_SERVER_LOGS: '/get_server_logs',
     
     // Recommendations
     RECOMMEND: (userId: string, modelId: string, n?: number) => 
