@@ -213,6 +213,7 @@ func CallbackHandler(c fiber.Ctx) error {
 	session.Values["authenticated"] = true
 
 	// Save session
+	fmt.Printf("Attempting to save session with values: %+v\n", session.Values)
 	if err := session.Save(httpReq2, w); err != nil {
 		fmt.Printf("Failed to save session: %v\n", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -221,12 +222,17 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
+	fmt.Printf("Session saved successfully!\n")
+	fmt.Printf("Response headers: %v\n", w.headers)
+
 	// Copy session cookies to Fiber response
 	if cookies := w.headers["Set-Cookie"]; len(cookies) > 0 {
 		for _, cookie := range cookies {
 			fmt.Printf("Setting cookie: %s\n", cookie)
 			c.Append("Set-Cookie", cookie)
 		}
+	} else {
+		fmt.Printf("WARNING: No Set-Cookie headers found!\n")
 	}
 
 	// Redirect to frontend callback page
@@ -282,22 +288,32 @@ func LogoutHandler(c fiber.Ctx) error {
 func GetUserHandler(c fiber.Ctx) error {
 	provider := c.Query("provider", "google")
 
+	// Debug: Print all cookies
+	fmt.Printf("GetUserHandler - Cookies received: %v\n", c.Cookies())
+	fmt.Printf("GetUserHandler - All headers: %v\n", c.GetReqHeaders())
+
 	// Convert Fiber request to HTTP request
 	httpReq, err := adaptor.ConvertRequest(c, false)
 	if err != nil {
+		fmt.Printf("Failed to convert request: %v\n", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to convert request",
 		})
 	}
 
 	// Get session
-	session, err := gothic.Store.Get(httpReq, fmt.Sprintf("%s_%s", gothic.SessionName, provider))
+	sessionName := fmt.Sprintf("%s_%s", gothic.SessionName, provider)
+	fmt.Printf("Looking for session: %s\n", sessionName)
+
+	session, err := gothic.Store.Get(httpReq, sessionName)
 	if err != nil {
 		fmt.Printf("Failed to get session: %v\n", err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Not authenticated - session error",
 		})
 	}
+
+	fmt.Printf("Session values: %+v\n", session.Values)
 
 	// Check if authenticated
 	authenticated, ok := session.Values["authenticated"].(bool)

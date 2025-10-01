@@ -48,16 +48,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkAuthStatus = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(buildAuthUrl(API_ENDPOINTS.AUTH.CHECK_STATUS), {
+      const url = buildAuthUrl(API_ENDPOINTS.AUTH.CHECK_STATUS);
+      console.log("Checking auth status at:", url);
+
+      const response = await fetch(url, {
         credentials: "include", // Important for session cookies
+        headers: {
+          'Accept': 'application/json',
+        },
       });
+
+      console.log("Auth check response:", response.status);
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Auth data received:", data);
         if (data.user) {
           setUser(data.user);
+        } else {
+          setUser(null);
         }
       } else {
+        console.error("Auth check failed with status:", response.status);
         setUser(null);
       }
     } catch (error) {
