@@ -288,9 +288,12 @@ func LogoutHandler(c fiber.Ctx) error {
 func GetUserHandler(c fiber.Ctx) error {
 	provider := c.Query("provider", "google")
 
-	// Debug: Print all cookies
-	fmt.Printf("GetUserHandler - Cookies received: %v\n", c.Cookies())
-	fmt.Printf("GetUserHandler - All headers: %v\n", c.GetReqHeaders())
+	// Debug: Print cookie header
+	cookieHeader := c.Get("Cookie")
+	fmt.Printf("GetUserHandler - Cookie header: %s\n", cookieHeader)
+
+	sessionName := fmt.Sprintf("%s_%s", gothic.SessionName, provider)
+	fmt.Printf("GetUserHandler - Looking for session cookie: %s\n", sessionName)
 
 	// Convert Fiber request to HTTP request
 	httpReq, err := adaptor.ConvertRequest(c, false)
@@ -302,8 +305,7 @@ func GetUserHandler(c fiber.Ctx) error {
 	}
 
 	// Get session
-	sessionName := fmt.Sprintf("%s_%s", gothic.SessionName, provider)
-	fmt.Printf("Looking for session: %s\n", sessionName)
+	fmt.Printf("Attempting to get session: %s\n", sessionName)
 
 	session, err := gothic.Store.Get(httpReq, sessionName)
 	if err != nil {
