@@ -15,8 +15,9 @@ func PublicRouters(a *fiber.App) {
 	route.Get("/recommend", handlers.Recommend)
 
 	// Authentication routes
-	route.Get("/auth/:provider", handlers.BeginAuthHandler)
-	route.Get("/auth/:provider/callback", handlers.CallbackHandler)
-	route.Post("/auth/logout", handlers.LogoutHandler)
+	// IMPORTANT: Specific routes MUST come before wildcard routes
 	route.Get("/auth/user", handlers.GetUserHandler)
+	route.Post("/auth/logout", handlers.LogoutHandler)
+	route.Get("/auth/:provider/callback", handlers.CallbackHandler)
+	route.Get("/auth/:provider", handlers.BeginAuthHandler)
 }
