@@ -9,8 +9,8 @@ port: 9999
 # Middleware configuration
 middleware:
   cors:
-    credentials: false
-    origins: [ "*" ]
+    credentials: true
+    origins: [ "http://localhost:5173", "http://127.0.0.1:5173" ]
     methods: [ "*" ]
     headers: [ "*" ]
 
