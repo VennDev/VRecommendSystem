@@ -312,7 +312,7 @@ func GetUserHandler(c fiber.Ctx) error {
 	email, _ := session.Values["email"].(string)
 	name, _ := session.Values["name"].(string)
 	picture, _ := session.Values["picture"].(string)
-	provider, _ := session.Values["provider"].(string)
+	providerV, _ := session.Values["provider"].(string)
 
 	if userId == "" || email == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -325,7 +325,7 @@ func GetUserHandler(c fiber.Ctx) error {
 			"id":       userId,
 			"name":     name,
 			"email":    email,
-			"provider": provider,
+			"provider": providerV,
 			"picture":  picture,
 		},
 	})
