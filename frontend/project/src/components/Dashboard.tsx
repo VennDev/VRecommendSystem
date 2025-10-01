@@ -1,14 +1,4 @@
-import {
-  Activity,
-  AlertCircle,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Cpu,
-  Database,
-  TrendingUp,
-  User,
-} from "lucide-react";
+import { Activity, CircleAlert as AlertCircle, Calendar, CircleCheck as CheckCircle, Clock, Cpu, Database, TrendingUp, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";

@@ -1,17 +1,4 @@
-import {
-  Bot,
-  Calendar,
-  Clock,
-  Cpu,
-  Database,
-  Home,
-  LogOut,
-  Menu,
-  Moon,
-  Sun,
-  User,
-  X,
-} from "lucide-react";
+import { Bot, Calendar, Clock, Cpu, Database, Hop as Home, LogOut, Menu, Moon, Sun, User, X } from "lucide-react";
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
