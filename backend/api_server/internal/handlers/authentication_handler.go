@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/gofiber/fiber/v3"
@@ -156,8 +157,12 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
-	// Exchange code for access token
-	_, err = sess.Authorize(gothProvider, map[string]string{"code": code})
+	// Exchange code for access token using url.Values which implements goth.Params
+	queryParams := url.Values{}
+	queryParams.Set("code", code)
+	queryParams.Set("state", state)
+
+	_, err = sess.Authorize(gothProvider, queryParams)
 	if err != nil {
 		fmt.Printf("Authorization error: %v\n", err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
