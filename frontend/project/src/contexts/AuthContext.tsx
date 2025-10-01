@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 import { buildAuthUrl, API_ENDPOINTS } from "../config/api";
+import { activityLogger } from "../services/activityLogger";
 
 interface User {
   id: string;
@@ -113,6 +114,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
+      // Log logout activity before clearing user
+      if (user) {
+        await activityLogger.log(user.id, user.email, {
+          action: 'logout',
+          details: { timestamp: new Date().toISOString() },
+        });
+      }
+
       await fetch(buildAuthUrl(API_ENDPOINTS.AUTH.LOGOUT), {
         method: "POST",
         credentials: "include",

@@ -429,7 +429,7 @@ const TasksPage: React.FC = () => {
 
               <div>
                 <label className="label">
-                  <span className="label-text">Interval (seconds)</span>
+                  <span className="label-text">Interval</span>
                 </label>
                 <select
                   value={formData.interval}
@@ -572,7 +572,7 @@ const TasksPage: React.FC = () => {
 
               <div>
                 <label className="label">
-                  <span className="label-text">Interval (seconds)</span>
+                  <span className="label-text">Interval</span>
                 </label>
                 <select
                   value={formData.interval}

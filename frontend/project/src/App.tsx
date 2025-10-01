@@ -5,6 +5,7 @@ import CallbackPage from "./components/CallbackPage";
 import DataChefsPage from "./components/DataChefsPage";
 import Layout from "./components/Layout";
 import LoginPage from "./components/LoginPage";
+import LogsPage from "./components/LogsPage";
 import ModelsPage from "./components/ModelsPage";
 import SchedulerPage from "./components/SchedulerPage";
 import TasksPage from "./components/TasksPage";
@@ -34,6 +35,7 @@ const AppContent: React.FC = () => {
       <Route path="/tasks" element={user ? <DashboardLayout><TasksPage /></DashboardLayout> : <Navigate to="/login" replace />} />
       <Route path="/scheduler" element={user ? <DashboardLayout><SchedulerPage /></DashboardLayout> : <Navigate to="/login" replace />} />
       <Route path="/data-chefs" element={user ? <DashboardLayout><DataChefsPage /></DashboardLayout> : <Navigate to="/login" replace />} />
+      <Route path="/logs" element={user ? <DashboardLayout><LogsPage /></DashboardLayout> : <Navigate to="/login" replace />} />
       <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
     </Routes>
   );
@@ -48,6 +50,7 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
     if (path.includes('/tasks')) return 'tasks';
     if (path.includes('/scheduler')) return 'scheduler';
     if (path.includes('/data-chefs')) return 'data-chefs';
+    if (path.includes('/logs')) return 'logs';
     return 'dashboard';
   });
 
@@ -58,6 +61,7 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
     else if (path.includes('/tasks')) setActiveTab('tasks');
     else if (path.includes('/scheduler')) setActiveTab('scheduler');
     else if (path.includes('/data-chefs')) setActiveTab('data-chefs');
+    else if (path.includes('/logs')) setActiveTab('logs');
     else setActiveTab('dashboard');
   }, [location]);
 

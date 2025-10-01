@@ -1,4 +1,4 @@
-import { Bot, Calendar, Clock, Cpu, Database, Hop as Home, LogOut, Menu, Moon, Sun, User, X } from "lucide-react";
+import { Bot, Calendar, Clock, Cpu, Database, FileText, Hop as Home, LogOut, Menu, Moon, Sun, User, X } from "lucide-react";
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -24,6 +24,7 @@ const Layout: React.FC<LayoutProps> = ({
     { id: "tasks", name: "Tasks", icon: Calendar },
     { id: "scheduler", name: "Scheduler", icon: Clock },
     { id: "data-chefs", name: "Restaurant Data", icon: Database },
+    { id: "logs", name: "Activity Logs", icon: FileText },
   ];
 
   return (

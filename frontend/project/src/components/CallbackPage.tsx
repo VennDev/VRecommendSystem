@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { activityLogger } from "../services/activityLogger";
 
 const CallbackPage: React.FC = () => {
   const { setUser } = useAuth();
@@ -41,6 +42,16 @@ const CallbackPage: React.FC = () => {
           picture,
           provider,
         }));
+
+        // Log successful login activity
+        await activityLogger.log(id, email, {
+          action: 'login',
+          details: {
+            provider: provider || 'google',
+            name: name || '',
+            timestamp: new Date().toISOString(),
+          },
+        });
 
         setStatus("Success! Redirecting to dashboard...");
 

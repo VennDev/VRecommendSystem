@@ -1,7 +1,8 @@
-import { Activity, CircleAlert as AlertCircle, Calendar, CircleCheck as CheckCircle, Clock, Cpu, Database, TrendingUp, User } from "lucide-react";
+import { Activity, CircleAlert as AlertCircle, Calendar, CircleCheck as CheckCircle, Clock, Cpu, Database, TrendingUp, User, Server } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
+import { healthCheckService, ServerHealth } from "../services/healthCheck";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -12,6 +13,8 @@ const Dashboard: React.FC = () => {
     activeModels: 0,
     isServerOnline: false,
   });
+
+  const [serverHealth, setServerHealth] = useState<ServerHealth[]>([]);
 
   const [recentActivity] = useState([
     {
@@ -42,7 +45,18 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchDashboardData();
+    checkServerHealth();
+
+    // Check server health every 30 seconds
+    const healthCheckInterval = setInterval(checkServerHealth, 30000);
+
+    return () => clearInterval(healthCheckInterval);
   }, []);
+
+  const checkServerHealth = async () => {
+    const health = await healthCheckService.checkAllServers();
+    setServerHealth(health);
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -221,45 +235,67 @@ const Dashboard: React.FC = () => {
         {/* System Status */}
         <div className="card bg-base-100 shadow-sm">
           <div className="card-body">
-            <h2 className="card-title text-base-content mb-4">System Status</h2>
+            <h2 className="card-title text-base-content mb-4 flex items-center justify-between">
+              <span>Server Health</span>
+              <button
+                onClick={checkServerHealth}
+                className="btn btn-ghost btn-xs"
+              >
+                Refresh
+              </button>
+            </h2>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-success/10">
-                <div className="flex items-center space-x-3">
-                  <div className="h-3 w-3 bg-success rounded-full"></div>
-                  <span className="text-sm font-medium text-base-content">
-                    AI Server
-                  </span>
+              {serverHealth.map((server) => (
+                <div
+                  key={server.name}
+                  className={`flex items-center justify-between p-3 rounded-lg ${
+                    server.status === 'healthy'
+                      ? 'bg-success/10'
+                      : 'bg-error/10'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Server className={`h-5 w-5 ${
+                      server.status === 'healthy'
+                        ? 'text-success'
+                        : 'text-error'
+                    }`} />
+                    <div>
+                      <span className="text-sm font-medium text-base-content block">
+                        {server.name}
+                      </span>
+                      {server.responseTime && (
+                        <span className="text-xs text-base-content/60">
+                          {server.responseTime}ms
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {server.status === 'healthy' ? (
+                    <span className="badge badge-success badge-sm">
+                      Healthy
+                    </span>
+                  ) : (
+                    <div className="text-right">
+                      <span className="badge badge-error badge-sm block mb-1">
+                        Unhealthy
+                      </span>
+                      {server.error && (
+                        <span className="text-xs text-error/70">
+                          {server.error}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
-                {stats.isServerOnline ? (
-                  <span className="badge badge-success badge-sm">
-                    Connected
-                  </span>
-                ) : (
-                  <span className="badge badge-error badge-sm">
-                    Disconnected
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-warning/10">
-                <div className="flex items-center space-x-3">
-                  <div className="h-3 w-3 bg-success rounded-full"></div>
-                  <span className="text-sm font-medium text-base-content">
-                    API Server
-                  </span>
+              ))}
+
+              {serverHealth.length === 0 && (
+                <div className="text-center py-4 text-base-content/60">
+                  <Server className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Checking server status...</p>
                 </div>
-                <span className="badge badge-error badge-sm">Disconnected</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-warning/10">
-                <div className="flex items-center space-x-3">
-                  <div className="h-3 w-3 bg-success rounded-full"></div>
-                  <span className="text-sm font-medium text-base-content">
-                    Model Training
-                  </span>
-                </div>
-                <span className="badge badge-warning badge-sm">
-                  In Progress
-                </span>
-              </div>
+              )}
             </div>
           </div>
         </div>
