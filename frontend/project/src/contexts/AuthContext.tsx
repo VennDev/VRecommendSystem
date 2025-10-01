@@ -21,6 +21,7 @@ interface AuthContextType {
   login: () => void;
   logout: () => void;
   checkAuthStatus: () => Promise<void>;
+  setUser: (user: User | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,12 +43,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Try to load user from localStorage first
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+        setIsLoading(false);
+        return;
+      } catch (error) {
+        console.error("Failed to parse stored user:", error);
+      }
+    }
+
+    // Fall back to checking auth status from server
     checkAuthStatus();
   }, []);
 
   const checkAuthStatus = async () => {
     setIsLoading(true);
     try {
+      // Check if user is stored in localStorage
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+        setIsLoading(false);
+        return;
+      }
+
       const url = buildAuthUrl(API_ENDPOINTS.AUTH.CHECK_STATUS);
       console.log("Checking auth status at:", url);
 
@@ -65,16 +87,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log("Auth data received:", data);
         if (data.user) {
           setUser(data.user);
+          localStorage.setItem("user", JSON.stringify(data.user));
         } else {
           setUser(null);
+          localStorage.removeItem("user");
         }
       } else {
         console.error("Auth check failed with status:", response.status);
         setUser(null);
+        localStorage.removeItem("user");
       }
     } catch (error) {
       console.error("Auth check failed:", error);
       setUser(null);
+      localStorage.removeItem("user");
     } finally {
       setIsLoading(false);
     }
@@ -92,17 +118,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         credentials: "include",
       });
       setUser(null);
+      localStorage.removeItem("user");
       window.location.href = "/login";
     } catch (error) {
       console.error("Logout failed:", error);
       // Still clear user on frontend even if API fails
       setUser(null);
+      localStorage.removeItem("user");
       window.location.href = "/login";
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, checkAuthStatus }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, checkAuthStatus, setUser }}>
       {children}
     </AuthContext.Provider>
   );

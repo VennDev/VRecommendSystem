@@ -3,22 +3,44 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const CallbackPage: React.FC = () => {
-  const { checkAuthStatus } = useAuth();
+  const { setUser } = useAuth();
   const navigate = useNavigate();
   const [status, setStatus] = useState<string>("Processing authentication...");
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        setStatus("Verifying your session...");
+        // Get user data from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get("id");
+        const email = urlParams.get("email");
+        const name = urlParams.get("name");
+        const picture = urlParams.get("picture");
+        const provider = urlParams.get("provider");
 
-        // Wait a brief moment for cookies to be set
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        if (!id || !email) {
+          throw new Error("Missing user data in callback");
+        }
 
         setStatus("Loading your profile...");
 
-        // Check auth status to get full user data from backend
-        await checkAuthStatus();
+        // Set user data in auth context
+        setUser({
+          id,
+          email,
+          name: name || "",
+          picture: picture || "",
+          provider: provider || "google",
+        });
+
+        // Store in localStorage for persistence
+        localStorage.setItem("user", JSON.stringify({
+          id,
+          email,
+          name,
+          picture,
+          provider,
+        }));
 
         setStatus("Success! Redirecting to dashboard...");
 
@@ -39,7 +61,7 @@ const CallbackPage: React.FC = () => {
     };
 
     handleCallback();
-  }, [checkAuthStatus, navigate]);
+  }, [setUser, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">

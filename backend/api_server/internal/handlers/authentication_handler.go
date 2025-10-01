@@ -235,8 +235,21 @@ func CallbackHandler(c fiber.Ctx) error {
 		fmt.Printf("WARNING: No Set-Cookie headers found!\n")
 	}
 
-	// Redirect to frontend callback page
-	return c.Redirect().To("http://localhost:5173/auth/callback")
+	// Encode user data as URL parameters to pass to frontend
+	// This is a simple approach - in production, you'd use a temporary token
+	userData := url.Values{}
+	userData.Set("id", user.UserID)
+	userData.Set("email", user.Email)
+	userData.Set("name", user.Name)
+	userData.Set("picture", user.AvatarURL)
+	userData.Set("provider", user.Provider)
+
+	// Redirect to frontend with user data
+	redirectURL := fmt.Sprintf("http://localhost:5173/auth/callback?%s", userData.Encode())
+
+	fmt.Printf("Redirecting to: %s\n", redirectURL)
+
+	return c.Redirect().To(redirectURL)
 }
 
 func LogoutHandler(c fiber.Ctx) error {
