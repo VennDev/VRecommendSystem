@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import CallbackPage from "./components/CallbackPage";
 import DataChefsPage from "./components/DataChefsPage";
@@ -40,8 +40,10 @@ const AppContent: React.FC = () => {
 };
 
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState(() => {
-    const path = window.location.pathname;
+    const path = location.pathname;
     if (path.includes('/models')) return 'models';
     if (path.includes('/tasks')) return 'tasks';
     if (path.includes('/scheduler')) return 'scheduler';
@@ -49,10 +51,19 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
     return 'dashboard';
   });
 
+  // Update active tab when location changes
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.includes('/models')) setActiveTab('models');
+    else if (path.includes('/tasks')) setActiveTab('tasks');
+    else if (path.includes('/scheduler')) setActiveTab('scheduler');
+    else if (path.includes('/data-chefs')) setActiveTab('data-chefs');
+    else setActiveTab('dashboard');
+  }, [location]);
+
   const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    // Navigate to the corresponding route
-    window.history.pushState(null, '', `/${tab === 'dashboard' ? 'dashboard' : tab}`);
+    // Use React Router's navigate instead of pushState
+    navigate(`/${tab === 'dashboard' ? 'dashboard' : tab}`);
   };
 
   return (
