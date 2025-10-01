@@ -1,4 +1,9 @@
-import { API_ENDPOINTS, buildAiUrl, buildAuthUrl, getApiConfig } from '../config/api';
+import {
+  API_ENDPOINTS,
+  buildAiUrl,
+  buildAuthUrl,
+  getApiConfig,
+} from "../config/api";
 
 const config = getApiConfig();
 
@@ -173,7 +178,7 @@ class ApiService {
     try {
       const baseUrl = useAuthServer ? config.AUTH_BASE_URL : config.AI_BASE_URL;
       const url = `${baseUrl}${endpoint}`;
-      
+
       const response = await fetch(url, {
         ...config.REQUEST_OPTIONS,
         ...options,
@@ -206,9 +211,12 @@ class ApiService {
   // Auth methods
   async checkAuthStatus(): Promise<ApiResponse<AuthUser>> {
     try {
-      const response = await fetch(buildAuthUrl(API_ENDPOINTS.AUTH.CHECK_STATUS), {
-        ...config.REQUEST_OPTIONS,
-      });
+      const response = await fetch(
+        buildAuthUrl(API_ENDPOINTS.AUTH.CHECK_STATUS),
+        {
+          ...config.REQUEST_OPTIONS,
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -342,10 +350,13 @@ class ApiService {
       data_chef_id: dataChefId,
     };
 
-    return this.request(API_ENDPOINTS.AI.UPDATE_TASK_INTERACTIONS_DATA_CHEF_ID, {
-      method: "POST",
-      body: JSON.stringify(requestBody),
-    });
+    return this.request(
+      API_ENDPOINTS.AI.UPDATE_TASK_INTERACTIONS_DATA_CHEF_ID,
+      {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+      }
+    );
   }
 
   async setTaskItemFeaturesDataChefId(taskName: string, dataChefId: string) {
@@ -354,10 +365,13 @@ class ApiService {
       data_chef_id: dataChefId,
     };
 
-    return this.request(API_ENDPOINTS.AI.UPDATE_TASK_ITEM_FEATURES_DATA_CHEF_ID, {
-      method: "POST",
-      body: JSON.stringify(requestBody),
-    });
+    return this.request(
+      API_ENDPOINTS.AI.UPDATE_TASK_ITEM_FEATURES_DATA_CHEF_ID,
+      {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+      }
+    );
   }
 
   async setTaskUserFeaturesDataChefId(taskName: string, dataChefId: string) {
@@ -366,10 +380,13 @@ class ApiService {
       data_chef_id: dataChefId,
     };
 
-    return this.request(API_ENDPOINTS.AI.UPDATE_TASK_USER_FEATURES_DATA_CHEF_ID, {
-      method: "POST",
-      body: JSON.stringify(requestBody),
-    });
+    return this.request(
+      API_ENDPOINTS.AI.UPDATE_TASK_USER_FEATURES_DATA_CHEF_ID,
+      {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+      }
+    );
   }
 
   async setTaskInterval(taskName: string, interval: number) {
@@ -533,15 +550,21 @@ class ApiService {
   }
 
   async getTotalCountRunTasks() {
-    return this.request<ApiResponse<number>>(API_ENDPOINTS.AI.GET_TOTAL_COUNT_RUN_TASKS);
+    return this.request<ApiResponse<number>>(
+      API_ENDPOINTS.AI.GET_TOTAL_COUNT_RUN_TASKS
+    );
   }
 
   async getTotalRunningTasks() {
-    return this.request<ApiResponse<number>>(API_ENDPOINTS.AI.GET_TOTAL_RUNNING_TASKS);
+    return this.request<ApiResponse<number>>(
+      API_ENDPOINTS.AI.GET_TOTAL_RUNNING_TASKS
+    );
   }
 
   async getTaskRuntime() {
-    return this.request<ApiResponse<number>>(API_ENDPOINTS.AI.GET_TASK_RUNTIME_SECONDS);
+    return this.request<ApiResponse<number>>(
+      API_ENDPOINTS.AI.GET_TASK_RUNTIME_SECONDS
+    );
   }
 
   async aiServerIsOnline() {
