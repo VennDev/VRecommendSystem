@@ -9,6 +9,7 @@ import {
   Menu,
   Moon,
   Sun,
+  User,
   X,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -114,24 +115,32 @@ const Layout: React.FC<LayoutProps> = ({
                 )}
               </button>
 
-              <div className="flex items-center space-x-3">
-                <img
-                  className="h-8 w-8 rounded-full"
-                  src={user?.picture}
-                  alt={user?.name}
-                />
-                <div className="hidden md:block">
-                  <div className="text-base font-medium text-base-content">
-                    {user?.name}
+              {user && (
+                <div className="flex items-center space-x-3">
+                  {user.picture ? (
+                    <img
+                      className="h-8 w-8 rounded-full object-cover"
+                      src={user.picture}
+                      alt={user.name}
+                    />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
+                  )}
+                  <div className="hidden md:block">
+                    <div className="text-base font-medium text-base-content">
+                      {user.name}
+                    </div>
+                    <div className="text-sm font-medium text-base-content/70">
+                      {user.email}
+                    </div>
                   </div>
-                  <div className="text-sm font-medium text-base-content/70">
-                    {user?.email}
-                  </div>
+                  <button onClick={logout} className="btn btn-ghost btn-circle" title="Logout">
+                    <LogOut className="h-5 w-5" />
+                  </button>
                 </div>
-                <button onClick={logout} className="btn btn-ghost btn-circle">
-                  <LogOut className="h-5 w-5" />
-                </button>
-              </div>
+              )}
             </div>
           </div>
         </header>

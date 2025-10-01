@@ -7,11 +7,14 @@ import {
   Cpu,
   Database,
   TrendingUp,
+  User,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuth();
   const [stats, setStats] = useState({
     totalTasks: 0,
     runningTasks: 0,
@@ -127,11 +130,39 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="p-6">
+      {/* Welcome Section with User Profile */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-base-content mb-2">Dashboard</h1>
-        <p className="text-base-content/70">
-          Overview of your AI model management system
-        </p>
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-base-content mb-2">
+              Welcome back{user ? `, ${user.name.split(' ')[0]}` : ''}!
+            </h1>
+            <p className="text-base-content/70">
+              Overview of your AI model management system
+            </p>
+          </div>
+
+          {/* User Profile Card */}
+          {user && (
+            <div className="flex items-center gap-3 bg-base-200 px-4 py-3 rounded-lg">
+              {user.picture ? (
+                <img
+                  src={user.picture}
+                  alt={user.name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <User className="w-5 h-5 text-primary" />
+                </div>
+              )}
+              <div className="text-left">
+                <p className="font-semibold text-base-content text-sm">{user.name}</p>
+                <p className="text-xs text-base-content/60">{user.email}</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Stats Grid */}
