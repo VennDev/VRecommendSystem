@@ -1,4 +1,4 @@
-import { Calendar, Clock, Edit, Plus, Trash2 } from "lucide-react";
+import { Calendar, Clock, CreditCard as Edit, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
 
