@@ -1,4 +1,4 @@
-import { FileText, RefreshCw, Server } from "lucide-react";
+import { Download, FileText, RefreshCw, Server } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { activityLogger } from "../services/activityLogger";
 import { useAuth } from "../contexts/AuthContext";
@@ -88,16 +88,25 @@ const LogsPage: React.FC = () => {
             Activity Logs
           </h1>
           <p className="text-base-content/70">
-            Track your account activity and system operations
+            Track your account activity and system operations (stored locally by date)
           </p>
         </div>
-        <button
-          onClick={fetchLogs}
-          className="btn btn-primary gap-2"
-        >
-          <RefreshCw className="h-5 w-5" />
-          <span>Refresh</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => activityLogger.downloadLogsAsFile()}
+            className="btn btn-secondary gap-2"
+          >
+            <Download className="h-5 w-5" />
+            <span>Download</span>
+          </button>
+          <button
+            onClick={fetchLogs}
+            className="btn btn-primary gap-2"
+          >
+            <RefreshCw className="h-5 w-5" />
+            <span>Refresh</span>
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

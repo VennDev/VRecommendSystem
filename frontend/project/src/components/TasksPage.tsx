@@ -429,9 +429,15 @@ const TasksPage: React.FC = () => {
 
               <div>
                 <label className="label">
-                  <span className="label-text">Interval</span>
+                  <span className="label-text">
+                    Interval: {formData.interval} seconds ({formatInterval(formData.interval)})
+                  </span>
                 </label>
-                <select
+                <input
+                  type="range"
+                  min="60"
+                  max="86400"
+                  step="60"
                   value={formData.interval}
                   onChange={(e) =>
                     setFormData({
@@ -439,15 +445,14 @@ const TasksPage: React.FC = () => {
                       interval: parseInt(e.target.value),
                     })
                   }
-                  className="select select-bordered w-full"
-                >
-                  <option value={300}>5 minutes</option>
-                  <option value={900}>15 minutes</option>
-                  <option value={1800}>30 minutes</option>
-                  <option value={3600}>1 hour</option>
-                  <option value={21600}>6 hours</option>
-                  <option value={86400}>1 day</option>
-                </select>
+                  className="range range-primary"
+                />
+                <div className="w-full flex justify-between text-xs px-2 text-base-content/60">
+                  <span>1 min</span>
+                  <span>6 hrs</span>
+                  <span>12 hrs</span>
+                  <span>24 hrs</span>
+                </div>
               </div>
 
               <div className="modal-action">
@@ -572,9 +577,15 @@ const TasksPage: React.FC = () => {
 
               <div>
                 <label className="label">
-                  <span className="label-text">Interval</span>
+                  <span className="label-text">
+                    Interval: {formData.interval} seconds ({formatInterval(formData.interval)})
+                  </span>
                 </label>
-                <select
+                <input
+                  type="range"
+                  min="60"
+                  max="86400"
+                  step="60"
                   value={formData.interval}
                   onChange={(e) =>
                     setFormData({
@@ -582,15 +593,14 @@ const TasksPage: React.FC = () => {
                       interval: parseInt(e.target.value),
                     })
                   }
-                  className="select select-bordered w-full"
-                >
-                  <option value={300}>5 minutes</option>
-                  <option value={900}>15 minutes</option>
-                  <option value={1800}>30 minutes</option>
-                  <option value={3600}>1 hour</option>
-                  <option value={21600}>6 hours</option>
-                  <option value={86400}>1 day</option>
-                </select>
+                  className="range range-primary"
+                />
+                <div className="w-full flex justify-between text-xs px-2 text-base-content/60">
+                  <span>1 min</span>
+                  <span>6 hrs</span>
+                  <span>12 hrs</span>
+                  <span>24 hrs</span>
+                </div>
               </div>
 
               <div className="modal-action">
