@@ -152,9 +152,19 @@ func CallbackHandler(c fiber.Ctx) error {
 	// Execute handler
 	handler.ServeHTTP(w, httpReq)
 
+	// IMPORTANT: Set cookies properly for Fiber
+	if cookies := w.headers["Set-Cookie"]; len(cookies) > 0 {
+		for _, cookie := range cookies {
+			c.Append("Set-Cookie", cookie)
+		}
+	}
+
+	// Set other headers
 	for key, values := range w.headers {
-		for _, value := range values {
-			c.Set(key, value)
+		if key != "Set-Cookie" { // Skip Set-Cookie as we already handled it
+			for _, value := range values {
+				c.Set(key, value)
+			}
 		}
 	}
 
@@ -175,20 +185,8 @@ func CallbackHandler(c fiber.Ctx) error {
 
 	c.Locals("user", user)
 
-	return c.JSON(fiber.Map{
-		"success": true,
-		"message": "Authentication successful",
-		"user": fiber.Map{
-			"id":       user.UserID,
-			"name":     user.Name,
-			"email":    user.Email,
-			"provider": user.Provider,
-			"picture":  user.AvatarURL,
-		},
-	})
-
-	// Option 2: Redirect to frontend callback page
-	// return c.Redirect().To("http://localhost:5173/auth/callback")
+	// Redirect to frontend callback page with cookies set
+	return c.Redirect().To("http://localhost:5173/auth/callback")
 }
 
 func LogoutHandler(c fiber.Ctx) error {
@@ -232,15 +230,52 @@ func LogoutHandler(c fiber.Ctx) error {
 }
 
 func GetUserHandler(c fiber.Ctx) error {
-	user := c.Locals("user")
-	if user == nil {
+	// Try to get user from session
+	var user goth.User
+	var authErr error
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Add provider query param (default to google)
+		q := r.URL.Query()
+		if q.Get("provider") == "" {
+			q.Add("provider", "google")
+			r.URL.RawQuery = q.Encode()
+		}
+
+		// Get user from session
+		user, authErr = gothic.CompleteUserAuth(w, r)
+	})
+
+	// Convert HTTP handler sang Fiber handler
+	httpReq, err := adaptor.ConvertRequest(c, false)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to convert request",
+		})
+	}
+
+	w := &fiberResponseWriter{
+		ctx:     c,
+		headers: make(http.Header),
+	}
+
+	// Execute handler
+	handler.ServeHTTP(w, httpReq)
+
+	if authErr != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Not authenticated",
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"user": user,
+		"user": fiber.Map{
+			"id":       user.UserID,
+			"name":     user.Name,
+			"email":    user.Email,
+			"provider": user.Provider,
+			"picture":  user.AvatarURL,
+		},
 	})
 }
 
