@@ -203,15 +203,14 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
-	// Store the complete user object in session
-	session.Values["user"] = map[string]interface{}{
-		"user_id":      user.UserID,
-		"email":        user.Email,
-		"name":         user.Name,
-		"picture":      user.AvatarURL,
-		"provider":     user.Provider,
-		"access_token": user.AccessToken,
-	}
+	// Store user data as separate fields (gob-compatible)
+	session.Values["user_id"] = user.UserID
+	session.Values["email"] = user.Email
+	session.Values["name"] = user.Name
+	session.Values["picture"] = user.AvatarURL
+	session.Values["provider"] = user.Provider
+	session.Values["access_token"] = user.AccessToken
+	session.Values["authenticated"] = true
 
 	// Save session
 	if err := session.Save(httpReq2, w); err != nil {
@@ -237,15 +236,7 @@ func CallbackHandler(c fiber.Ctx) error {
 func LogoutHandler(c fiber.Ctx) error {
 	provider := c.Query("provider", "google")
 
-	var logoutErr error
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		q := r.URL.Query()
-		q.Add("provider", provider)
-		r.URL.RawQuery = q.Encode()
-
-		logoutErr = gothic.Logout(w, r)
-	})
-
+	// Convert request
 	httpReq, err := adaptor.ConvertRequest(c, false)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -253,19 +244,33 @@ func LogoutHandler(c fiber.Ctx) error {
 		})
 	}
 
+	// Create response writer
 	w := &fiberResponseWriter{
 		ctx:     c,
 		headers: make(http.Header),
 	}
 
-	// Execute handler
-	handler.ServeHTTP(w, httpReq)
+	// Get and clear session
+	session, err := gothic.Store.Get(httpReq, fmt.Sprintf("%s_%s", gothic.SessionName, provider))
+	if err != nil {
+		fmt.Printf("Failed to get session for logout: %v\n", err)
+		// Continue anyway to clear client-side
+	} else {
+		// Clear all session values
+		session.Values = make(map[interface{}]interface{})
+		session.Options.MaxAge = -1 // Delete cookie
 
-	if logoutErr != nil {
-		fmt.Println("Logout error:", logoutErr)
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Logout failed",
-		})
+		// Save cleared session
+		if err := session.Save(httpReq, w); err != nil {
+			fmt.Printf("Failed to clear session: %v\n", err)
+		}
+
+		// Copy cleared cookie to response
+		if cookies := w.headers["Set-Cookie"]; len(cookies) > 0 {
+			for _, cookie := range cookies {
+				c.Append("Set-Cookie", cookie)
+			}
+		}
 	}
 
 	return c.JSON(fiber.Map{
@@ -294,29 +299,34 @@ func GetUserHandler(c fiber.Ctx) error {
 		})
 	}
 
-	// Get user from session
-	userDataRaw, ok := session.Values["user"]
-	if !ok {
+	// Check if authenticated
+	authenticated, ok := session.Values["authenticated"].(bool)
+	if !ok || !authenticated {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Not authenticated - no user in session",
+			"error": "Not authenticated",
 		})
 	}
 
-	// Convert to map
-	userData, ok := userDataRaw.(map[string]interface{})
-	if !ok {
+	// Get user data from session
+	userId, _ := session.Values["user_id"].(string)
+	email, _ := session.Values["email"].(string)
+	name, _ := session.Values["name"].(string)
+	picture, _ := session.Values["picture"].(string)
+	provider, _ := session.Values["provider"].(string)
+
+	if userId == "" || email == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Not authenticated - invalid session data",
+			"error": "Invalid session data",
 		})
 	}
 
 	return c.JSON(fiber.Map{
 		"user": fiber.Map{
-			"id":       userData["user_id"],
-			"name":     userData["name"],
-			"email":    userData["email"],
-			"provider": userData["provider"],
-			"picture":  userData["picture"],
+			"id":       userId,
+			"name":     name,
+			"email":    email,
+			"provider": provider,
+			"picture":  picture,
 		},
 	})
 }
