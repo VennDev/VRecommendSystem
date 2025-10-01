@@ -35,8 +35,9 @@ func NewAuth() {
 	store.MaxAge(24 * 60 * 60) // 24 hours in seconds
 	store.Options.Path = "/"
 	store.Options.HttpOnly = true
-	store.Options.Secure = false // Set true for HTTPS in production
-	//store.Options.SameSite = http.SameSiteLaxMode
+	store.Options.Secure = false // Set false for HTTP in development
+	store.Options.SameSite = http.SameSiteLaxMode
+	store.Options.Domain = "" // Empty means current domain only
 
 	gothic.Store = store
 
@@ -70,7 +71,7 @@ func BeginAuthHandler(c fiber.Ctx) error {
 		authURL, authErr = gothic.GetAuthURL(w, r)
 	})
 
-	// Convert HTTP handler sang Fiber handler và execute
+	// Convert Fiber request to HTTP request
 	httpReq, err := adaptor.ConvertRequest(c, false)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -86,15 +87,14 @@ func BeginAuthHandler(c fiber.Ctx) error {
 	// Execute handler
 	handler.ServeHTTP(w, httpReq)
 
+	// Copy ALL headers including Set-Cookie
 	for key, values := range w.headers {
 		for _, value := range values {
-			c.Set(key, value)
-		}
-	}
-
-	if cookies := w.headers["Set-Cookie"]; len(cookies) > 0 {
-		for _, cookie := range cookies {
-			c.Append("Set-Cookie", cookie)
+			if key == "Set-Cookie" {
+				c.Append(key, value)
+			} else {
+				c.Set(key, value)
+			}
 		}
 	}
 
@@ -124,68 +124,108 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
-	var user goth.User
-	var authErr error
+	// Debug: Print incoming cookies
+	fmt.Printf("Incoming cookies: %s\n", c.Get("Cookie"))
+	fmt.Printf("Query params: %s\n", c.Request().URI().QueryString())
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Set provider in request context for gothic
-		q := r.URL.Query()
-		q.Add("provider", provider)
-		r.URL.RawQuery = q.Encode()
-
-		user, authErr = gothic.CompleteUserAuth(w, r)
-	})
-
-	// Convert HTTP handler sang Fiber handler
-	httpReq, err := adaptor.ConvertRequest(c, false)
+	// Get the provider from goth
+	gothProvider, err := goth.GetProvider(provider)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to convert request",
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   "Invalid provider",
+			"details": err.Error(),
 		})
 	}
 
-	w := &fiberResponseWriter{
-		ctx:     c,
-		headers: make(http.Header),
+	// Get code and state from query params
+	code := c.Query("code")
+	state := c.Query("state")
+
+	if code == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Authorization code not provided",
+		})
 	}
 
-	// Execute handler
-	handler.ServeHTTP(w, httpReq)
-
-	// IMPORTANT: Set cookies properly for Fiber
-	if cookies := w.headers["Set-Cookie"]; len(cookies) > 0 {
-		for _, cookie := range cookies {
-			c.Append("Set-Cookie", cookie)
-		}
+	// Create a new session for this callback (not relying on cookies from BeginAuth)
+	sess, err := gothProvider.BeginAuth(state)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   "Failed to begin auth",
+			"details": err.Error(),
+		})
 	}
 
-	// Set other headers
-	for key, values := range w.headers {
-		if key != "Set-Cookie" { // Skip Set-Cookie as we already handled it
-			for _, value := range values {
-				c.Set(key, value)
-			}
-		}
-	}
-
-	if authErr != nil {
-		fmt.Printf("Authentication error for provider %s: %v\n", provider, authErr)
-
-		if authErr.Error() == "user has not completed auth flow" {
-			return BeginAuthHandler(c)
-		}
-
+	// Exchange code for access token
+	_, err = sess.Authorize(gothProvider, map[string]string{"code": code})
+	if err != nil {
+		fmt.Printf("Authorization error: %v\n", err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error":   "Authentication failed",
-			"details": authErr.Error(),
+			"details": err.Error(),
+		})
+	}
+
+	// Get user info from provider
+	user, err := gothProvider.FetchUser(sess)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   "Failed to fetch user",
+			"details": err.Error(),
 		})
 	}
 
 	fmt.Printf("User authenticated successfully: %s (%s)\n", user.Email, user.Provider)
 
-	c.Locals("user", user)
+	// Convert Fiber request to HTTP request for session handling
+	httpReq2, err := adaptor.ConvertRequest(c, false)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to convert request for session",
+		})
+	}
 
-	// Redirect to frontend callback page with cookies set
+	// Create response writer for session
+	w := &fiberResponseWriter{ctx: c, headers: make(http.Header)}
+
+	// Save user to session manually using gorilla sessions
+	session, err := gothic.Store.Get(httpReq2, fmt.Sprintf("%s_%s", gothic.SessionName, provider))
+	if err != nil {
+		fmt.Printf("Failed to get session: %v\n", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   "Failed to create session",
+			"details": err.Error(),
+		})
+	}
+
+	// Store the complete user object in session
+	session.Values["user"] = map[string]interface{}{
+		"user_id":      user.UserID,
+		"email":        user.Email,
+		"name":         user.Name,
+		"picture":      user.AvatarURL,
+		"provider":     user.Provider,
+		"access_token": user.AccessToken,
+	}
+
+	// Save session
+	if err := session.Save(httpReq2, w); err != nil {
+		fmt.Printf("Failed to save session: %v\n", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   "Failed to save session",
+			"details": err.Error(),
+		})
+	}
+
+	// Copy session cookies to Fiber response
+	if cookies := w.headers["Set-Cookie"]; len(cookies) > 0 {
+		for _, cookie := range cookies {
+			fmt.Printf("Setting cookie: %s\n", cookie)
+			c.Append("Set-Cookie", cookie)
+		}
+	}
+
+	// Redirect to frontend callback page
 	return c.Redirect().To("http://localhost:5173/auth/callback")
 }
 
@@ -230,23 +270,9 @@ func LogoutHandler(c fiber.Ctx) error {
 }
 
 func GetUserHandler(c fiber.Ctx) error {
-	// Try to get user from session
-	var user goth.User
-	var authErr error
+	provider := c.Query("provider", "google")
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Add provider query param (default to google)
-		q := r.URL.Query()
-		if q.Get("provider") == "" {
-			q.Add("provider", "google")
-			r.URL.RawQuery = q.Encode()
-		}
-
-		// Get user from session
-		user, authErr = gothic.CompleteUserAuth(w, r)
-	})
-
-	// Convert HTTP handler sang Fiber handler
+	// Convert Fiber request to HTTP request
 	httpReq, err := adaptor.ConvertRequest(c, false)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -254,27 +280,38 @@ func GetUserHandler(c fiber.Ctx) error {
 		})
 	}
 
-	w := &fiberResponseWriter{
-		ctx:     c,
-		headers: make(http.Header),
+	// Get session
+	session, err := gothic.Store.Get(httpReq, fmt.Sprintf("%s_%s", gothic.SessionName, provider))
+	if err != nil {
+		fmt.Printf("Failed to get session: %v\n", err)
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Not authenticated - session error",
+		})
 	}
 
-	// Execute handler
-	handler.ServeHTTP(w, httpReq)
-
-	if authErr != nil {
+	// Get user from session
+	userDataRaw, ok := session.Values["user"]
+	if !ok {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Not authenticated",
+			"error": "Not authenticated - no user in session",
+		})
+	}
+
+	// Convert to map
+	userData, ok := userDataRaw.(map[string]interface{})
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Not authenticated - invalid session data",
 		})
 	}
 
 	return c.JSON(fiber.Map{
 		"user": fiber.Map{
-			"id":       user.UserID,
-			"name":     user.Name,
-			"email":    user.Email,
-			"provider": user.Provider,
-			"picture":  user.AvatarURL,
+			"id":       userData["user_id"],
+			"name":     userData["name"],
+			"email":    userData["email"],
+			"provider": userData["provider"],
+			"picture":  userData["picture"],
 		},
 	})
 }

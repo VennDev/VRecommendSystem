@@ -1,17 +1,24 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const CallbackPage: React.FC = () => {
   const { checkAuthStatus } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const handleCallback = async () => {
-      // Wait a moment for the backend to process the session
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Get user info from URL params (if provided)
+      const userId = searchParams.get("user_id");
+      const email = searchParams.get("email");
 
-      // Check auth status to get user data
+      console.log("Callback received:", { userId, email });
+
+      // Wait a moment for cookies to be set
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Check auth status to get full user data from backend
       await checkAuthStatus();
 
       // Redirect to dashboard
@@ -19,7 +26,7 @@ const CallbackPage: React.FC = () => {
     };
 
     handleCallback();
-  }, [checkAuthStatus]);
+  }, [checkAuthStatus, navigate, searchParams]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
