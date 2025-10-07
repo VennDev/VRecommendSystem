@@ -9,7 +9,9 @@
       <change beforePath="$PROJECT_DIR$/models/my_model.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model_config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/my_model_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/models/my_model_metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/services/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/services/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ai_server/routers/private_routers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../diagrams/use case/Admin.drawio" beforeDir="false" afterPath="$PROJECT_DIR$/../../diagrams/use case/Admin.drawio" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/project/src/contexts/ThemeContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/project/src/contexts/ThemeContext.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -268,6 +270,7 @@
       <workItem from="1759302416741" duration="1912000" />
       <workItem from="1759317498934" duration="1651000" />
       <workItem from="1759335629759" duration="5054000" />
+      <workItem from="1759727675578" duration="1128000" />
     </task>
     <servers />
   </component>

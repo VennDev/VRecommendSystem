@@ -618,7 +618,7 @@ def get_scheduler_status() -> dict:
     """
     try:
         scheduler = scheduler_service.get_scheduler_manager()
-        is_running = scheduler.scheduler.running if hasattr(scheduler, 'scheduler') else False
+        is_running = scheduler.is_alive() if hasattr(scheduler, 'scheduler') else False
 
         return {
             "data": {
@@ -639,7 +639,6 @@ def get_server_logs(limit: int = 50) -> dict:
     :return: List of recent log entries
     """
     try:
-        import logging
         import os
         from datetime import datetime
 
@@ -675,7 +674,7 @@ def get_server_logs(limit: int = 50) -> dict:
                 },
                 {
                     "timestamp": datetime.now().isoformat(),
-                    "message": f"Scheduler status: {'running' if scheduler_service.get_scheduler_manager().scheduler.running else 'stopped'}",
+                    "message": f"Scheduler status: {'running' if scheduler_service.get_scheduler_manager().scheduler.is_running else 'stopped'}",
                     "level": "INFO"
                 }
             ]
