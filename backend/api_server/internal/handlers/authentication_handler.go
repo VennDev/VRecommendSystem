@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/adaptor"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"github.com/markbates/goth"
@@ -225,7 +227,7 @@ func CallbackHandler(c fiber.Ctx) error {
 	fmt.Printf("Session saved successfully!\n")
 	fmt.Printf("Response headers: %v\n", w.headers)
 
-	// Copy session cookies to Fiber response
+	// Copy session cookies to Fiber response (for API server authentication)
 	if cookies := w.headers["Set-Cookie"]; len(cookies) > 0 {
 		for _, cookie := range cookies {
 			fmt.Printf("Setting cookie: %s\n", cookie)
@@ -233,6 +235,24 @@ func CallbackHandler(c fiber.Ctx) error {
 		}
 	} else {
 		fmt.Printf("WARNING: No Set-Cookie headers found!\n")
+	}
+
+	// Generate JWT token for cross-service authentication (for AI server)
+	jwtToken, err := generateJWTToken(user.UserID, user.Email, user.Name)
+	if err != nil {
+		fmt.Printf("Failed to generate JWT token: %v\n", err)
+	} else {
+		// Set JWT token as an additional cookie for AI server
+		c.Cookie(&fiber.Cookie{
+			Name:     "auth_token",
+			Value:    jwtToken,
+			Path:     "/",
+			MaxAge:   24 * 60 * 60,
+			HTTPOnly: true,
+			Secure:   false,
+			SameSite: "Lax",
+		})
+		fmt.Printf("JWT token cookie set successfully\n")
 	}
 
 	// Encode user data as URL parameters to pass to frontend
@@ -380,4 +400,28 @@ func (w *fiberResponseWriter) Write(b []byte) (int, error) {
 
 func (w *fiberResponseWriter) WriteHeader(statusCode int) {
 	w.statusCode = statusCode
+}
+
+// generateJWTToken creates a JWT token for cross-service authentication
+func generateJWTToken(userID, email, name string) (string, error) {
+	secretKey := os.Getenv("JWT_SECRET_KEY")
+	if secretKey == "" {
+		secretKey = os.Getenv("SESSION_SECRET")
+	}
+
+	claims := jwt.MapClaims{
+		"user_id": userID,
+		"email":   email,
+		"name":    name,
+		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+		"iat":     time.Now().Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(secretKey))
+	if err != nil {
+		return "", fmt.Errorf("failed to sign JWT token: %w", err)
+	}
+
+	return tokenString, nil
 }
