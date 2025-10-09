@@ -1,7 +1,8 @@
-import { Bot, Calendar, Clock, Cpu, Database, FileText, Hop as Home, LogOut, Menu, Moon, Sun, User, X } from "lucide-react";
+import { Bot, LogOut, Menu, Moon, Sun, User, X } from "lucide-react";
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
+import { NAVIGATION_ITEMS } from "../constants/navigation";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,15 +18,6 @@ const Layout: React.FC<LayoutProps> = ({
   const { user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const navigation = [
-    { id: "dashboard", name: "Dashboard", icon: Home },
-    { id: "models", name: "Models", icon: Cpu },
-    { id: "tasks", name: "Tasks", icon: Calendar },
-    { id: "scheduler", name: "Scheduler", icon: Clock },
-    { id: "data-chefs", name: "Restaurant Data", icon: Database },
-    { id: "logs", name: "Activity Logs", icon: FileText },
-  ];
 
   return (
     <div className="h-screen bg-base-200 flex">
@@ -49,8 +41,10 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
 
         <nav className="mt-5 px-2">
-          {navigation.map((item) => {
+          {NAVIGATION_ITEMS.map((item) => {
             const Icon = item.icon;
+            const isActive = activeTab === item.id;
+
             return (
               <button
                 key={item.id}
@@ -59,20 +53,13 @@ const Layout: React.FC<LayoutProps> = ({
                   setSidebarOpen(false);
                 }}
                 className={`${
-                  activeTab === item.id
+                  isActive
                     ? "bg-primary/10 border-r-2 border-primary text-primary"
                     : "text-base-content/70 hover:bg-base-200"
                 } group flex items-center px-2 py-2 text-base font-medium rounded-l-md w-full mb-1 transition-all duration-200 btn btn-ghost justify-start`}
               >
                 <Icon className="mr-4 h-6 w-6" />
-                {item.id === "data-chefs" ? (
-                  <>
-                    <span>{item.name}</span>
-                    <br />
-                  </>
-                ) : (
-                  item.name
-                )}
+                <span>{item.name}</span>
               </button>
             );
           })}

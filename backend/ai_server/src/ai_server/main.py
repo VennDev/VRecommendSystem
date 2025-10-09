@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from ai_server.initialize import (
     logger, scheduler, config, routers, prometheus
 )
+from ai_server.middlewares import verify_authentication
 
 
 def main():
@@ -43,6 +44,10 @@ def main():
         allow_methods=cfg_cors.methods,
         allow_headers=cfg_cors.headers,
     )
+
+    # Add authentication middleware
+    app.middleware("http")(verify_authentication)
+    loguru.logger.info("Authentication middleware initialized.")
 
     # Initialize routers
     routers.init(app)
