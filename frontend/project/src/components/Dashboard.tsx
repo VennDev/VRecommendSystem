@@ -1,7 +1,18 @@
-import { Activity, CircleAlert as AlertCircle, Calendar, CircleCheck as CheckCircle, Clock, Cpu, Database, TrendingUp, User, Server } from "lucide-react";
+import {
+  Activity,
+  CircleAlert as AlertCircle,
+  Calendar,
+  CircleCheck as CheckCircle,
+  Clock,
+  Cpu,
+  Database,
+  Server,
+  TrendingUp,
+  User,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
+import { apiService } from "../services/api";
 import { healthCheckService, ServerHealth } from "../services/healthCheck";
 
 const Dashboard: React.FC = () => {
@@ -15,7 +26,12 @@ const Dashboard: React.FC = () => {
   });
 
   const [serverHealth, setServerHealth] = useState<ServerHealth[]>([]);
-  const [schedulerStatus, setSchedulerStatus] = useState<{is_running: boolean; status: string} | null>(null);
+  const [schedulerStatus, setSchedulerStatus] = useState<{
+    data: {
+      is_running: boolean;
+      status: string;
+    } | null;
+  } | null>(null);
 
   const [recentActivity] = useState([
     {
@@ -70,7 +86,7 @@ const Dashboard: React.FC = () => {
         setSchedulerStatus(response.data);
       }
     } catch (error) {
-      console.error('Failed to check scheduler status:', error);
+      console.error("Failed to check scheduler status:", error);
     }
   };
 
@@ -155,7 +171,7 @@ const Dashboard: React.FC = () => {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-bold text-base-content mb-2">
-              Welcome back{user ? `, ${user.name.split(' ')[0]}` : ''}!
+              Welcome back{user ? `, ${user.name.split(" ")[0]}` : ""}!
             </h1>
             <p className="text-base-content/70">
               Overview of your AI model management system
@@ -177,7 +193,9 @@ const Dashboard: React.FC = () => {
                 </div>
               )}
               <div className="text-left">
-                <p className="font-semibold text-base-content text-sm">{user.name}</p>
+                <p className="font-semibold text-base-content text-sm">
+                  {user.name}
+                </p>
                 <p className="text-xs text-base-content/60">{user.email}</p>
               </div>
             </div>
@@ -265,17 +283,19 @@ const Dashboard: React.FC = () => {
                 <div
                   key={server.name}
                   className={`flex items-center justify-between p-3 rounded-lg ${
-                    server.status === 'healthy'
-                      ? 'bg-success/10'
-                      : 'bg-error/10'
+                    server.status === "healthy"
+                      ? "bg-success/10"
+                      : "bg-error/10"
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <Server className={`h-5 w-5 ${
-                      server.status === 'healthy'
-                        ? 'text-success'
-                        : 'text-error'
-                    }`} />
+                    <Server
+                      className={`h-5 w-5 ${
+                        server.status === "healthy"
+                          ? "text-success"
+                          : "text-error"
+                      }`}
+                    />
                     <div>
                       <span className="text-sm font-medium text-base-content block">
                         {server.name}
@@ -287,7 +307,7 @@ const Dashboard: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  {server.status === 'healthy' ? (
+                  {server.status === "healthy" ? (
                     <span className="badge badge-success badge-sm">
                       Healthy
                     </span>
@@ -317,27 +337,31 @@ const Dashboard: React.FC = () => {
               {schedulerStatus && (
                 <div
                   className={`flex items-center justify-between p-3 rounded-lg mt-4 ${
-                    schedulerStatus.is_running
-                      ? 'bg-success/10'
-                      : 'bg-warning/10'
+                    schedulerStatus.data?.is_running
+                      ? "bg-success/10"
+                      : "bg-warning/10"
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <Clock className={`h-5 w-5 ${
-                      schedulerStatus.is_running
-                        ? 'text-success'
-                        : 'text-warning'
-                    }`} />
+                    <Clock
+                      className={`h-5 w-5 ${
+                        schedulerStatus.data?.is_running
+                          ? "text-success"
+                          : "text-warning"
+                      }`}
+                    />
                     <span className="text-sm font-medium text-base-content">
                       Task Scheduler
                     </span>
                   </div>
-                  <span className={`badge badge-sm ${
-                    schedulerStatus.is_running
-                      ? 'badge-success'
-                      : 'badge-warning'
-                  }`}>
-                    {schedulerStatus.status}
+                  <span
+                    className={`badge badge-sm ${
+                      schedulerStatus.data?.is_running
+                        ? "badge-success"
+                        : "badge-warning"
+                    }`}
+                  >
+                    {schedulerStatus.data?.status}
                   </span>
                 </div>
               )}
