@@ -2,6 +2,7 @@ import loguru
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
 from ai_server.initialize import (
     logger, scheduler, config, routers, prometheus
@@ -13,6 +14,10 @@ def main():
     """
     Main entry point for the application.
     """
+
+    # Load environment variables from .env file
+    load_dotenv()
+    print("Loading environment variables...")
 
     # Initialize config
     config.init()
