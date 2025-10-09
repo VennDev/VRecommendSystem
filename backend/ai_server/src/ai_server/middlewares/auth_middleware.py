@@ -15,6 +15,12 @@ async def verify_authentication(request: Request, call_next: Callable):
     """
 
     path = request.url.path
+    method = request.method
+
+    # Allow all OPTIONS requests (CORS preflight)
+    if method == "OPTIONS":
+        response = await call_next(request)
+        return response
 
     public_paths = [
         "/api/v1/health",

@@ -47,7 +47,12 @@ const CallbackPage: React.FC = () => {
         // Store JWT token for API authentication
         if (token) {
           localStorage.setItem("auth_token", token);
+          console.log("JWT token saved to localStorage");
+        } else {
+          console.warn("No JWT token received from callback");
         }
+
+        console.log("Auth token in localStorage:", localStorage.getItem("auth_token"));
 
         // Log successful login activity
         await activityLogger.log(id, email, {

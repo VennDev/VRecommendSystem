@@ -189,6 +189,9 @@ class ApiService {
       // Add Authorization header if token exists
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
+        console.debug(`Request to ${url} with token`);
+      } else {
+        console.warn(`Request to ${url} WITHOUT token`);
       }
 
       const response = await fetch(url, {
