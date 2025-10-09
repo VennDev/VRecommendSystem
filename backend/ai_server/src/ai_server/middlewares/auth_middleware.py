@@ -2,7 +2,7 @@ from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from typing import Callable
 import loguru
-import jwt
+from jwt import decode as jwt_decode, ExpiredSignatureError, InvalidTokenError
 import os
 
 
@@ -73,7 +73,7 @@ async def verify_authentication(request: Request, call_next: Callable):
                 }
             )
 
-        payload = jwt.decode(auth_token, secret_key, algorithms=["HS256"])
+        payload = jwt_decode(auth_token, secret_key, algorithms=["HS256"])
 
         user_id = payload.get("user_id")
         email = payload.get("email")
@@ -93,7 +93,7 @@ async def verify_authentication(request: Request, call_next: Callable):
         request.state.user_id = user_id
         request.state.user_email = email
 
-    except jwt.ExpiredSignatureError:
+    except ExpiredSignatureError:
         loguru.logger.warning(f"Expired token for {path}")
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -102,7 +102,7 @@ async def verify_authentication(request: Request, call_next: Callable):
                 "authenticated": False
             }
         )
-    except jwt.InvalidTokenError as e:
+    except InvalidTokenError as e:
         loguru.logger.warning(f"Invalid token for {path}: {str(e)}")
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
