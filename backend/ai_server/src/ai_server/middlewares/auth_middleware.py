@@ -10,7 +10,7 @@ async def verify_authentication(request: Request, call_next: Callable):
     """
     Middleware to verify user authentication for private routes.
 
-    This middleware checks if the user has a valid JWT token in cookies.
+    This middleware checks if the user has a valid JWT token in Authorization header or cookies.
     If not authenticated, returns a 401 Unauthorized response.
     """
 
@@ -31,10 +31,22 @@ async def verify_authentication(request: Request, call_next: Callable):
         response = await call_next(request)
         return response
 
-    auth_token = request.cookies.get("auth_token")
+    # Get token from Authorization header or cookie
+    auth_token = None
+    auth_header = request.headers.get("Authorization")
+
+    if auth_header and auth_header.startswith("Bearer "):
+        auth_token = auth_header.split(" ")[1]
+        loguru.logger.debug(f"Auth token from Authorization header for {path}")
+    else:
+        auth_token = request.cookies.get("auth_token")
+        if auth_token:
+            loguru.logger.debug(f"Auth token from cookie for {path}")
 
     if not auth_token:
         loguru.logger.warning(f"Unauthorized access attempt to {path} - No auth token")
+        loguru.logger.warning(f"Authorization header: {auth_header}")
+        loguru.logger.warning(f"Available cookies: {list(request.cookies.keys())}")
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={
@@ -70,7 +82,7 @@ async def verify_authentication(request: Request, call_next: Callable):
                 }
             )
 
-        loguru.logger.debug(f"Authenticated request to {path} from user {email}")
+        loguru.logger.info(f"Authenticated request to {path} from user {email}")
 
         request.state.user_id = user_id
         request.state.user_email = email

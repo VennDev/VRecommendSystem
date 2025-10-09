@@ -18,6 +18,7 @@ const CallbackPage: React.FC = () => {
         const name = urlParams.get("name");
         const picture = urlParams.get("picture");
         const provider = urlParams.get("provider");
+        const token = urlParams.get("token");
 
         if (!id || !email) {
           throw new Error("Missing user data in callback");
@@ -42,6 +43,11 @@ const CallbackPage: React.FC = () => {
           picture,
           provider,
         }));
+
+        // Store JWT token for API authentication
+        if (token) {
+          localStorage.setItem("auth_token", token);
+        }
 
         // Log successful login activity
         await activityLogger.log(id, email, {

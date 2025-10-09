@@ -256,7 +256,6 @@ func CallbackHandler(c fiber.Ctx) error {
 	}
 
 	// Encode user data as URL parameters to pass to frontend
-	// This is a simple approach - in production, you'd use a temporary token
 	userData := url.Values{}
 	userData.Set("id", user.UserID)
 	userData.Set("email", user.Email)
@@ -264,7 +263,12 @@ func CallbackHandler(c fiber.Ctx) error {
 	userData.Set("picture", user.AvatarURL)
 	userData.Set("provider", user.Provider)
 
-	// Redirect to frontend with user data
+	// Add JWT token to URL params for frontend to store
+	if jwtToken != "" {
+		userData.Set("token", jwtToken)
+	}
+
+	// Redirect to frontend with user data and token
 	redirectURL := fmt.Sprintf("http://localhost:5173/auth/callback?%s", userData.Encode())
 
 	fmt.Printf("Redirecting to: %s\n", redirectURL)

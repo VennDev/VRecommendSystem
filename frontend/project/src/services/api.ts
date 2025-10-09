@@ -179,13 +179,22 @@ class ApiService {
       const baseUrl = useAuthServer ? config.AUTH_BASE_URL : config.AI_BASE_URL;
       const url = `${baseUrl}${endpoint}`;
 
+      // Get JWT token from localStorage
+      const token = localStorage.getItem("auth_token");
+      const headers: HeadersInit = {
+        ...config.DEFAULT_HEADERS,
+        ...options.headers,
+      };
+
+      // Add Authorization header if token exists
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(url, {
         ...config.REQUEST_OPTIONS,
         ...options,
-        headers: {
-          ...config.DEFAULT_HEADERS,
-          ...options.headers,
-        },
+        headers,
       });
 
       const data = await response.json();
