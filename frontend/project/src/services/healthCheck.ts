@@ -13,12 +13,26 @@ export const healthCheckService = {
   async checkAiServer(): Promise<ServerHealth> {
     const startTime = Date.now();
     try {
+      const token = localStorage.getItem("auth_token");
+      const headers: HeadersInit = { Accept: "application/json" };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${AI_SERVER_URL}/api/v1/health`, {
         method: "GET",
-        headers: { Accept: "application/json" },
+        headers,
       });
 
       const responseTime = Date.now() - startTime;
+
+      if (response.status === 401) {
+        console.warn("Health check received 401, token expired");
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
 
       if (response.ok) {
         return {

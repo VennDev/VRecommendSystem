@@ -46,19 +46,52 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Try to load user from localStorage first
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+    const token = localStorage.getItem("auth_token");
+
+    if (storedUser && token) {
       try {
-        setUser(JSON.parse(storedUser));
-        setIsLoading(false);
-        return;
+        // Check if token is expired by verifying with server
+        verifyTokenAndLoadUser(storedUser);
       } catch (error) {
         console.error("Failed to parse stored user:", error);
+        localStorage.removeItem("user");
+        localStorage.removeItem("auth_token");
+        setIsLoading(false);
       }
+    } else {
+      // No stored credentials, check auth status from server
+      checkAuthStatus();
     }
-
-    // Fall back to checking auth status from server
-    checkAuthStatus();
   }, []);
+
+  const verifyTokenAndLoadUser = async (storedUser: string) => {
+    try {
+      const user = JSON.parse(storedUser);
+      setUser(user);
+
+      // Verify token is still valid by making a simple API call
+      const response = await fetch(buildAuthUrl(API_ENDPOINTS.AUTH.CHECK_STATUS), {
+        credentials: "include",
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.warn("Token verification failed, clearing session");
+        localStorage.removeItem("user");
+        localStorage.removeItem("auth_token");
+        setUser(null);
+      }
+    } catch (error) {
+      console.error("Token verification error:", error);
+      localStorage.removeItem("user");
+      localStorage.removeItem("auth_token");
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const checkAuthStatus = async () => {
     setIsLoading(true);

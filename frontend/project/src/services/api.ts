@@ -203,8 +203,11 @@ class ApiService {
       const data = await response.json();
 
       if (!response.ok) {
-        // Handle auth errors
+        // Handle auth errors - token expired or invalid
         if (response.status === 401) {
+          console.warn("Token expired or invalid, redirecting to login...");
+          localStorage.removeItem("auth_token");
+          localStorage.removeItem("user");
           window.location.href = "/login";
           return { error: "Authentication required" };
         }
