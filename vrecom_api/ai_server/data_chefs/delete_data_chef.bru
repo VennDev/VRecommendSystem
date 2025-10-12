@@ -1,0 +1,15 @@
+meta {
+  name: delete_data_chef
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:9999/api/v1/delete_data_chef/csv_interactions
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

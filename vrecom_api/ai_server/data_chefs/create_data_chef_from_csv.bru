@@ -1,0 +1,25 @@
+meta {
+  name: create_data_chef_from_csv
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:9999/api/v1/create_data_chef_from_csv
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "data_chef_id": "csv_interactions",
+    "file_path": "/path/to/interactions.csv",
+    "user_column": "user_id",
+    "item_column": "item_id",
+    "rating_column": "rating"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

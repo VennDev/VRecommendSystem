@@ -1,0 +1,15 @@
+meta {
+  name: delete_model
+  type: http
+  seq: 4
+}
+
+delete {
+  url: http://localhost:9999/api/v1/delete_model/my_model
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

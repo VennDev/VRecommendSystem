@@ -1,0 +1,22 @@
+meta {
+  name: rename_task
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:9999/api/v1/rename_task
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "old_task_name": "daily_training",
+    "new_task_name": "hourly_training"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,27 @@
+meta {
+  name: recommend
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:2030/api/v1/recommend?user_id=user123&model_id=my_model&n=10
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Get Recommendations
+
+  Get personalized recommendations for a user using a specific model.
+  This endpoint proxies the request to the AI Server with caching.
+
+  Query Parameters:
+  - user_id: User identifier
+  - model_id: Model identifier
+  - n: Number of recommendations (default: 10)
+}

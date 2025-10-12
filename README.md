@@ -1,31 +1,31 @@
 # VRecommendSystem
 
-## 📋 Tổng quan
+## 📋 Overview
 
-VRecommendSystem là hệ thống recommendation engine mạnh mẽ với kiến trúc microservices, hỗ trợ đa dạng thuật toán machine learning và khả năng mở rộng cao.
+VRecommendSystem is a powerful recommendation engine with microservices architecture, supporting diverse machine learning algorithms and high scalability.
 
-## 🏗️ Kiến trúc hệ thống
+## 🏗️ System Architecture
 
-- **API Server** (Go/Fiber): Backend API gateway xử lý authentication và routing
-- **AI Server** (Python/FastAPI): ML engine với support cho collaborative filtering
-- **Frontend** (React/TypeScript): Dashboard quản lý và giám sát
+- **API Server** (Go/Fiber): Backend API gateway handling authentication and routing
+- **AI Server** (Python/FastAPI): ML engine with support for collaborative filtering
+- **Frontend** (React/TypeScript): Management and monitoring dashboard
 - **Redis**: Caching layer
-- **Prometheus**: Monitoring và metrics
+- **Prometheus**: Monitoring and metrics
 
-## 🚀 Khởi động nhanh
+## 🚀 Quick Start
 
-### Sử dụng Docker (Khuyến nghị)
+### Using Docker (Recommended)
 
 ```bash
 # 1. Clone repository
 git clone <repository-url>
 cd VRecommendSystem
 
-# 2. Copy và cấu hình environment
+# 2. Copy and configure environment
 cp .env.example .env
 cp frontend/project/.env.example frontend/project/.env
 
-# 3. Khởi động toàn bộ hệ thống
+# 3. Start all services
 ./docker-start.sh up
 ```
 
@@ -35,16 +35,16 @@ cp frontend/project/.env.example frontend/project/.env
 - AI Server: http://localhost:9999
 - Prometheus: http://localhost:9090
 
-Chi tiết setup Docker xem tại: [DOCKER_SETUP.md](./DOCKER_SETUP.md)
+For detailed Docker setup, see: [DOCKER_SETUP.md](./DOCKER_SETUP.md)
 
-### Development Setup (Không dùng Docker)
+### Development Setup (Without Docker)
 
 #### Backend - API Server (Go)
 
 ```bash
 cd backend/api_server
 cp example-env .env
-# Cấu hình .env theo nhu cầu
+# Configure .env as needed
 go mod download
 go run main.go
 ```
@@ -65,9 +65,9 @@ npm install
 npm run dev
 ```
 
-## ⚙️ Cấu hình Port
+## ⚙️ Port Configuration
 
-Tất cả port được quản lý tập trung tại file `.env`:
+All ports are centrally managed in the `.env` file:
 
 ```env
 # API Server
@@ -86,8 +86,8 @@ REDIS_PORT=6379
 PROMETHEUS_PORT=9090
 ```
 
-Để thay đổi port:
-1. Cập nhật file `.env`
+To change ports:
+1. Update the `.env` file
 2. Restart services: `./docker-start.sh restart`
 
 ## 📦 Services
@@ -97,7 +97,7 @@ PROMETHEUS_PORT=9090
 - Authentication & Authorization
 - Request routing
 - Redis caching
-- Proxy requests đến AI Server
+- Proxy requests to AI Server
 
 **Health check:** `GET http://localhost:2030/api/v1/ping`
 
@@ -106,13 +106,13 @@ PROMETHEUS_PORT=9090
 - Model training & management
 - Recommendation engine
 - Data chefs (ETL pipelines)
-- Scheduler cho batch jobs
+- Scheduler for batch jobs
 
 **Health check:** `GET http://localhost:9999/api/v1/health`
 
 ### Frontend (Port 5173)
 
-- Dashboard quản lý models
+- Model management dashboard
 - Task scheduler interface
 - Logs viewer
 - Metrics visualization
@@ -120,35 +120,35 @@ PROMETHEUS_PORT=9090
 ## 📝 Docker Commands
 
 ```bash
-# Khởi động
+# Start services
 ./docker-start.sh up
 
-# Dừng
+# Stop services
 ./docker-start.sh down
 
-# Build lại
+# Rebuild images
 ./docker-start.sh build
 
-# Xem logs
+# View logs
 ./docker-start.sh logs
 
-# Xem logs của service cụ thể
+# View logs for specific service
 ./docker-start.sh logs api_server
 ./docker-start.sh logs ai_server
 
-# Kiểm tra status
+# Check status
 ./docker-start.sh status
 
-# Dọn dẹp hoàn toàn
+# Clean everything
 ./docker-start.sh clean
 ```
 
 ## 🛠️ Development
 
-### Hot reload được enable cho:
+### Hot reload enabled for:
 
 - Frontend: Vite HMR
-- AI Server: Volume mount cho `/src`
+- AI Server: Volume mount for `/src`
 - API Server: Rebuild required
 
 ### Testing
@@ -165,7 +165,7 @@ poetry run pytest
 
 ## 📊 Monitoring
 
-Prometheus metrics có sẵn tại: http://localhost:9090
+Prometheus metrics available at: http://localhost:9090
 
 **AI Server Metrics:**
 - Model training time
@@ -192,6 +192,19 @@ Prometheus metrics có sẵn tại: http://localhost:9090
 - `VITE_API_SERVER_URL`: API Server URL
 - `VITE_AI_SERVER_URL`: AI Server URL
 - `VITE_SUPABASE_*`: Supabase config
+
+## 🧪 API Testing
+
+Bruno API collection is available in the `vrecom_api/` directory for testing all endpoints.
+
+**Available Collections:**
+- `api_server/`: API Server endpoints (Authentication, Ping)
+- `ai_server/`: AI Server endpoints (Models, Tasks, Data Chefs, Scheduler, Metrics)
+
+To use:
+1. Install [Bruno](https://www.usebruno.com/)
+2. Open the `vrecom_api` folder as a collection
+3. Start testing endpoints
 
 ## 📚 Documentation
 

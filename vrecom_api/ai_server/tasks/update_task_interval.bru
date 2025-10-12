@@ -1,0 +1,22 @@
+meta {
+  name: update_task_interval
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:9999/api/v1/update_task_interval
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "task_name": "daily_training",
+    "interval": "hourly"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
