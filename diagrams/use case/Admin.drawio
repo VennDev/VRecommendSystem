@@ -7,7 +7,7 @@
         <mxCell id="pz74ikTeV96kR6cz_8VZ-16" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.963;exitY=0.434;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.049;entryY=0.729;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;entryPerimeter=0;" parent="1" source="pz74ikTeV96kR6cz_8VZ-74" target="pz74ikTeV96kR6cz_8VZ-12" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="pz74ikTeV96kR6cz_8VZ-24" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.963;exitY=0.539;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;" parent="1" source="pz74ikTeV96kR6cz_8VZ-74" target="pz74ikTeV96kR6cz_8VZ-23" edge="1">
+        <mxCell id="pz74ikTeV96kR6cz_8VZ-24" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.963;exitY=0.539;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;" parent="1" source="pz74ikTeV96kR6cz_8VZ-74" target="pz74ikTeV96kR6cz_8VZ-23" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="pz74ikTeV96kR6cz_8VZ-26" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.921;exitY=0.539;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;" parent="1" source="pz74ikTeV96kR6cz_8VZ-74" target="pz74ikTeV96kR6cz_8VZ-25" edge="1">
@@ -58,7 +58,7 @@
         <mxCell id="pz74ikTeV96kR6cz_8VZ-20" value="Xem thông tin model" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
           <mxGeometry x="600" y="220" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="pz74ikTeV96kR6cz_8VZ-21" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;dashed=1;" parent="1" source="pz74ikTeV96kR6cz_8VZ-12" target="pz74ikTeV96kR6cz_8VZ-20" edge="1">
+        <mxCell id="pz74ikTeV96kR6cz_8VZ-21" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;dashed=1;" parent="1" source="pz74ikTeV96kR6cz_8VZ-12" target="pz74ikTeV96kR6cz_8VZ-20" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="600" y="120" as="sourcePoint" />
             <mxPoint x="860" y="260" as="targetPoint" />
@@ -165,10 +165,10 @@
           <mxGeometry x="710" y="840" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="pz74ikTeV96kR6cz_8VZ-51" value="Tạo nguồn data mới" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
-          <mxGeometry x="560" y="830" width="120" height="80" as="geometry" />
+          <mxGeometry x="580" y="880" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="pz74ikTeV96kR6cz_8VZ-52" value="Chỉnh sửa nguồn data" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
-          <mxGeometry x="550" y="1000" width="120" height="80" as="geometry" />
+          <mxGeometry x="520" y="1000" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="pz74ikTeV96kR6cz_8VZ-53" value="Xóa nguồn data" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
           <mxGeometry x="390" y="1030" width="120" height="80" as="geometry" />
@@ -204,7 +204,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="pz74ikTeV96kR6cz_8VZ-60" value="Xem thông tin nguồn&lt;div&gt;data&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
-          <mxGeometry x="240" y="1070" width="120" height="80" as="geometry" />
+          <mxGeometry x="260" y="1030" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="pz74ikTeV96kR6cz_8VZ-61" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=open;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;dashed=1;" parent="1" source="pz74ikTeV96kR6cz_8VZ-27" target="pz74ikTeV96kR6cz_8VZ-60" edge="1">
           <mxGeometry relative="1" as="geometry">
@@ -256,10 +256,10 @@
         <mxCell id="pz74ikTeV96kR6cz_8VZ-75" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
           <mxGeometry y="600" width="50" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="vrLS-OWnsT858FHgo4uk-1" value="Đăng nhập" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+        <mxCell id="vrLS-OWnsT858FHgo4uk-1" value="Đăng nhập" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
           <mxGeometry x="440" y="-80" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="vrLS-OWnsT858FHgo4uk-2" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;curved=1;entryX=0;entryY=1;entryDx=0;entryDy=0;exitX=1;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;endFill=0;" edge="1" parent="1" source="pz74ikTeV96kR6cz_8VZ-74" target="vrLS-OWnsT858FHgo4uk-1">
+        <mxCell id="vrLS-OWnsT858FHgo4uk-2" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;curved=1;entryX=0;entryY=1;entryDx=0;entryDy=0;exitX=1;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;endFill=0;" parent="1" source="pz74ikTeV96kR6cz_8VZ-74" target="vrLS-OWnsT858FHgo4uk-1" edge="1">
           <mxGeometry width="140" relative="1" as="geometry">
             <mxPoint x="170" y="90" as="sourcePoint" />
             <mxPoint x="310" y="90" as="targetPoint" />

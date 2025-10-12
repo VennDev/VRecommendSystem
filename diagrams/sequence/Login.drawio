@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="btu6OMzoNkepz1fCtM7P-12" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;" edge="1" parent="1" source="iG1tL0JvZU8y5PSEpBtQ-2">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-12" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;" parent="1" source="iG1tL0JvZU8y5PSEpBtQ-2" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="70" y="600" as="targetPoint" />
           </mxGeometry>
@@ -18,107 +18,107 @@
             <mxPoint x="70" y="120" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="iG1tL0JvZU8y5PSEpBtQ-6" value="" style="endArrow=blockThin;html=1;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;curved=1;endFill=1;entryX=-0.02;entryY=0.078;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" edge="1" target="btu6OMzoNkepz1fCtM7P-2">
+        <mxCell id="iG1tL0JvZU8y5PSEpBtQ-6" value="" style="endArrow=blockThin;html=1;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;curved=1;endFill=1;entryX=-0.02;entryY=0.078;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" target="btu6OMzoNkepz1fCtM7P-2" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="70" y="188" as="sourcePoint" />
             <mxPoint x="270" y="230" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-1" value="Gửi yêu cầu đăng nhập" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" connectable="0" parent="iG1tL0JvZU8y5PSEpBtQ-6">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-1" value="Gửi yêu cầu đăng nhập" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="iG1tL0JvZU8y5PSEpBtQ-6" vertex="1" connectable="0">
           <mxGeometry x="-0.1051" y="-1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-4" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;" edge="1" parent="1" source="btu6OMzoNkepz1fCtM7P-2">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-4" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;" parent="1" source="btu6OMzoNkepz1fCtM7P-2" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="407" y="120" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-8" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.11;exitY=0.11;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=1;exitPerimeter=0;" edge="1" parent="1" source="btu6OMzoNkepz1fCtM7P-17">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-8" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.11;exitY=0.11;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=1;exitPerimeter=0;" parent="1" source="btu6OMzoNkepz1fCtM7P-17" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="690" y="370" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-9" value="Truy vấn email" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" connectable="0" parent="btu6OMzoNkepz1fCtM7P-8">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-9" value="Truy vấn email" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="btu6OMzoNkepz1fCtM7P-8" vertex="1" connectable="0">
           <mxGeometry x="0.0091" y="1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-13" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="btu6OMzoNkepz1fCtM7P-2" target="btu6OMzoNkepz1fCtM7P-17">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-13" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="btu6OMzoNkepz1fCtM7P-2" target="btu6OMzoNkepz1fCtM7P-17" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="407" y="360" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-15" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=1;" edge="1" parent="1" source="btu6OMzoNkepz1fCtM7P-2" target="iG1tL0JvZU8y5PSEpBtQ-2">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-15" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=1;" parent="1" source="btu6OMzoNkepz1fCtM7P-2" target="iG1tL0JvZU8y5PSEpBtQ-2" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-16" value="Yêu cầu đăng nhập google" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" connectable="0" parent="btu6OMzoNkepz1fCtM7P-15">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-16" value="Yêu cầu đăng nhập google" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="btu6OMzoNkepz1fCtM7P-15" vertex="1" connectable="0">
           <mxGeometry x="0.0191" y="-1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-2" value="" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-2" value="" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
           <mxGeometry x="397" y="180" width="20" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-3" value="Server Back-End" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-3" value="Server API" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
           <mxGeometry x="337" y="30" width="123" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-5" value="Database" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-5" value="Database" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
           <mxGeometry x="620" y="30" width="113" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-7" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;" edge="1" parent="1" source="btu6OMzoNkepz1fCtM7P-6">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-7" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;" parent="1" source="btu6OMzoNkepz1fCtM7P-6" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="687" y="120" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-11" value="Trả về kết quả" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.15;exitY=0.678;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=1;exitPerimeter=0;" edge="1" parent="1" source="btu6OMzoNkepz1fCtM7P-6">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-11" value="Trả về kết quả" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.15;exitY=0.678;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=1;exitPerimeter=0;" parent="1" source="btu6OMzoNkepz1fCtM7P-6" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="410" y="530" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-14" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;" edge="1" parent="1" source="btu6OMzoNkepz1fCtM7P-6">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-14" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;" parent="1" source="btu6OMzoNkepz1fCtM7P-6" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="687" y="600" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-6" value="" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-6" value="" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
           <mxGeometry x="677" y="460" width="20" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-10" value="Người dùng" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-10" value="Người dùng" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
           <mxGeometry x="10" y="30" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-19" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;" edge="1" parent="1" source="btu6OMzoNkepz1fCtM7P-17">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-19" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=none;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;endFill=0;dashed=1;" parent="1" source="btu6OMzoNkepz1fCtM7P-17" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="407" y="600" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-17" value="" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" parent="1">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-17" value="" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="1" vertex="1">
           <mxGeometry x="397" y="360" width="20" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-20" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;exitX=1;exitY=0.929;exitDx=0;exitDy=0;exitPerimeter=0;endFill=1;" edge="1" parent="1" source="iG1tL0JvZU8y5PSEpBtQ-2">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-20" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;exitX=1;exitY=0.929;exitDx=0;exitDy=0;exitPerimeter=0;endFill=1;" parent="1" source="iG1tL0JvZU8y5PSEpBtQ-2" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="83" y="371" as="sourcePoint" />
             <mxPoint x="397" y="370" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-21" value="Đăng nhập bằng google&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" connectable="0" parent="btu6OMzoNkepz1fCtM7P-20">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-21" value="Đăng nhập bằng google&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="btu6OMzoNkepz1fCtM7P-20" vertex="1" connectable="0">
           <mxGeometry x="0.0695" y="-1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-22" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;curved=1;endFill=1;" edge="1" parent="1">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-22" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;curved=1;endFill=1;" parent="1" edge="1">
           <mxGeometry width="140" relative="1" as="geometry">
             <mxPoint x="410" y="550" as="sourcePoint" />
             <mxPoint x="70" y="550" as="targetPoint" />
             <Array as="points" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-23" value="Trả về thông báo" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" connectable="0" parent="btu6OMzoNkepz1fCtM7P-22">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-23" value="Trả về thông báo" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="btu6OMzoNkepz1fCtM7P-22" vertex="1" connectable="0">
           <mxGeometry x="0.1042" y="-3" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-25" value="" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;entryX=0.99;entryY=0.622;entryDx=0;entryDy=0;entryPerimeter=0;endFill=1;" edge="1" parent="1" target="btu6OMzoNkepz1fCtM7P-6">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-25" value="" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;startSize=14;endArrow=blockThin;endSize=14;sourcePerimeterSpacing=8;targetPerimeterSpacing=8;entryX=0.99;entryY=0.622;entryDx=0;entryDy=0;entryPerimeter=0;endFill=1;" parent="1" target="btu6OMzoNkepz1fCtM7P-6" edge="1">
           <mxGeometry width="140" relative="1" as="geometry">
             <mxPoint x="690" y="440" as="sourcePoint" />
             <mxPoint x="850" y="430" as="targetPoint" />
@@ -128,7 +128,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="btu6OMzoNkepz1fCtM7P-26" value="Kiểm tra tồn tại" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" vertex="1" connectable="0" parent="btu6OMzoNkepz1fCtM7P-25">
+        <mxCell id="btu6OMzoNkepz1fCtM7P-26" value="Kiểm tra tồn tại" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=16;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;" parent="btu6OMzoNkepz1fCtM7P-25" vertex="1" connectable="0">
           <mxGeometry x="-0.6311" y="2" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>

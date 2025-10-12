@@ -1,12 +1,13 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/venndev/vrecommendation/internal/initialize"
 	"github.com/venndev/vrecommendation/pkg/utils"
-	"log"
-	"os"
 )
 
 func main() {
