@@ -2,10 +2,12 @@ package redis
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/venndev/vrecommendation/pkg/setting"
 )
 
 type RedisClient struct {
@@ -22,6 +24,46 @@ func InitRedis(host string, port int) (*RedisClient, error) {
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := client.Ping(ctx).Err(); err != nil {
+		return nil, fmt.Errorf("failed to connect to redis: %w", err)
+	}
+
+	globalRedisClient = &RedisClient{client: client}
+	return globalRedisClient, nil
+}
+
+func InitRedisWithConfig(config setting.Redis) (*RedisClient, error) {
+	opts := &redis.Options{
+		Addr:         fmt.Sprintf("%s:%d", config.Host, config.Port),
+		Password:     config.Password,
+		DB:           config.DB,
+		MaxRetries:   config.MaxRetries,
+		PoolSize:     config.PoolSize,
+		MinIdleConns: config.MinIdleConns,
+		PoolTimeout:  time.Duration(config.PoolTimeout) * time.Second,
+		ReadTimeout:  time.Duration(config.ReadTimeout) * time.Second,
+		WriteTimeout: time.Duration(config.WriteTimeout) * time.Second,
+	}
+
+	if config.MaxConnAge > 0 {
+		opts.ConnMaxLifetime = time.Duration(config.MaxConnAge) * time.Second
+	}
+
+	if config.IdleTimeout > 0 {
+		opts.ConnMaxIdleTime = time.Duration(config.IdleTimeout) * time.Second
+	}
+
+	if config.SSL {
+		opts.TLSConfig = &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		}
+	}
+
+	client := redis.NewClient(opts)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := client.Ping(ctx).Err(); err != nil {
