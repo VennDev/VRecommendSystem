@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v3"
@@ -42,7 +43,11 @@ func Recommend(c fiber.Ctx) error {
 		}
 	}
 
-	aiServerUrl := fmt.Sprintf("http://localhost:9999/api/v1/recommend/%s/%s/%s", userId, modelId, n)
+	aiServerBaseUrl := os.Getenv("AI_SERVER_URL")
+	if aiServerBaseUrl == "" {
+		aiServerBaseUrl = "http://localhost:9999"
+	}
+	aiServerUrl := fmt.Sprintf("%s/api/v1/recommend/%s/%s/%s", aiServerBaseUrl, userId, modelId, n)
 
 	req, err := http.NewRequestWithContext(ctx, "GET", aiServerUrl, nil)
 	if err != nil {

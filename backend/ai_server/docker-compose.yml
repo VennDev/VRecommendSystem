@@ -1,15 +1,25 @@
+# Standalone docker-compose for AI Server only
+# For full system deployment, use docker-compose.yml at project root
+
 services:
   vrecommendation_ai:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${HOST_PORT:-9999}:${CONTAINER_PORT:-9999}"
+      - "${AI_SERVER_PORT:-9999}:${AI_SERVER_PORT:-9999}"
     environment:
-      - HOST_PORT=${HOST_PORT:-9999}
-      - CONTAINER_PORT=${CONTAINER_PORT:-9999}
-    env_file:
-      - .env
+      - HOST=${AI_SERVER_HOST:-0.0.0.0}
+      - PORT=${AI_SERVER_PORT:-9999}
+      - MYSQL_HOST=${MYSQL_HOST:-localhost}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_USER=${MYSQL_USER:-admin}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-pokiwar0981}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-shop}
+      - MONGODB_HOST=${MONGODB_HOST:-localhost}
+      - MONGODB_PORT=${MONGODB_PORT:-27017}
+      - MONGODB_USERNAME=${MONGODB_USERNAME:-root}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD:-password}
     restart: unless-stopped
     networks:
       - vrecommendation_ai_network
@@ -28,9 +38,7 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
-      - "${PROMETHEUS_HOST_PORT:-9090}:${PROMETHEUS_CONTAINER_PORT:-9090}"
-    env_file:
-      - .env
+      - "${PROMETHEUS_PORT:-9090}:9090"
     networks:
       - vrecommendation_ai_network
 

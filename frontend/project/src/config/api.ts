@@ -1,30 +1,35 @@
+// Get environment variables with fallbacks
+const getEnvVar = (key: string, defaultValue: string): string => {
+  return import.meta.env[key] || defaultValue;
+};
+
 // API Configuration - Centralized place for all API settings
 export const API_CONFIG = {
-  // Base URLs
-  AI_SERVER_URL: "http://localhost:9999",
-  AUTH_SERVER_URL: "http://localhost:2030",
-  
+  // Base URLs from environment variables
+  AI_SERVER_URL: getEnvVar('VITE_AI_SERVER_URL', 'http://localhost:9999'),
+  AUTH_SERVER_URL: getEnvVar('VITE_API_SERVER_URL', 'http://localhost:2030'),
+
   // API Versions
   AI_API_VERSION: "/api/v1",
   AUTH_API_VERSION: "/api/v1",
-  
+
   // Full base URLs with versions
   get AI_BASE_URL() {
     return `${this.AI_SERVER_URL}${this.AI_API_VERSION}`;
   },
-  
+
   get AUTH_BASE_URL() {
     return `${this.AUTH_SERVER_URL}${this.AUTH_API_VERSION}`;
   },
-  
+
   // Timeout settings
   REQUEST_TIMEOUT: 30000, // 30 seconds
-  
+
   // Request settings
   DEFAULT_HEADERS: {
     'Content-Type': 'application/json',
   },
-  
+
   REQUEST_OPTIONS: {
     credentials: 'include' as RequestCredentials,
   },
@@ -112,19 +117,24 @@ export const buildAuthUrl = (endpoint: string): string => {
 // Environment-specific overrides (for production, staging, etc.)
 export const getApiConfig = () => {
   const env = import.meta.env.MODE;
-  
+
+  // Log current configuration for debugging
+  console.log(`[API Config] Environment: ${env}`);
+  console.log(`[API Config] AI Server URL: ${API_CONFIG.AI_SERVER_URL}`);
+  console.log(`[API Config] Auth Server URL: ${API_CONFIG.AUTH_SERVER_URL}`);
+
   switch (env) {
     case 'production':
       return {
         ...API_CONFIG,
-        AI_SERVER_URL: import.meta.env.VITE_AI_SERVER_URL || API_CONFIG.AI_SERVER_URL,
-        AUTH_SERVER_URL: import.meta.env.VITE_AUTH_SERVER_URL || API_CONFIG.AUTH_SERVER_URL,
+        AI_SERVER_URL: getEnvVar('VITE_AI_SERVER_URL', API_CONFIG.AI_SERVER_URL),
+        AUTH_SERVER_URL: getEnvVar('VITE_API_SERVER_URL', API_CONFIG.AUTH_SERVER_URL),
       };
     case 'staging':
       return {
         ...API_CONFIG,
-        AI_SERVER_URL: import.meta.env.VITE_AI_SERVER_URL || 'http://staging-ai.example.com',
-        AUTH_SERVER_URL: import.meta.env.VITE_AUTH_SERVER_URL || 'http://staging-auth.example.com',
+        AI_SERVER_URL: getEnvVar('VITE_AI_SERVER_URL', 'http://staging-ai.example.com'),
+        AUTH_SERVER_URL: getEnvVar('VITE_API_SERVER_URL', 'http://staging-auth.example.com'),
       };
     default:
       return API_CONFIG;

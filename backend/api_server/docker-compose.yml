@@ -1,13 +1,25 @@
 ---
+# Standalone docker-compose for API Server only
+# For full system deployment, use docker-compose.yml at project root
+
 services:
   vrecommendation:
     build: .
     ports:
-      - "${HOST_PORT:-2030}:${HOST_PORT:-3000}"
+      - "${HOST_PORT:-2030}:${HOST_PORT:-2030}"
     environment:
-      - PORT=${HOST_PORT:-3000}
+      - STATUS_DEV=${STATUS_DEV:-dev}
+      - HOST_ADDRESS=${HOST_ADDRESS:-0.0.0.0}
+      - HOST_PORT=${HOST_PORT:-2030}
+      - HOST_READ_TIMEOUT=${HOST_READ_TIMEOUT:-60}
+      - AI_SERVER_URL=${AI_SERVER_URL:-http://localhost:9999}
+      - REDIS_HOST=${REDIS_HOST:-localhost}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_DB=${REDIS_DB:-0}
     volumes:
       - ./logs:/app/logs
+      - ./config:/app/config
     networks:
       - vrecommendation-network
     restart: unless-stopped
