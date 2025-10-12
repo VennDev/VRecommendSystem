@@ -29,6 +29,12 @@ func main() {
 	// Initialize OAuth
 	initialize.InitOAuth()
 
+	// Initialize Redis
+	err = initialize.InitRedis()
+	if err != nil {
+		panic(err)
+	}
+
 	// Initialize App
 	app := initialize.InitApp()
 

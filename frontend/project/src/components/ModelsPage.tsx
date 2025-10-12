@@ -207,6 +207,15 @@ const ModelsPage: React.FC = () => {
                 </div>
               )}
 
+              <div className="mb-4">
+                <div className="text-xs font-semibold text-base-content/70 mb-1">
+                  API Endpoint:
+                </div>
+                <code className="text-xs bg-base-200 p-2 rounded block break-all">
+                  GET /api/v1/recommend?user_id=USER_ID&model_id={model.model_id}&n=10
+                </code>
+              </div>
+
               <div className="card-actions justify-end">
                 <button
                   onClick={() => handleViewDetails(model)}
@@ -375,6 +384,26 @@ const ModelsPage: React.FC = () => {
                     </p>
                   </div>
                 )}
+              </div>
+
+              <div>
+                <label className="label">
+                  <span className="label-text font-semibold">
+                    Recommendation API Endpoint
+                  </span>
+                </label>
+                <div className="bg-base-200 p-4 rounded-lg">
+                  <code className="text-sm break-all">
+                    GET /api/v1/recommend?user_id=USER_ID&model_id={selectedModel.model_id}&n=10
+                  </code>
+                  <p className="text-xs text-base-content/60 mt-2">
+                    Replace USER_ID with the actual user ID to get recommendations.
+                    The 'n' parameter controls the number of recommendations (default: 10).
+                  </p>
+                  <p className="text-xs text-base-content/60 mt-1">
+                    This endpoint uses Redis caching with 5-minute TTL for improved performance.
+                  </p>
+                </div>
               </div>
             </div>
 
