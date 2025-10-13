@@ -33,7 +33,7 @@ const AppContent: React.FC = () => {
       <Route path="/scheduler" element={<ProtectedRoute><DashboardLayout><SchedulerPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/data-chefs" element={<ProtectedRoute><DashboardLayout><DataChefsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/logs" element={<ProtectedRoute><DashboardLayout><LogsPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/super-admin" element={<ProtectedRoute><DashboardLayout><SuperAdminPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/super-admin" element={<SuperAdminPage />} />
       <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
     </Routes>
   );
