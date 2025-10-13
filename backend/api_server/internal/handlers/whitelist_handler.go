@@ -5,12 +5,13 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v3"
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
+	"github.com/venndev/vrecommendation/global"
 )
 
 type WhitelistEntry struct {
@@ -41,38 +42,54 @@ type UpdateEmailRequest struct {
 }
 
 var whitelistDB *sql.DB
+var dbType string
 
 func InitWhitelistDB() error {
 	if whitelistDB != nil {
 		return nil
 	}
 
-	dbHost := os.Getenv("POSTGRES_HOST")
-	if dbHost == "" {
-		dbHost = "localhost"
-	}
-	dbPort := os.Getenv("POSTGRES_PORT")
-	if dbPort == "" {
-		dbPort = "5432"
-	}
-	dbUser := os.Getenv("POSTGRES_USER")
-	if dbUser == "" {
-		dbUser = "postgres"
-	}
-	dbPassword := os.Getenv("POSTGRES_PASSWORD")
-	if dbPassword == "" {
-		dbPassword = "postgres"
-	}
-	dbName := os.Getenv("POSTGRES_DB")
-	if dbName == "" {
-		dbName = "vrecommendation"
-	}
+	cfg := global.Config
+	dbType = strings.ToLower(cfg.Database.Type)
 
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		dbHost, dbPort, dbUser, dbPassword, dbName)
+	var connStr string
+	var driverName string
+
+	switch dbType {
+	case "mysql":
+		driverName = "mysql"
+		sslParam := ""
+		if cfg.Database.SSL {
+			sslParam = "?tls=true"
+		}
+		connStr = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s%s",
+			cfg.Database.User,
+			cfg.Database.Password,
+			cfg.Database.Host,
+			cfg.Database.Port,
+			cfg.Database.DB,
+			sslParam,
+		)
+	case "postgresql", "postgres":
+		driverName = "postgres"
+		sslMode := "disable"
+		if cfg.Database.SSL {
+			sslMode = "require"
+		}
+		connStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+			cfg.Database.Host,
+			cfg.Database.Port,
+			cfg.Database.User,
+			cfg.Database.Password,
+			cfg.Database.DB,
+			sslMode,
+		)
+	default:
+		return fmt.Errorf("unsupported database type: %s (supported: mysql, postgresql)", dbType)
+	}
 
 	var err error
-	whitelistDB, err = sql.Open("postgres", connStr)
+	whitelistDB, err = sql.Open(driverName, connStr)
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
@@ -81,9 +98,9 @@ func InitWhitelistDB() error {
 		return fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	whitelistDB.SetMaxOpenConns(25)
-	whitelistDB.SetMaxIdleConns(5)
-	whitelistDB.SetConnMaxLifetime(5 * time.Minute)
+	whitelistDB.SetMaxOpenConns(cfg.Database.MaxOpenConns)
+	whitelistDB.SetMaxIdleConns(cfg.Database.MaxIdleConns)
+	whitelistDB.SetConnMaxLifetime(time.Duration(cfg.Database.ConnMaxLifetime) * time.Second)
 
 	if err := createWhitelistTable(); err != nil {
 		return fmt.Errorf("failed to create whitelist table: %w", err)
@@ -93,22 +110,43 @@ func InitWhitelistDB() error {
 }
 
 func createWhitelistTable() error {
-	query := `
-	CREATE TABLE IF NOT EXISTS email_whitelist (
-		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-		email_hash TEXT UNIQUE NOT NULL,
-		email_encrypted TEXT NOT NULL,
-		added_by TEXT DEFAULT 'system',
-		added_at TIMESTAMPTZ DEFAULT NOW(),
-		is_active BOOLEAN DEFAULT true,
-		notes TEXT,
-		created_at TIMESTAMPTZ DEFAULT NOW(),
-		updated_at TIMESTAMPTZ DEFAULT NOW()
-	);
+	var query string
 
-	CREATE INDEX IF NOT EXISTS idx_email_whitelist_hash ON email_whitelist(email_hash);
-	CREATE INDEX IF NOT EXISTS idx_email_whitelist_active ON email_whitelist(is_active) WHERE is_active = true;
-	`
+	switch dbType {
+	case "mysql":
+		query = `
+		CREATE TABLE IF NOT EXISTS email_whitelist (
+			id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
+			email_hash VARCHAR(64) UNIQUE NOT NULL,
+			email_encrypted TEXT NOT NULL,
+			added_by VARCHAR(255) DEFAULT 'system',
+			added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			is_active BOOLEAN DEFAULT TRUE,
+			notes TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			INDEX idx_email_whitelist_hash (email_hash),
+			INDEX idx_email_whitelist_active (is_active)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+		`
+	case "postgresql", "postgres":
+		query = `
+		CREATE TABLE IF NOT EXISTS email_whitelist (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			email_hash TEXT UNIQUE NOT NULL,
+			email_encrypted TEXT NOT NULL,
+			added_by TEXT DEFAULT 'system',
+			added_at TIMESTAMPTZ DEFAULT NOW(),
+			is_active BOOLEAN DEFAULT true,
+			notes TEXT,
+			created_at TIMESTAMPTZ DEFAULT NOW(),
+			updated_at TIMESTAMPTZ DEFAULT NOW()
+		);
+
+		CREATE INDEX IF NOT EXISTS idx_email_whitelist_hash ON email_whitelist(email_hash);
+		CREATE INDEX IF NOT EXISTS idx_email_whitelist_active ON email_whitelist(is_active) WHERE is_active = true;
+		`
+	}
 
 	_, err := whitelistDB.Exec(query)
 	return err
@@ -137,7 +175,7 @@ func AddEmailToWhitelist(c fiber.Ctx) error {
 
 	if err := InitWhitelistDB(); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to initialize database connection",
+			"error": "Failed to initialize database connection: " + err.Error(),
 		})
 	}
 
@@ -156,11 +194,50 @@ func AddEmailToWhitelist(c fiber.Ctx) error {
 
 	emailHash := hashEmail(req.Email)
 
-	query := `
-		INSERT INTO email_whitelist (email_hash, email_encrypted, added_by, notes, is_active)
-		VALUES ($1, $2, $3, $4, true)
-		RETURNING id, email_hash, email_encrypted, added_by, added_at, is_active, notes, created_at, updated_at
-	`
+	var query string
+	switch dbType {
+	case "mysql":
+		query = `
+			INSERT INTO email_whitelist (email_hash, email_encrypted, added_by, notes, is_active)
+			VALUES (?, ?, ?, ?, true)
+		`
+	case "postgresql", "postgres":
+		query = `
+			INSERT INTO email_whitelist (email_hash, email_encrypted, added_by, notes, is_active)
+			VALUES ($1, $2, $3, $4, true)
+			RETURNING id, email_hash, email_encrypted, added_by, added_at, is_active, notes, created_at, updated_at
+		`
+	}
+
+	if dbType == "mysql" {
+		result, err := whitelistDB.Exec(query, emailHash, req.Email, req.AddedBy, req.Notes)
+		if err != nil {
+			if strings.Contains(err.Error(), "Duplicate entry") || strings.Contains(err.Error(), "duplicate key") {
+				return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+					"error": "Email already exists in whitelist",
+				})
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Failed to add email to whitelist: " + err.Error(),
+			})
+		}
+
+		id, _ := result.LastInsertId()
+		entry := WhitelistEntry{
+			ID:             fmt.Sprintf("%d", id),
+			EmailHash:      emailHash,
+			EmailEncrypted: req.Email,
+			AddedBy:        req.AddedBy,
+			IsActive:       true,
+			Notes:          req.Notes,
+		}
+
+		return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+			"success": true,
+			"message": "Email added to whitelist successfully",
+			"data":    entry,
+		})
+	}
 
 	var entry WhitelistEntry
 	err := whitelistDB.QueryRow(query, emailHash, req.Email, req.AddedBy, req.Notes).Scan(
@@ -256,13 +333,23 @@ func CheckEmailWhitelisted(c fiber.Ctx) error {
 
 	emailHash := hashEmail(req.Email)
 
-	query := `
-		SELECT COUNT(*) FROM email_whitelist
-		WHERE email_hash = $1 AND is_active = true
-	`
+	var query string
+	switch dbType {
+	case "mysql":
+		query = `SELECT COUNT(*) FROM email_whitelist WHERE email_hash = ? AND is_active = true`
+	case "postgresql", "postgres":
+		query = `SELECT COUNT(*) FROM email_whitelist WHERE email_hash = $1 AND is_active = true`
+	}
 
 	var count int
-	err := whitelistDB.QueryRow(query, emailHash).Scan(&count)
+	var err error
+
+	if dbType == "mysql" {
+		err = whitelistDB.QueryRow(query, emailHash).Scan(&count)
+	} else {
+		err = whitelistDB.QueryRow(query, emailHash).Scan(&count)
+	}
+
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to check whitelist: " + err.Error(),
@@ -293,7 +380,14 @@ func RemoveEmailFromWhitelist(c fiber.Ctx) error {
 		})
 	}
 
-	query := `DELETE FROM email_whitelist WHERE id = $1`
+	var query string
+	switch dbType {
+	case "mysql":
+		query = `DELETE FROM email_whitelist WHERE id = ?`
+	case "postgresql", "postgres":
+		query = `DELETE FROM email_whitelist WHERE id = $1`
+	}
+
 	result, err := whitelistDB.Exec(query, id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -339,34 +433,67 @@ func UpdateWhitelistEmail(c fiber.Ctx) error {
 		})
 	}
 
-	query := `
-		UPDATE email_whitelist
-		SET is_active = $1, notes = $2, updated_at = NOW()
-		WHERE id = $3
-		RETURNING id, email_hash, email_encrypted, added_by, added_at, is_active, notes, created_at, updated_at
-	`
+	var query string
+	switch dbType {
+	case "mysql":
+		query = `
+			UPDATE email_whitelist
+			SET is_active = ?, notes = ?, updated_at = NOW()
+			WHERE id = ?
+		`
+		result, err := whitelistDB.Exec(query, req.IsActive, req.Notes, id)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Failed to update whitelist entry: " + err.Error(),
+			})
+		}
 
-	var entry WhitelistEntry
-	err := whitelistDB.QueryRow(query, req.IsActive, req.Notes, id).Scan(
-		&entry.ID, &entry.EmailHash, &entry.EmailEncrypted, &entry.AddedBy,
-		&entry.AddedAt, &entry.IsActive, &entry.Notes, &entry.CreatedAt, &entry.UpdatedAt,
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
+		rowsAffected, _ := result.RowsAffected()
+		if rowsAffected == 0 {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"error": "Email not found in whitelist",
 			})
 		}
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to update whitelist entry: " + err.Error(),
+
+		return c.JSON(fiber.Map{
+			"success": true,
+			"message": "Whitelist entry updated successfully",
+		})
+
+	case "postgresql", "postgres":
+		query = `
+			UPDATE email_whitelist
+			SET is_active = $1, notes = $2, updated_at = NOW()
+			WHERE id = $3
+			RETURNING id, email_hash, email_encrypted, added_by, added_at, is_active, notes, created_at, updated_at
+		`
+
+		var entry WhitelistEntry
+		err := whitelistDB.QueryRow(query, req.IsActive, req.Notes, id).Scan(
+			&entry.ID, &entry.EmailHash, &entry.EmailEncrypted, &entry.AddedBy,
+			&entry.AddedAt, &entry.IsActive, &entry.Notes, &entry.CreatedAt, &entry.UpdatedAt,
+		)
+
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+					"error": "Email not found in whitelist",
+				})
+			}
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Failed to update whitelist entry: " + err.Error(),
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"success": true,
+			"message": "Whitelist entry updated successfully",
+			"data":    entry,
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"success": true,
-		"message": "Whitelist entry updated successfully",
-		"data":    entry,
+	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		"error": "Unsupported database type",
 	})
 }
 
@@ -377,10 +504,13 @@ func CheckEmailWhitelistedInternal(email string) (bool, error) {
 
 	emailHash := hashEmail(email)
 
-	query := `
-		SELECT COUNT(*) FROM email_whitelist
-		WHERE email_hash = $1 AND is_active = true
-	`
+	var query string
+	switch dbType {
+	case "mysql":
+		query = `SELECT COUNT(*) FROM email_whitelist WHERE email_hash = ? AND is_active = true`
+	case "postgresql", "postgres":
+		query = `SELECT COUNT(*) FROM email_whitelist WHERE email_hash = $1 AND is_active = true`
+	}
 
 	var count int
 	err := whitelistDB.QueryRow(query, emailHash).Scan(&count)

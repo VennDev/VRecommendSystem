@@ -2,9 +2,10 @@ package setting
 
 type Config struct {
 	// From local.yml
-	Logger Logger `yaml:"logger" mapstructure:"logger"`
-	JWT    JWT    `yaml:"jwt" mapstructure:"jwt"`
-	Redis  Redis  `yaml:"redis" mapstructure:"redis"`
+	Logger   Logger   `yaml:"logger" mapstructure:"logger"`
+	JWT      JWT      `yaml:"jwt" mapstructure:"jwt"`
+	Database Database `yaml:"database" mapstructure:"database"`
+	Redis    Redis    `yaml:"redis" mapstructure:"redis"`
 }
 
 type Logger struct {
@@ -20,6 +21,19 @@ type JWT struct {
 	ExpireMinsCount         int    `yaml:"expire_mins_count" mapstructure:"expire_mins_count"`
 	RefreshKey              string `yaml:"refresh_key" mapstructure:"refresh_key"`
 	RefreshExpireHoursCount int    `yaml:"refresh_expire_hours_count" mapstructure:"refresh_expire_hours_count"`
+}
+
+type Database struct {
+	Type            string `yaml:"type" mapstructure:"type"`
+	Host            string `yaml:"host" mapstructure:"host"`
+	Port            int    `yaml:"port" mapstructure:"port"`
+	User            string `yaml:"user" mapstructure:"user"`
+	Password        string `yaml:"password" mapstructure:"password"`
+	DB              string `yaml:"db" mapstructure:"db"`
+	SSL             bool   `yaml:"ssl" mapstructure:"ssl"`
+	MaxIdleConns    int    `yaml:"max_idle_conns" mapstructure:"max_idle_conns"`
+	MaxOpenConns    int    `yaml:"max_open_conns" mapstructure:"max_open_conns"`
+	ConnMaxLifetime int    `yaml:"conn_max_lifetime" mapstructure:"conn_max_lifetime"`
 }
 
 type Redis struct {

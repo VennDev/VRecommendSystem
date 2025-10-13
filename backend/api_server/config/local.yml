@@ -14,6 +14,20 @@ jwt:
   refresh_key: 'refresh_secret'
   refresh_expire_hours_count: 720
 
+# Database configuration for email whitelist
+database:
+  # Database type: "mysql" or "postgresql"
+  type: "postgresql"
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "postgres"
+  db: "vrecommendation"
+  ssl: false
+  max_idle_conns: 5
+  max_open_conns: 25
+  conn_max_lifetime: 300 # seconds
+
 # Redis configuration
 redis:
   host: '0.0.0.0'
