@@ -30,9 +30,9 @@ database:
 
 # Redis configuration
 redis:
-  host: '0.0.0.0'
-  port: 6379
-  password: '' # Leave empty if no password
+  host: 'redis-11030.c1.ap-southeast-1-1.ec2.redns.redis-cloud.com'
+  port: 11030 
+  password: 'UqIklPGg9na7naIGGTTlvrIXqWPsTJSH' # Leave empty if no password
   db: 0 # Default database
   ssl: false # Enable SSL/TLS connection
   max_retries: 3 # Maximum number of retries
