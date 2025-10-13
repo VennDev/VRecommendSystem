@@ -612,7 +612,7 @@ class ApiService {
     };
 
     return this.request(
-      "/api/v1/whitelist/add",
+      "/whitelist/add",
       {
         method: "POST",
         body: JSON.stringify(requestBody),
@@ -622,14 +622,14 @@ class ApiService {
   }
 
   async getWhitelistEmails() {
-    return this.request("/api/v1/whitelist/list", {}, true);
+    return this.request("/whitelist/list", {}, true);
   }
 
   async checkEmailWhitelisted(email: string) {
     const requestBody = { email };
 
     return this.request(
-      "/api/v1/whitelist/check",
+      "/whitelist/check",
       {
         method: "POST",
         body: JSON.stringify(requestBody),
@@ -640,7 +640,7 @@ class ApiService {
 
   async removeEmailFromWhitelist(id: string) {
     return this.request(
-      `/api/v1/whitelist/${id}`,
+      `/whitelist/${id}`,
       {
         method: "DELETE",
       },
@@ -655,7 +655,7 @@ class ApiService {
     };
 
     return this.request(
-      `/api/v1/whitelist/${id}`,
+      `/whitelist/${id}`,
       {
         method: "PUT",
         body: JSON.stringify(requestBody),
