@@ -12,8 +12,24 @@ interface Task {
   status?: "running" | "paused" | "completed";
 }
 
+interface Model {
+  model_id: string;
+  model_name: string;
+  algorithm: string;
+  model_type: string;
+  status: string;
+}
+
+interface DataChef {
+  id: string;
+  name: string;
+  type: string;
+}
+
 const TasksPage: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
+  const [dataChefs, setDataChefs] = useState<DataChef[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -23,11 +39,12 @@ const TasksPage: React.FC = () => {
     dataChefId: "",
     itemFeaturesDataChefId: "",
     userFeaturesDataChefId: "",
-    interval: 3600, // 1 hour default
+    interval: 3600,
   });
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingResources, setLoadingResources] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -38,7 +55,6 @@ const TasksPage: React.FC = () => {
       const response = await apiService.listTasks();
       if (response.data) {
         const tasksObject = response.data;
-        // Add task names based on model_id if not present
         const tasksWithNames = Object.entries(tasksObject).map(
           ([task, index]) => ({
             name: task,
@@ -51,6 +67,37 @@ const TasksPage: React.FC = () => {
       console.error("Failed to fetch tasks:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchModelsAndDataChefs = async () => {
+    setLoadingResources(true);
+    try {
+      const [modelsResponse, dataChefsResponse] = await Promise.all([
+        apiService.listModels(),
+        apiService.listDataChefs(),
+      ]);
+
+      if (modelsResponse.data) {
+        const modelsArray = Object.values(modelsResponse.data) as Model[];
+        setModels(modelsArray);
+      }
+
+      if (dataChefsResponse.data) {
+        const dataChefsObject = dataChefsResponse.data;
+        const dataChefsArray = Object.entries(dataChefsObject).map(
+          ([key, value]: [string, any]) => ({
+            id: key,
+            name: key,
+            type: value.type || "unknown",
+          })
+        );
+        setDataChefs(dataChefsArray);
+      }
+    } catch (error) {
+      console.error("Failed to fetch models and data chefs:", error);
+    } finally {
+      setLoadingResources(false);
     }
   };
 
@@ -91,6 +138,7 @@ const TasksPage: React.FC = () => {
       userFeaturesDataChefId: task.user_features_data_chef_id || "",
       interval: task.interval,
     });
+    fetchModelsAndDataChefs();
     setShowEditModal(true);
   };
 
@@ -237,7 +285,10 @@ const TasksPage: React.FC = () => {
           </p>
         </div>
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => {
+            fetchModelsAndDataChefs();
+            setShowCreateModal(true);
+          }}
           className="btn btn-primary gap-2"
         >
           <Plus className="h-5 w-5" />
@@ -359,32 +410,70 @@ const TasksPage: React.FC = () => {
                 <label className="label">
                   <span className="label-text">Model ID</span>
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.modelId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, modelId: e.target.value })
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="model_id"
-                />
+                {loadingResources ? (
+                  <div className="flex items-center justify-center p-3 bg-base-200 rounded-lg">
+                    <div className="loading loading-spinner loading-sm mr-2"></div>
+                    <span className="text-sm text-base-content/70">Loading models...</span>
+                  </div>
+                ) : (
+                  <select
+                    required
+                    value={formData.modelId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, modelId: e.target.value })
+                    }
+                    className="select select-bordered w-full"
+                  >
+                    <option value="" disabled>
+                      Select a model
+                    </option>
+                    {models.map((model) => (
+                      <option key={model.model_id} value={model.model_id}>
+                        {model.model_name} ({model.model_id})
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {!loadingResources && models.length === 0 && (
+                  <p className="text-xs text-warning mt-1">
+                    No models found. Please create a model first.
+                  </p>
+                )}
               </div>
 
               <div>
                 <label className="label">
                   <span className="label-text">Interactions Data Chef ID</span>
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.dataChefId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, dataChefId: e.target.value })
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="data_chef_id"
-                />
+                {loadingResources ? (
+                  <div className="flex items-center justify-center p-3 bg-base-200 rounded-lg">
+                    <div className="loading loading-spinner loading-sm mr-2"></div>
+                    <span className="text-sm text-base-content/70">Loading data chefs...</span>
+                  </div>
+                ) : (
+                  <select
+                    required
+                    value={formData.dataChefId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dataChefId: e.target.value })
+                    }
+                    className="select select-bordered w-full"
+                  >
+                    <option value="" disabled>
+                      Select a data chef
+                    </option>
+                    {dataChefs.map((chef) => (
+                      <option key={chef.id} value={chef.id}>
+                        {chef.name} ({chef.type})
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {!loadingResources && dataChefs.length === 0 && (
+                  <p className="text-xs text-warning mt-1">
+                    No data chefs found. Please create a data chef first.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -393,18 +482,30 @@ const TasksPage: React.FC = () => {
                     Item Features Data Chef ID (Optional)
                   </span>
                 </label>
-                <input
-                  type="text"
-                  value={formData.itemFeaturesDataChefId}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      itemFeaturesDataChefId: e.target.value,
-                    })
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="item_features_data_chef_id"
-                />
+                {loadingResources ? (
+                  <div className="flex items-center justify-center p-3 bg-base-200 rounded-lg">
+                    <div className="loading loading-spinner loading-sm mr-2"></div>
+                    <span className="text-sm text-base-content/70">Loading data chefs...</span>
+                  </div>
+                ) : (
+                  <select
+                    value={formData.itemFeaturesDataChefId}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        itemFeaturesDataChefId: e.target.value,
+                      })
+                    }
+                    className="select select-bordered w-full"
+                  >
+                    <option value="">None</option>
+                    {dataChefs.map((chef) => (
+                      <option key={chef.id} value={chef.id}>
+                        {chef.name} ({chef.type})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>
@@ -413,18 +514,30 @@ const TasksPage: React.FC = () => {
                     User Features Data Chef ID (Optional)
                   </span>
                 </label>
-                <input
-                  type="text"
-                  value={formData.userFeaturesDataChefId}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      userFeaturesDataChefId: e.target.value,
-                    })
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="user_features_data_chef_id"
-                />
+                {loadingResources ? (
+                  <div className="flex items-center justify-center p-3 bg-base-200 rounded-lg">
+                    <div className="loading loading-spinner loading-sm mr-2"></div>
+                    <span className="text-sm text-base-content/70">Loading data chefs...</span>
+                  </div>
+                ) : (
+                  <select
+                    value={formData.userFeaturesDataChefId}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        userFeaturesDataChefId: e.target.value,
+                      })
+                    }
+                    className="select select-bordered w-full"
+                  >
+                    <option value="">None</option>
+                    {dataChefs.map((chef) => (
+                      <option key={chef.id} value={chef.id}>
+                        {chef.name} ({chef.type})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>
@@ -507,32 +620,70 @@ const TasksPage: React.FC = () => {
                 <label className="label">
                   <span className="label-text">Model ID</span>
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.modelId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, modelId: e.target.value })
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="model_id"
-                />
+                {loadingResources ? (
+                  <div className="flex items-center justify-center p-3 bg-base-200 rounded-lg">
+                    <div className="loading loading-spinner loading-sm mr-2"></div>
+                    <span className="text-sm text-base-content/70">Loading models...</span>
+                  </div>
+                ) : (
+                  <select
+                    required
+                    value={formData.modelId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, modelId: e.target.value })
+                    }
+                    className="select select-bordered w-full"
+                  >
+                    <option value="" disabled>
+                      Select a model
+                    </option>
+                    {models.map((model) => (
+                      <option key={model.model_id} value={model.model_id}>
+                        {model.model_name} ({model.model_id})
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {!loadingResources && models.length === 0 && (
+                  <p className="text-xs text-warning mt-1">
+                    No models found. Please create a model first.
+                  </p>
+                )}
               </div>
 
               <div>
                 <label className="label">
                   <span className="label-text">Interactions Data Chef ID</span>
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.dataChefId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, dataChefId: e.target.value })
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="data_chef_id"
-                />
+                {loadingResources ? (
+                  <div className="flex items-center justify-center p-3 bg-base-200 rounded-lg">
+                    <div className="loading loading-spinner loading-sm mr-2"></div>
+                    <span className="text-sm text-base-content/70">Loading data chefs...</span>
+                  </div>
+                ) : (
+                  <select
+                    required
+                    value={formData.dataChefId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dataChefId: e.target.value })
+                    }
+                    className="select select-bordered w-full"
+                  >
+                    <option value="" disabled>
+                      Select a data chef
+                    </option>
+                    {dataChefs.map((chef) => (
+                      <option key={chef.id} value={chef.id}>
+                        {chef.name} ({chef.type})
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {!loadingResources && dataChefs.length === 0 && (
+                  <p className="text-xs text-warning mt-1">
+                    No data chefs found. Please create a data chef first.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -541,18 +692,30 @@ const TasksPage: React.FC = () => {
                     Item Features Data Chef ID (Optional)
                   </span>
                 </label>
-                <input
-                  type="text"
-                  value={formData.itemFeaturesDataChefId}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      itemFeaturesDataChefId: e.target.value,
-                    })
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="item_features_data_chef_id"
-                />
+                {loadingResources ? (
+                  <div className="flex items-center justify-center p-3 bg-base-200 rounded-lg">
+                    <div className="loading loading-spinner loading-sm mr-2"></div>
+                    <span className="text-sm text-base-content/70">Loading data chefs...</span>
+                  </div>
+                ) : (
+                  <select
+                    value={formData.itemFeaturesDataChefId}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        itemFeaturesDataChefId: e.target.value,
+                      })
+                    }
+                    className="select select-bordered w-full"
+                  >
+                    <option value="">None</option>
+                    {dataChefs.map((chef) => (
+                      <option key={chef.id} value={chef.id}>
+                        {chef.name} ({chef.type})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>
@@ -561,18 +724,30 @@ const TasksPage: React.FC = () => {
                     User Features Data Chef ID (Optional)
                   </span>
                 </label>
-                <input
-                  type="text"
-                  value={formData.userFeaturesDataChefId}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      userFeaturesDataChefId: e.target.value,
-                    })
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="user_features_data_chef_id"
-                />
+                {loadingResources ? (
+                  <div className="flex items-center justify-center p-3 bg-base-200 rounded-lg">
+                    <div className="loading loading-spinner loading-sm mr-2"></div>
+                    <span className="text-sm text-base-content/70">Loading data chefs...</span>
+                  </div>
+                ) : (
+                  <select
+                    value={formData.userFeaturesDataChefId}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        userFeaturesDataChefId: e.target.value,
+                      })
+                    }
+                    className="select select-bordered w-full"
+                  >
+                    <option value="">None</option>
+                    {dataChefs.map((chef) => (
+                      <option key={chef.id} value={chef.id}>
+                        {chef.name} ({chef.type})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>
