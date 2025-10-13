@@ -270,9 +270,20 @@ func GetWhitelistEmails(c fiber.Ctx) error {
 
 	if err := InitWhitelistDB(); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to initialize database connection",
+			"error": "Failed to initialize database connection: " + err.Error(),
 		})
 	}
+
+	// First, check if table exists and count rows
+	var count int
+	countQuery := "SELECT COUNT(*) FROM email_whitelist"
+	if err := whitelistDB.QueryRow(countQuery).Scan(&count); err != nil {
+		fmt.Printf("Error counting rows: %v\n", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to count rows: " + err.Error(),
+		})
+	}
+	fmt.Printf("GetWhitelistEmails: Table has %d rows\n", count)
 
 	query := `
 		SELECT id, email_hash, email_encrypted, added_by, added_at, is_active, notes, created_at, updated_at
@@ -280,8 +291,10 @@ func GetWhitelistEmails(c fiber.Ctx) error {
 		ORDER BY created_at DESC
 	`
 
+	fmt.Printf("GetWhitelistEmails: Executing query...\n")
 	rows, err := whitelistDB.Query(query)
 	if err != nil {
+		fmt.Printf("GetWhitelistEmails: Query error: %v\n", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to fetch whitelist: " + err.Error(),
 		})
@@ -289,17 +302,29 @@ func GetWhitelistEmails(c fiber.Ctx) error {
 	defer rows.Close()
 
 	var entries []WhitelistEntry
+	rowCount := 0
 	for rows.Next() {
+		rowCount++
 		var entry WhitelistEntry
 		err := rows.Scan(
 			&entry.ID, &entry.EmailHash, &entry.EmailEncrypted, &entry.AddedBy,
 			&entry.AddedAt, &entry.IsActive, &entry.Notes, &entry.CreatedAt, &entry.UpdatedAt,
 		)
 		if err != nil {
+			fmt.Printf("Error scanning row %d: %v\n", rowCount, err)
 			continue
 		}
 		entries = append(entries, entry)
 	}
+
+	// Check for errors from iterating over rows
+	if err := rows.Err(); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Error iterating rows: " + err.Error(),
+		})
+	}
+
+	fmt.Printf("GetWhitelistEmails: Found %d rows, successfully scanned %d entries\n", rowCount, len(entries))
 
 	if entries == nil {
 		entries = []WhitelistEntry{}
