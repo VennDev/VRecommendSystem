@@ -200,7 +200,21 @@ class ApiService {
         headers,
       });
 
+      console.log(`API Response [${url}]:`, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        throw new Error(`Expected JSON response but got: ${contentType}. Body: ${text.substring(0, 200)}`);
+      }
+
       const data = await response.json();
+      console.log(`API Data [${url}]:`, data);
 
       if (!response.ok) {
         // Handle auth errors - token expired or invalid

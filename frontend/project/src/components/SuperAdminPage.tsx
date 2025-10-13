@@ -49,18 +49,35 @@ const SuperAdminPage: React.FC = () => {
   const fetchEmails = async () => {
     try {
       setError(null);
+      console.log("Fetching whitelist emails...");
       const response = await apiService.getWhitelistEmails();
+      console.log("Whitelist response:", response);
 
       if (response.error) {
+        console.error("Response error:", response.error);
         setError(`Failed to fetch whitelist: ${response.error}`);
         setEmails([]);
         return;
       }
 
-      if (response.data?.data) {
-        setEmails(response.data.data);
-        setError(null);
+      if (response.data) {
+        console.log("Response data:", response.data);
+        console.log("Response data.data:", response.data.data);
+
+        if (response.data.data && Array.isArray(response.data.data)) {
+          console.log("Setting emails:", response.data.data);
+          setEmails(response.data.data);
+          setError(null);
+        } else if (Array.isArray(response.data)) {
+          console.log("Data is array directly:", response.data);
+          setEmails(response.data);
+          setError(null);
+        } else {
+          console.warn("No valid data array found");
+          setEmails([]);
+        }
       } else {
+        console.warn("No data in response");
         setEmails([]);
       }
     } catch (error) {
