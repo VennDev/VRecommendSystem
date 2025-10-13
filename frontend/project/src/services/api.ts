@@ -602,6 +602,67 @@ class ApiService {
   async getRecommendations(userId: string, modelId: string, n?: number) {
     return this.request(API_ENDPOINTS.AI.RECOMMEND(userId, modelId, n));
   }
+
+  // Email Whitelist methods (localhost only)
+  async addEmailToWhitelist(email: string, addedBy: string, notes?: string) {
+    const requestBody = {
+      email,
+      added_by: addedBy,
+      notes: notes || "",
+    };
+
+    return this.request(
+      "/api/v1/whitelist/add",
+      {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+      },
+      true
+    );
+  }
+
+  async getWhitelistEmails() {
+    return this.request("/api/v1/whitelist/list", {}, true);
+  }
+
+  async checkEmailWhitelisted(email: string) {
+    const requestBody = { email };
+
+    return this.request(
+      "/api/v1/whitelist/check",
+      {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+      },
+      true
+    );
+  }
+
+  async removeEmailFromWhitelist(id: string) {
+    return this.request(
+      `/api/v1/whitelist/${id}`,
+      {
+        method: "DELETE",
+      },
+      true
+    );
+  }
+
+  async updateWhitelistEmail(id: string, isActive: boolean, notes: string) {
+    const requestBody = {
+      is_active: isActive,
+      notes,
+    };
+
+    return this.request(
+      `/api/v1/whitelist/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(requestBody),
+      },
+      true
+    );
+  }
 }
 
 export const apiService = new ApiService();

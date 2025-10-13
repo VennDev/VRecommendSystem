@@ -2,7 +2,7 @@ import { Bot, LogOut, Menu, Moon, Sun, User, X } from "lucide-react";
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
-import { NAVIGATION_ITEMS } from "../constants/navigation";
+import { NAVIGATION_ITEMS, ADMIN_NAVIGATION_ITEMS, isLocalhost } from "../constants/navigation";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -63,6 +63,34 @@ const Layout: React.FC<LayoutProps> = ({
               </button>
             );
           })}
+
+          {isLocalhost() && (
+            <>
+              <div className="divider text-xs text-base-content/50">Admin</div>
+              {ADMIN_NAVIGATION_ITEMS.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onTabChange(item.id);
+                      setSidebarOpen(false);
+                    }}
+                    className={`${
+                      isActive
+                        ? "bg-error/10 border-r-2 border-error text-error"
+                        : "text-base-content/70 hover:bg-base-200"
+                    } group flex items-center px-2 py-2 text-base font-medium rounded-l-md w-full mb-1 transition-all duration-200 btn btn-ghost justify-start`}
+                  >
+                    <Icon className="mr-4 h-6 w-6" />
+                    <span>{item.name}</span>
+                  </button>
+                );
+              })}
+            </>
+          )}
         </nav>
       </div>
 

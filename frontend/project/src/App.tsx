@@ -9,6 +9,7 @@ import LogsPage from "./components/LogsPage";
 import ModelsPage from "./components/ModelsPage";
 import SchedulerPage from "./components/SchedulerPage";
 import TasksPage from "./components/TasksPage";
+import SuperAdminPage from "./components/SuperAdminPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ProtectedRoute } from "./components/common/ProtectedRoute";
@@ -32,6 +33,7 @@ const AppContent: React.FC = () => {
       <Route path="/scheduler" element={<ProtectedRoute><DashboardLayout><SchedulerPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/data-chefs" element={<ProtectedRoute><DashboardLayout><DataChefsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/logs" element={<ProtectedRoute><DashboardLayout><LogsPage /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/super-admin" element={<ProtectedRoute><DashboardLayout><SuperAdminPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
     </Routes>
   );

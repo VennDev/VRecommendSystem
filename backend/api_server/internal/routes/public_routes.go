@@ -20,4 +20,11 @@ func PublicRouters(a *fiber.App) {
 	route.Post("/auth/logout", handlers.LogoutHandler)
 	route.Get("/auth/:provider/callback", handlers.CallbackHandler)
 	route.Get("/auth/:provider", handlers.BeginAuthHandler)
+
+	// Email whitelist routes (localhost only)
+	route.Post("/whitelist/add", handlers.AddEmailToWhitelist)
+	route.Get("/whitelist/list", handlers.GetWhitelistEmails)
+	route.Post("/whitelist/check", handlers.CheckEmailWhitelisted)
+	route.Delete("/whitelist/:id", handlers.RemoveEmailFromWhitelist)
+	route.Put("/whitelist/:id", handlers.UpdateWhitelistEmail)
 }
