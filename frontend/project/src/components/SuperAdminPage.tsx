@@ -32,6 +32,7 @@ const SuperAdminPage: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLocalhost, setIsLocalhost] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const hostname = window.location.hostname;
@@ -47,12 +48,25 @@ const SuperAdminPage: React.FC = () => {
 
   const fetchEmails = async () => {
     try {
+      setError(null);
       const response = await apiService.getWhitelistEmails();
+
+      if (response.error) {
+        setError(`Failed to fetch whitelist: ${response.error}`);
+        setEmails([]);
+        return;
+      }
+
       if (response.data?.data) {
         setEmails(response.data.data);
+        setError(null);
+      } else {
+        setEmails([]);
       }
     } catch (error) {
       console.error("Failed to fetch whitelist:", error);
+      setError("Unable to connect to API server. Make sure it's running on port 2030.");
+      setEmails([]);
     } finally {
       setLoading(false);
     }
@@ -228,6 +242,29 @@ const SuperAdminPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="alert alert-error mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <h3 className="font-bold">Connection Error</h3>
+            <div className="text-sm">{error}</div>
+            <div className="text-xs mt-2">
+              Make sure:
+              <ul className="list-disc list-inside mt-1">
+                <li>API server is running on port 2030</li>
+                <li>Database is configured in backend/api_server/config/local.yml</li>
+                <li>Database connection is working</li>
+              </ul>
+            </div>
+          </div>
+          <button onClick={() => fetchEmails()} className="btn btn-sm">
+            Retry
+          </button>
+        </div>
+      )}
 
       <div className="overflow-x-auto bg-base-100 rounded-lg shadow">
         <table className="table">
