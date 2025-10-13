@@ -185,21 +185,7 @@ func CallbackHandler(c fiber.Ctx) error {
 	fmt.Printf("User authenticated successfully: %s (%s)\n", user.Email, user.Provider)
 
 	// Check if email is whitelisted
-	if err := initSupabaseClient(); err != nil {
-		fmt.Printf("Failed to initialize Supabase client: %v\n", err)
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to verify user access",
-		})
-	}
-
-	emailHash := hashEmail(user.Email)
-	var whitelistResult []WhitelistEntry
-	err = supabaseClient.DB.From("email_whitelist").
-		Select("*").
-		Eq("email_hash", emailHash).
-		Eq("is_active", "true").
-		Execute(&whitelistResult)
-
+	whitelisted, err := CheckEmailWhitelistedInternal(user.Email)
 	if err != nil {
 		fmt.Printf("Failed to check whitelist: %v\n", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -207,7 +193,7 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
-	if len(whitelistResult) == 0 {
+	if !whitelisted {
 		fmt.Printf("User email %s is not whitelisted\n", user.Email)
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"error":   "Access denied",

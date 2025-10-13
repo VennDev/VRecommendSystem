@@ -1,6 +1,27 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Service
+  postgres:
+    image: postgres:15-alpine
+    container_name: vrecom_postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-vrecommendation}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vrecom_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Redis Service
   redis:
     image: redis:7-alpine
@@ -27,6 +48,11 @@ services:
       - HOST_ADDRESS=${API_SERVER_HOST:-0.0.0.0}
       - HOST_PORT=${API_SERVER_PORT:-2030}
       - HOST_READ_TIMEOUT=${API_SERVER_READ_TIMEOUT:-60}
+      - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-vrecommendation}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_PASSWORD=${REDIS_PASSWORD:-}
@@ -37,6 +63,7 @@ services:
     networks:
       - vrecom_network
     depends_on:
+      - postgres
       - redis
     restart: unless-stopped
 
@@ -97,8 +124,6 @@ services:
     environment:
       - VITE_API_SERVER_URL=${VITE_API_SERVER_URL:-http://localhost:2030}
       - VITE_AI_SERVER_URL=${VITE_AI_SERVER_URL:-http://localhost:9999}
-      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-      - VITE_SUPABASE_SUPABASE_ANON_KEY=${VITE_SUPABASE_SUPABASE_ANON_KEY}
     volumes:
       - ./frontend/project/src:/app/src
       - ./frontend/project/public:/app/public
@@ -114,5 +139,6 @@ networks:
     driver: bridge
 
 volumes:
+  postgres_data:
   redis_data:
   prometheus_data:
