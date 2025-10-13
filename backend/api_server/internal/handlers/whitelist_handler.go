@@ -58,11 +58,11 @@ func InitWhitelistDB() error {
 	switch dbType {
 	case "mysql":
 		driverName = "mysql"
-		sslParam := ""
+		sslParam := "parseTime=true"
 		if cfg.Database.SSL {
-			sslParam = "?tls=true"
+			sslParam = "parseTime=true&tls=true"
 		}
-		connStr = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s%s",
+		connStr = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?%s",
 			cfg.Database.User,
 			cfg.Database.Password,
 			cfg.Database.Host,
