@@ -606,7 +606,19 @@ class ApiService {
     );
   }
 
-  async getServerLogs(limit: number = 50) {
+  async getServerLogs(limit: number = 50, server: string = 'all') {
+    return this.requestAuth<ApiResponse<Array<{
+      timestamp: string;
+      message: string;
+      level: string;
+      server: string;
+      raw: string;
+    }>>>(
+      `${API_ENDPOINTS.SERVER_LOGS.GET_LOGS}?limit=${limit}&server=${server}`
+    );
+  }
+
+  async getAiServerLogs(limit: number = 50) {
     return this.request<ApiResponse<Array<{timestamp: string; message: string; level: string}>>>(
       `${API_ENDPOINTS.AI.GET_SERVER_LOGS}?limit=${limit}`
     );

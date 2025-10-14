@@ -34,4 +34,7 @@ func PublicRouters(a *fiber.App) {
 	route.Get("/activity-logs/all", handlers.GetAllRecentActivityLogs)
 	route.Get("/activity-logs/resource", handlers.GetActivityLogsByResource)
 	route.Get("/activity-logs/export", handlers.ExportUserActivityLogs)
+
+	// Server logs routes
+	route.Get("/server-logs", handlers.GetServerLogs)
 }

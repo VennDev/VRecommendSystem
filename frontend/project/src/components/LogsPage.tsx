@@ -8,6 +8,8 @@ interface ServerLog {
     timestamp: string;
     message: string;
     level: string;
+    server: string;
+    raw: string;
 }
 
 const LogsPage: React.FC = () => {
@@ -17,6 +19,8 @@ const LogsPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [serverLogsLoading, setServerLogsLoading] = useState(true);
     const [filter, setFilter] = useState<string>("all");
+    const [serverFilter, setServerFilter] = useState<string>("all");
+    const [levelFilter, setLevelFilter] = useState<string>("all");
 
     useEffect(() => {
         if (user) {
@@ -39,20 +43,50 @@ const LogsPage: React.FC = () => {
         }
     };
 
-    const fetchServerLogs = async () => {
+    const fetchServerLogs = async (server: string = "all") => {
         setServerLogsLoading(true);
         try {
-            const response = await apiService.getServerLogs(100);
+            const response = await apiService.getServerLogs(100, server);
             if (response.data) {
                 setServerLogs(response.data?.data || []);
             }
         } catch (error) {
-
             console.error("Failed to fetch server logs:", error);
         } finally {
             setServerLogsLoading(false);
         }
     };
+
+    const handleServerFilterChange = (server: string) => {
+        setServerFilter(server);
+        fetchServerLogs(server);
+    };
+
+    const isValidJSON = (str: string): boolean => {
+        try {
+            JSON.parse(str);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+
+    const formatLogMessage = (log: ServerLog): string => {
+        if (isValidJSON(log.message)) {
+            try {
+                const parsed = JSON.parse(log.message);
+                return JSON.stringify(parsed, null, 2);
+            } catch {
+                return log.message;
+            }
+        }
+        return log.message;
+    };
+
+    const filteredServerLogs = serverLogs.filter((log) => {
+        if (levelFilter !== "all" && log.level !== levelFilter) return false;
+        return true;
+    });
 
     const filteredLogs = logs.filter((log) => {
         if (filter === "all") return true;
@@ -229,7 +263,7 @@ const LogsPage: React.FC = () => {
                         Server Logs
                     </h2>
                     <button
-                        onClick={fetchServerLogs}
+                        onClick={() => fetchServerLogs(serverFilter)}
                         className="btn btn-secondary btn-sm gap-2"
                         disabled={serverLogsLoading}
                     >
@@ -238,11 +272,66 @@ const LogsPage: React.FC = () => {
                     </button>
                 </div>
 
+                {/* Filters */}
+                <div className="mb-4 flex flex-wrap gap-2">
+                    <div className="flex gap-2 items-center">
+                        <span className="text-sm font-medium text-base-content">Server:</span>
+                        <button
+                            onClick={() => handleServerFilterChange("all")}
+                            className={`btn btn-xs ${serverFilter === "all" ? "btn-primary" : "btn-ghost"}`}
+                        >
+                            All
+                        </button>
+                        <button
+                            onClick={() => handleServerFilterChange("api_server")}
+                            className={`btn btn-xs ${serverFilter === "api_server" ? "btn-primary" : "btn-ghost"}`}
+                        >
+                            API Server
+                        </button>
+                        <button
+                            onClick={() => handleServerFilterChange("ai_server")}
+                            className={`btn btn-xs ${serverFilter === "ai_server" ? "btn-primary" : "btn-ghost"}`}
+                        >
+                            AI Server
+                        </button>
+                    </div>
+
+                    <div className="divider divider-horizontal"></div>
+
+                    <div className="flex gap-2 items-center">
+                        <span className="text-sm font-medium text-base-content">Level:</span>
+                        <button
+                            onClick={() => setLevelFilter("all")}
+                            className={`btn btn-xs ${levelFilter === "all" ? "btn-primary" : "btn-ghost"}`}
+                        >
+                            All
+                        </button>
+                        <button
+                            onClick={() => setLevelFilter("INFO")}
+                            className={`btn btn-xs ${levelFilter === "INFO" ? "btn-primary" : "btn-ghost"}`}
+                        >
+                            Info
+                        </button>
+                        <button
+                            onClick={() => setLevelFilter("WARNING")}
+                            className={`btn btn-xs ${levelFilter === "WARNING" ? "btn-primary" : "btn-ghost"}`}
+                        >
+                            Warning
+                        </button>
+                        <button
+                            onClick={() => setLevelFilter("ERROR")}
+                            className={`btn btn-xs ${levelFilter === "ERROR" ? "btn-primary" : "btn-ghost"}`}
+                        >
+                            Error
+                        </button>
+                    </div>
+                </div>
+
                 <div className="card bg-base-100 shadow-sm">
                     <div className="card-body">
                         <h3 className="card-title text-lg flex items-center gap-2 mb-4">
                             <Server className="h-5 w-5" />
-                            AI Server Logs
+                            Server Logs ({filteredServerLogs.length})
                         </h3>
 
                         {serverLogsLoading ? (
@@ -252,31 +341,53 @@ const LogsPage: React.FC = () => {
                             </div>
                         ) : (
                             <>
-                                {serverLogs.length > 0 ? (
+                                {filteredServerLogs.length > 0 ? (
                                     <div className="overflow-x-auto">
                                         <div className="bg-base-200 rounded-lg p-4 max-h-96 overflow-y-auto">
-                                            <div className="font-mono text-xs space-y-1">
-                                                {serverLogs.map((log, index) => (
+                                            <div className="font-mono text-xs space-y-2">
+                                                {filteredServerLogs.map((log, index) => (
                                                     <div
                                                         key={index}
-                                                        className="flex items-start gap-3 hover:bg-base-300 px-2 py-1 rounded"
+                                                        className="hover:bg-base-300 px-3 py-2 rounded border-l-4"
+                                                        style={{
+                                                            borderLeftColor: log.level === 'ERROR' ? '#f87171' :
+                                                                           log.level === 'WARNING' ? '#fbbf24' : '#60a5fa'
+                                                        }}
                                                     >
-                                                        <span
-                                                            className={`badge badge-xs mt-1 ${log.level === 'ERROR'
-                                                                ? 'badge-error'
-                                                                : log.level === 'WARNING'
-                                                                    ? 'badge-warning'
-                                                                    : 'badge-info'
-                                                                }`}
-                                                        >
-                                                            {log.level}
-                                                        </span>
-                                                        <span className="text-base-content/60 whitespace-nowrap">
-                                                            {new Date(log.timestamp).toLocaleString()}
-                                                        </span>
-                                                        <span className="text-base-content flex-1">
-                                                            {log.message}
-                                                        </span>
+                                                        <div className="flex items-center gap-3 mb-1">
+                                                            <span
+                                                                className={`badge badge-xs ${log.level === 'ERROR'
+                                                                    ? 'badge-error'
+                                                                    : log.level === 'WARNING'
+                                                                        ? 'badge-warning'
+                                                                        : 'badge-info'
+                                                                    }`}
+                                                            >
+                                                                {log.level}
+                                                            </span>
+                                                            <span className="badge badge-xs badge-ghost">
+                                                                {log.server}
+                                                            </span>
+                                                            <span className="text-base-content/60 text-xs">
+                                                                {new Date(log.timestamp).toLocaleString()}
+                                                            </span>
+                                                        </div>
+                                                        <div className="text-base-content mt-1">
+                                                            {isValidJSON(log.message) ? (
+                                                                <details className="cursor-pointer">
+                                                                    <summary className="text-primary hover:underline">
+                                                                        View JSON
+                                                                    </summary>
+                                                                    <pre className="text-xs mt-2 p-2 bg-base-300 rounded overflow-x-auto whitespace-pre-wrap">
+                                                                        {formatLogMessage(log)}
+                                                                    </pre>
+                                                                </details>
+                                                            ) : (
+                                                                <span className="whitespace-pre-wrap break-words">
+                                                                    {log.message}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>

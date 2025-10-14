@@ -53,6 +53,11 @@ export const API_ENDPOINTS = {
     GET_BY_RESOURCE: '/activity-logs/resource',
     EXPORT: '/activity-logs/export',
   },
+
+  // Server Logs endpoints
+  SERVER_LOGS: {
+    GET_LOGS: '/server-logs',
+  },
   
   // AI Server endpoints
   AI: {
