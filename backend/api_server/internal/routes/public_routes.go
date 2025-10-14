@@ -27,4 +27,11 @@ func PublicRouters(a *fiber.App) {
 	route.Post("/whitelist/check", handlers.CheckEmailWhitelisted)
 	route.Delete("/whitelist/:id", handlers.RemoveEmailFromWhitelist)
 	route.Put("/whitelist/:id", handlers.UpdateWhitelistEmail)
+
+	// Activity logging routes
+	route.Post("/activity-logs", handlers.CreateActivityLog)
+	route.Get("/activity-logs/user", handlers.GetUserActivityLogs)
+	route.Get("/activity-logs/all", handlers.GetAllRecentActivityLogs)
+	route.Get("/activity-logs/resource", handlers.GetActivityLogsByResource)
+	route.Get("/activity-logs/export", handlers.ExportUserActivityLogs)
 }

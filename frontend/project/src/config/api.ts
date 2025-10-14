@@ -44,6 +44,15 @@ export const API_ENDPOINTS = {
     LOGOUT: '/auth/logout',
     CALLBACK: (provider: string) => `/auth/${provider}/callback`,
   },
+
+  // Activity Logs endpoints
+  ACTIVITY_LOGS: {
+    CREATE: '/activity-logs',
+    GET_USER_LOGS: '/activity-logs/user',
+    GET_ALL_RECENT: '/activity-logs/all',
+    GET_BY_RESOURCE: '/activity-logs/resource',
+    EXPORT: '/activity-logs/export',
+  },
   
   // AI Server endpoints
   AI: {

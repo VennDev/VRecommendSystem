@@ -1,9 +1,8 @@
 import { Download, FileText, RefreshCw, Server } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { activityLogger } from "../services/activityLogger";
+import { activityLogger, ActivityLog } from "../services/activityLogger";
 import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
-import { ActivityLog } from "../lib/supabase";
 
 interface ServerLog {
     timestamp: string;
