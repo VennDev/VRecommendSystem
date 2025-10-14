@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import { activityLogger } from "../services/activityLogger";
 
 interface DataChef {
   id: string;
@@ -30,6 +32,7 @@ interface DataChef {
 }
 
 const DataChefsPage: React.FC = () => {
+  const { user } = useAuth();
   const [dataChefs, setDataChefs] = useState<DataChef[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -152,6 +155,18 @@ const DataChefsPage: React.FC = () => {
         alert("Error: " + response.error);
       } else {
         alert("Data chef updated successfully!");
+
+        if (user) {
+          await activityLogger.log(user.id, user.email, {
+            action: "update",
+            resourceType: "data_chef",
+            resourceId: selectedDataChef.id,
+            details: {
+              type: selectedType,
+            },
+          });
+        }
+
         setShowEditModal(false);
         setSelectedDataChef(null);
         resetForm();
@@ -176,6 +191,16 @@ const DataChefsPage: React.FC = () => {
           alert("Error: " + response.error);
         } else {
           alert("Data chef deleted successfully!");
+
+          if (user) {
+            await activityLogger.log(user.id, user.email, {
+              action: "delete",
+              resourceType: "data_chef",
+              resourceId: dataChef.id,
+              details: {},
+            });
+          }
+
           fetchDataChefs();
         }
       } catch (error) {
@@ -255,6 +280,18 @@ const DataChefsPage: React.FC = () => {
         alert("Error: " + response.error);
       } else {
         alert("Data chef created successfully!");
+
+        if (user) {
+          await activityLogger.log(user.id, user.email, {
+            action: "create",
+            resourceType: "data_chef",
+            resourceId: formData.dataChefId,
+            details: {
+              type: selectedType,
+            },
+          });
+        }
+
         setShowCreateModal(false);
         resetForm();
         fetchDataChefs();

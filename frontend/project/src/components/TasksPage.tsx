@@ -1,6 +1,8 @@
 import { Calendar, Clock, CreditCard as Edit, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import { activityLogger } from "../services/activityLogger";
 
 interface Task {
   model_id: string;
@@ -27,6 +29,7 @@ interface DataChef {
 }
 
 const TasksPage: React.FC = () => {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [dataChefs, setDataChefs] = useState<DataChef[]>([]);
@@ -117,6 +120,20 @@ const TasksPage: React.FC = () => {
         alert("Error: " + response.error);
       } else {
         alert("Task created successfully!");
+
+        if (user) {
+          await activityLogger.log(user.id, user.email, {
+            action: "create",
+            resourceType: "task",
+            resourceId: formData.taskName,
+            details: {
+              model_id: formData.modelId,
+              data_chef_id: formData.dataChefId,
+              interval: formData.interval,
+            },
+          });
+        }
+
         setShowCreateModal(false);
         resetForm();
         fetchTasks();
@@ -205,6 +222,18 @@ const TasksPage: React.FC = () => {
       await Promise.all(updates);
 
       alert("Task updated successfully!");
+
+      if (user) {
+        await activityLogger.log(user.id, user.email, {
+          action: "update",
+          resourceType: "task",
+          resourceId: formData.taskName,
+          details: {
+            updated_fields: updates.length,
+          },
+        });
+      }
+
       setShowEditModal(false);
       setSelectedTask(null);
       resetForm();
@@ -225,6 +254,16 @@ const TasksPage: React.FC = () => {
           alert("Error: " + response.error);
         } else {
           alert("Task removed successfully!");
+
+          if (user) {
+            await activityLogger.log(user.id, user.email, {
+              action: "delete",
+              resourceType: "task",
+              resourceId: taskName,
+              details: {},
+            });
+          }
+
           fetchTasks();
         }
       } catch (error) {

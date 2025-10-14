@@ -1,8 +1,11 @@
 import { AlertCircle, Clock, Play, RotateCcw, Square } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import { activityLogger } from "../services/activityLogger";
 
 const SchedulerPage: React.FC = () => {
+  const { user } = useAuth();
   const [schedulers, setSchedulers] = useState<any[]>([]);
   const [activeTasks, setActiveTasks] = useState<number>(0);
   const [totalRunTasks, setTotalRunTasks] = useState<number>(0);
@@ -56,6 +59,16 @@ const SchedulerPage: React.FC = () => {
         alert("Error: " + response.error);
       } else {
         alert("Scheduler stopped successfully!");
+
+        if (user) {
+          await activityLogger.log(user.id, user.email, {
+            action: "stop",
+            resourceType: "scheduler",
+            resourceId: "main_scheduler",
+            details: {},
+          });
+        }
+
         fetchSchedulers();
       }
     } catch (error) {
@@ -73,6 +86,16 @@ const SchedulerPage: React.FC = () => {
         alert("Error: " + response.error);
       } else {
         alert("Scheduler restarted successfully!");
+
+        if (user) {
+          await activityLogger.log(user.id, user.email, {
+            action: "restart",
+            resourceType: "scheduler",
+            resourceId: "main_scheduler",
+            details: {},
+          });
+        }
+
         fetchSchedulers();
       }
     } catch (error) {

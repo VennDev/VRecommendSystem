@@ -1,6 +1,8 @@
 import { Cpu, Eye, Play, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import { activityLogger } from "../services/activityLogger";
 
 interface Model {
   model_id: string;
@@ -27,6 +29,7 @@ interface Model {
 }
 
 const ModelsPage: React.FC = () => {
+  const { user } = useAuth();
   const [models, setModels] = useState<Model[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -84,6 +87,19 @@ const ModelsPage: React.FC = () => {
         alert("Error: " + response.error);
       } else {
         alert("Model created successfully!");
+
+        if (user) {
+          await activityLogger.log(user.id, user.email, {
+            action: "create",
+            resourceType: "model",
+            resourceId: formData.modelId,
+            details: {
+              model_name: formData.modelName,
+              algorithm: formData.algorithm,
+            },
+          });
+        }
+
         setShowCreateModal(false);
         setFormData({
           modelId: "",
@@ -108,6 +124,16 @@ const ModelsPage: React.FC = () => {
           alert("Error: " + response.error);
         } else {
           alert("Model deleted successfully!");
+
+          if (user) {
+            await activityLogger.log(user.id, user.email, {
+              action: "delete",
+              resourceType: "model",
+              resourceId: modelId,
+              details: {},
+            });
+          }
+
           fetchModels();
         }
       } catch (error) {
