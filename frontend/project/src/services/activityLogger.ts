@@ -1,4 +1,4 @@
-const LOGS_STORAGE_KEY = 'vrecom_activity_logs';
+import { supabase, ActivityLog } from '../lib/supabase';
 
 interface ActivityLogData {
   action: string;
@@ -7,57 +7,15 @@ interface ActivityLogData {
   details?: Record<string, any>;
 }
 
-interface ActivityLog {
-  id: string;
-  user_id: string;
-  user_email: string;
-  action: string;
-  resource_type?: string;
-  resource_id?: string;
-  details: Record<string, any>;
-  user_agent: string;
-  created_at: string;
-}
-
-interface LogsByDate {
-  [date: string]: ActivityLog[];
-}
-
 const getTodayDateKey = () => {
   const today = new Date();
   return today.toISOString().split('T')[0];
 };
 
-const loadLogsFromStorage = (): LogsByDate => {
-  try {
-    const stored = localStorage.getItem(LOGS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : {};
-  } catch (error) {
-    console.error('Failed to load logs from storage:', error);
-    return {};
-  }
-};
-
-const saveLogsToStorage = (logs: LogsByDate) => {
-  try {
-    localStorage.setItem(LOGS_STORAGE_KEY, JSON.stringify(logs));
-  } catch (error) {
-    console.error('Failed to save logs to storage:', error);
-  }
-};
-
 export const activityLogger = {
   async log(userId: string, userEmail: string, data: ActivityLogData) {
     try {
-      const dateKey = getTodayDateKey();
-      const allLogs = loadLogsFromStorage();
-
-      if (!allLogs[dateKey]) {
-        allLogs[dateKey] = [];
-      }
-
-      const logEntry: ActivityLog = {
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      const logEntry: Omit<ActivityLog, 'id' | 'created_at'> = {
         user_id: userId,
         user_email: userEmail,
         action: data.action,
@@ -65,11 +23,15 @@ export const activityLogger = {
         resource_id: data.resourceId,
         details: data.details || {},
         user_agent: navigator.userAgent,
-        created_at: new Date().toISOString(),
       };
 
-      allLogs[dateKey].push(logEntry);
-      saveLogsToStorage(allLogs);
+      const { error } = await supabase
+        .from('activity_logs')
+        .insert([logEntry]);
+
+      if (error) {
+        console.error('Failed to insert activity log:', error);
+      }
     } catch (error) {
       console.error('Activity logger error:', error);
     }
@@ -77,84 +39,122 @@ export const activityLogger = {
 
   async getRecentLogs(userId: string, limit: number = 50): Promise<ActivityLog[]> {
     try {
-      const allLogs = loadLogsFromStorage();
-      const allLogEntries: ActivityLog[] = [];
+      const { data, error } = await supabase
+        .from('activity_logs')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
 
-      // Get all logs sorted by date (newest first)
-      const sortedDates = Object.keys(allLogs).sort().reverse();
-
-      for (const date of sortedDates) {
-        const dayLogs = allLogs[date].filter(log => log.user_id === userId);
-        allLogEntries.push(...dayLogs);
+      if (error) {
+        console.error('Failed to fetch activity logs:', error);
+        return [];
       }
 
-      // Sort by created_at descending and limit
-      return allLogEntries
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, limit);
+      return data || [];
     } catch (error) {
       console.error('Failed to fetch activity logs:', error);
       return [];
     }
   },
 
-  async getLogsByResource(resourceType: string, resourceId: string, limit: number = 20): Promise<ActivityLog[]> {
+  async getAllRecentLogs(limit: number = 50): Promise<ActivityLog[]> {
     try {
-      const allLogs = loadLogsFromStorage();
-      const allLogEntries: ActivityLog[] = [];
+      const { data, error } = await supabase
+        .from('activity_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(limit);
 
-      const sortedDates = Object.keys(allLogs).sort().reverse();
-
-      for (const date of sortedDates) {
-        const dayLogs = allLogs[date].filter(
-          log => log.resource_type === resourceType && log.resource_id === resourceId
-        );
-        allLogEntries.push(...dayLogs);
+      if (error) {
+        console.error('Failed to fetch all activity logs:', error);
+        return [];
       }
 
-      return allLogEntries
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, limit);
+      return data || [];
+    } catch (error) {
+      console.error('Failed to fetch all activity logs:', error);
+      return [];
+    }
+  },
+
+  async getLogsByResource(resourceType: string, resourceId: string, limit: number = 20): Promise<ActivityLog[]> {
+    try {
+      const { data, error } = await supabase
+        .from('activity_logs')
+        .select('*')
+        .eq('resource_type', resourceType)
+        .eq('resource_id', resourceId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.error('Failed to fetch resource logs:', error);
+        return [];
+      }
+
+      return data || [];
     } catch (error) {
       console.error('Failed to fetch resource logs:', error);
       return [];
     }
   },
 
-  async exportLogsAsJson(): Promise<string> {
-    const allLogs = loadLogsFromStorage();
-    return JSON.stringify(allLogs, null, 2);
+  async exportLogsAsJson(userId?: string): Promise<string> {
+    try {
+      let query = supabase
+        .from('activity_logs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (userId) {
+        query = query.eq('user_id', userId);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Failed to export logs:', error);
+        return '{}';
+      }
+
+      return JSON.stringify(data || [], null, 2);
+    } catch (error) {
+      console.error('Failed to export logs:', error);
+      return '{}';
+    }
   },
 
-  downloadLogsAsFile() {
-    const allLogs = loadLogsFromStorage();
-    const json = JSON.stringify(allLogs, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `activity-logs-${getTodayDateKey()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  async downloadLogsAsFile(userId?: string) {
+    try {
+      const json = await this.exportLogsAsJson(userId);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `activity-logs-${getTodayDateKey()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download logs:', error);
+    }
   },
 
   async clearOldLogs(daysToKeep: number = 30) {
     try {
-      const allLogs = loadLogsFromStorage();
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
-      const cutoffDateKey = cutoffDate.toISOString().split('T')[0];
 
-      const filteredLogs: LogsByDate = {};
-      for (const [date, logs] of Object.entries(allLogs)) {
-        if (date >= cutoffDateKey) {
-          filteredLogs[date] = logs;
-        }
+      const { error } = await supabase
+        .from('activity_logs')
+        .delete()
+        .lt('created_at', cutoffDate.toISOString());
+
+      if (error) {
+        console.error('Failed to clear old logs:', error);
       }
-
-      saveLogsToStorage(filteredLogs);
     } catch (error) {
       console.error('Failed to clear old logs:', error);
     }

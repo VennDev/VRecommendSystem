@@ -3,17 +3,7 @@ import React, { useEffect, useState } from "react";
 import { activityLogger } from "../services/activityLogger";
 import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
-
-interface ActivityLog {
-    id: string;
-    user_id: string;
-    user_email: string;
-    action: string;
-    resource_type?: string;
-    resource_id?: string;
-    details: Record<string, any>;
-    created_at: string;
-}
+import { ActivityLog } from "../lib/supabase";
 
 interface ServerLog {
     timestamp: string;
@@ -113,12 +103,12 @@ const LogsPage: React.FC = () => {
                         Activity Logs
                     </h1>
                     <p className="text-base-content/70">
-                        Track your account activity and system operations (stored locally by date)
+                        Track your account activity and system operations
                     </p>
                 </div>
                 <div className="flex gap-2">
                     <button
-                        onClick={() => activityLogger.downloadLogsAsFile()}
+                        onClick={() => activityLogger.downloadLogsAsFile(user?.id)}
                         className="btn btn-secondary gap-2"
                     >
                         <Download className="h-5 w-5" />
@@ -127,8 +117,9 @@ const LogsPage: React.FC = () => {
                     <button
                         onClick={fetchLogs}
                         className="btn btn-primary gap-2"
+                        disabled={loading}
                     >
-                        <RefreshCw className="h-5 w-5" />
+                        <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
                         <span>Refresh</span>
                     </button>
                 </div>

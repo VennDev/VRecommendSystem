@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { apiService } from "../services/api";
 import { healthCheckService, ServerHealth } from "../services/healthCheck";
+import { activityLogger } from "../services/activityLogger";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -33,45 +34,27 @@ const Dashboard: React.FC = () => {
     } | null;
   } | null>(null);
 
-  const [recentActivity] = useState([
-    {
-      id: 1,
-      action: "Model trained successfully",
-      time: "2 minutes ago",
-      type: "success",
-    },
-    {
-      id: 2,
-      action: "New task scheduled",
-      time: "5 minutes ago",
-      type: "info",
-    },
-    {
-      id: 3,
-      action: "Data chef created from API",
-      time: "10 minutes ago",
-      type: "success",
-    },
-    {
-      id: 4,
-      action: "Scheduler restarted",
-      time: "15 minutes ago",
-      type: "warning",
-    },
-  ]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
   useEffect(() => {
     fetchDashboardData();
     checkServerHealth();
     checkSchedulerStatus();
+    fetchRecentActivity();
 
-    // Check server health every 30 seconds
     const healthCheckInterval = setInterval(() => {
       checkServerHealth();
       checkSchedulerStatus();
     }, 30000);
 
-    return () => clearInterval(healthCheckInterval);
+    const activityInterval = setInterval(() => {
+      fetchRecentActivity();
+    }, 10000);
+
+    return () => {
+      clearInterval(healthCheckInterval);
+      clearInterval(activityInterval);
+    };
   }, []);
 
   const checkServerHealth = async () => {
@@ -87,6 +70,15 @@ const Dashboard: React.FC = () => {
       }
     } catch (error) {
       console.error("Failed to check scheduler status:", error);
+    }
+  };
+
+  const fetchRecentActivity = async () => {
+    try {
+      const logs = await activityLogger.getAllRecentLogs(5);
+      setRecentActivity(logs);
+    } catch (error) {
+      console.error("Failed to fetch recent activity:", error);
     }
   };
 
@@ -110,7 +102,7 @@ const Dashboard: React.FC = () => {
         totalTasks: Object.keys(tasksResponse).length || 0,
         runningTasks: runningTasksResponse.data?.data || 0,
         dataChefs: Object.keys(dataChefResponse.data || {}).length || 0,
-        activeModels: Object.keys(listModelsResponse.data || {}).length || 0, // Mock data
+        activeModels: Object.keys(listModelsResponse.data || {}).length || 0,
         isServerOnline: serverStatusResponse.data?.status == "ok" || false,
       });
     } catch (error) {
@@ -153,15 +145,43 @@ const Dashboard: React.FC = () => {
     },
   ];
 
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case "success":
+  const getActivityIcon = (action: string) => {
+    switch (action) {
+      case "create":
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case "warning":
-        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+      case "delete":
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
+      case "update":
+        return <Activity className="h-4 w-4 text-blue-500" />;
+      case "login":
+        return <User className="h-4 w-4 text-green-500" />;
+      case "logout":
+        return <User className="h-4 w-4 text-orange-500" />;
       default:
         return <Activity className="h-4 w-4 text-blue-500" />;
     }
+  };
+
+  const getTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const created = new Date(timestamp);
+    const diffInSeconds = Math.floor((now.getTime() - created.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  };
+
+  const formatActionText = (log: any) => {
+    const parts = [log.action];
+    if (log.resource_type) {
+      parts.push(log.resource_type);
+    }
+    if (log.resource_id) {
+      parts.push(`#${log.resource_id}`);
+    }
+    return parts.join(' ');
   };
 
   return (
@@ -242,26 +262,45 @@ const Dashboard: React.FC = () => {
         {/* Recent Activity */}
         <div className="card bg-base-100 shadow-sm">
           <div className="card-body">
-            <h2 className="card-title text-base-content mb-4">
-              Recent Activity
+            <h2 className="card-title text-base-content mb-4 flex items-center justify-between">
+              <span>Recent Activity</span>
+              <button
+                onClick={fetchRecentActivity}
+                className="btn btn-ghost btn-xs"
+              >
+                Refresh
+              </button>
             </h2>
-            <div className="space-y-4">
-              {recentActivity.map((activity) => (
-                <div
-                  key={activity.id}
-                  className="flex items-center space-x-3 p-3 rounded-lg bg-base-200"
-                >
-                  {getActivityIcon(activity.type)}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-base-content">
-                      {activity.action}
-                    </p>
-                    <p className="text-xs text-base-content/50">
-                      {activity.time}
-                    </p>
+            <div className="max-h-80 overflow-y-auto space-y-3">
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-start space-x-3 p-3 rounded-lg bg-base-200 hover:bg-base-300 transition-colors"
+                  >
+                    {getActivityIcon(activity.action)}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-base-content">
+                        {formatActionText(activity)}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-xs text-base-content/50">
+                          {getTimeAgo(activity.created_at)}
+                        </p>
+                        <span className="text-xs text-base-content/40">•</span>
+                        <p className="text-xs text-base-content/50 truncate">
+                          {activity.user_email}
+                        </p>
+                      </div>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-base-content/60">
+                  <Activity className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No recent activity</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
