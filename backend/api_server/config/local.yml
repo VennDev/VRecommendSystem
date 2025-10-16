@@ -17,12 +17,12 @@ jwt:
 # Database configuration for email whitelist
 database:
   # Database type: "mysql" or "postgresql"
-  type: "postgresql"
-  host: "localhost"
-  port: 5432
-  user: "postgres"
-  password: "postgres"
-  db: "vrecommendation"
+  type: "mysql"
+  host: "192.168.2.12"
+  port: 3306 
+  user: "admin"
+  password: "pokiwar0981"
+  db: "shop"
   ssl: false
   max_idle_conns: 5
   max_open_conns: 25

@@ -7,4 +7,5 @@ import (
 
 func InitRouter(app *fiber.App) {
 	routes.PublicRouters(app)
+	routes.PrivateRouters(app)
 }

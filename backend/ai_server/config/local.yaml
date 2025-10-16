@@ -22,7 +22,7 @@ logger:
   compression: true # Whether to compress old log files
   local_time: true # Use local time for timestamps in logs
   enqueue: true # Whether to use an asynchronous logging queue
-  serialize: false # Whether to serialize log entries
+  serialize: true # Whether to serialize log entries
 
 # Scheduler configuration
 scheduler:
