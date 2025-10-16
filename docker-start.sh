@@ -11,11 +11,11 @@ echo ""
 
 # Check if .env file exists
 if [ ! -f .env ]; then
-    echo -e "${YELLOW}⚠️  .env file not found. Copying from .env.example...${NC}"
+    echo -e "${YELLOW}!  .env file not found. Copying from .env.example...${NC}"
     if [ -f .env.example ]; then
         cp .env.example .env
         echo -e "${GREEN}✓ .env file created successfully${NC}"
-        echo -e "${YELLOW}⚠️  Please edit .env file with your configuration before proceeding${NC}"
+        echo -e "${YELLOW}!  Please edit .env file with your configuration before proceeding${NC}"
         echo ""
         exit 1
     else
@@ -29,7 +29,7 @@ echo ""
 
 # Check if frontend .env exists
 if [ ! -f frontend/project/.env ]; then
-    echo -e "${YELLOW}⚠️  Frontend .env not found. Copying from .env.example...${NC}"
+    echo -e "${YELLOW}! Frontend .env not found. Copying from .env.example...${NC}"
     if [ -f frontend/project/.env.example ]; then
         cp frontend/project/.env.example frontend/project/.env
         echo -e "${GREEN}✓ Frontend .env created${NC}"
@@ -48,10 +48,10 @@ case $COMMAND in
         docker-compose ps
         echo ""
         echo -e "${GREEN}=== Access URLs ===${NC}"
-        echo -e "  🌐 Frontend:    ${YELLOW}http://localhost:5173${NC}"
-        echo -e "  🔧 API Server:  ${YELLOW}http://localhost:2030${NC}"
-        echo -e "  🤖 AI Server:   ${YELLOW}http://localhost:9999${NC}"
-        echo -e "  📊 Prometheus:  ${YELLOW}http://localhost:9090${NC}"
+        echo -e "  Frontend:    ${YELLOW}http://localhost:5173${NC}"
+        echo -e "  API Server:  ${YELLOW}http://localhost:2030${NC}"
+        echo -e "  AI Server:   ${YELLOW}http://localhost:9999${NC}"
+        echo -e "  Prometheus:  ${YELLOW}http://localhost:9090${NC}"
         echo ""
         echo -e "${GREEN}✓ All services started successfully!${NC}"
         ;;
@@ -86,7 +86,7 @@ case $COMMAND in
         ;;
 
     clean)
-        echo -e "${YELLOW}⚠️  This will remove all containers, volumes, and images${NC}"
+        echo -e "${YELLOW}!  This will remove all containers, volumes, and images${NC}"
         read -p "Are you sure? (y/N) " -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
