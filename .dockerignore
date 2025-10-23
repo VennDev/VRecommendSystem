@@ -46,6 +46,9 @@ tmp/
 temp/
 *.tmp
 
+# Data directories (persistent storage)
+data/
+
 # OS
 .DS_Store
 Thumbs.db

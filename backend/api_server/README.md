@@ -348,7 +348,7 @@ func JWTMiddleware() fiber.Handler {
                 "error": "Authorization token required"
             })
         }
-        
+
         // Validate JWT token
         claims, err := ValidateJWT(token)
         if err != nil {
@@ -356,7 +356,7 @@ func JWTMiddleware() fiber.Handler {
                 "error": "Invalid token"
             })
         }
-        
+
         // Store user info in context
         c.Locals("user", claims)
         return c.Next()
@@ -461,10 +461,10 @@ go tool cover -html=coverage.out
 func TestPingHandler(t *testing.T) {
     app := fiber.New()
     app.Get("/ping", controllers.PingHandler)
-    
+
     req := httptest.NewRequest("GET", "/ping", nil)
     resp, _ := app.Test(req)
-    
+
     assert.Equal(t, 200, resp.StatusCode)
 }
 ```
@@ -711,10 +711,6 @@ MAX_CONNECTIONS=1000
 - Keep functions small and focused
 - Handle errors appropriately
 - Write tests for new features
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.txt](../../LICENSE.txt) file for details.
 
 ## Support
 

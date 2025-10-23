@@ -13,5 +13,11 @@ RUN addgroup --gid 1001 appgroup && adduser --uid 1001 --gid 1001 --disabled-pas
 WORKDIR /app
 COPY --from=builder /app/main .
 COPY --from=builder /app/config ./config
+# Copy .env file if it exists (optional)
+COPY --from=builder /app/.env* ./
+# Create user_logs directory with proper permissions
+RUN mkdir -p /app/user_logs && chown -R appuser:appgroup /app/user_logs
+# Change ownership of the entire app directory to appuser
+RUN chown -R appuser:appgroup /app
 USER appuser
 CMD ["./main"]

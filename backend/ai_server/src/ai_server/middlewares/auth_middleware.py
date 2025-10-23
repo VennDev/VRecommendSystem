@@ -7,10 +7,12 @@ import os
 try:
     import jwt
     from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+
     jwt_decode = jwt.decode
 except (ImportError, AttributeError):
     import PyJWT as jwt
     from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+
     jwt_decode = jwt.decode
 
 
@@ -33,10 +35,17 @@ async def verify_authentication(request: Request, call_next: Callable):
     public_paths = [
         "/api/v1/health",
         "/api/v1/recommend",
+        "/api/v1/list_tasks",
+        "/api/v1/list_data_chefs",
+        "/api/v1/get_total_running_tasks",
+        "/api/v1/list_models",
+        "/api/v1/get_scheduler_status",
+        "/api/v1/get_total_count_run_tasks",
+        "/api/v1/get_task_runtime_seconds",
         "/docs",
         "/openapi.json",
         "/redoc",
-        "/metrics"
+        "/metrics",
     ]
 
     is_public = any(path.startswith(public_path) for public_path in public_paths)
@@ -65,8 +74,8 @@ async def verify_authentication(request: Request, call_next: Callable):
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={
                 "detail": "Authentication required. Please login to access this resource.",
-                "authenticated": False
-            }
+                "authenticated": False,
+            },
         )
 
     try:
@@ -77,8 +86,8 @@ async def verify_authentication(request: Request, call_next: Callable):
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 content={
                     "detail": "Server configuration error",
-                    "authenticated": False
-                }
+                    "authenticated": False,
+                },
             )
 
         payload = jwt_decode(auth_token, secret_key, algorithms=["HS256"])
@@ -92,8 +101,8 @@ async def verify_authentication(request: Request, call_next: Callable):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={
                     "detail": "Invalid authentication token",
-                    "authenticated": False
-                }
+                    "authenticated": False,
+                },
             )
 
         loguru.logger.info(f"Authenticated request to {path} from user {email}")
@@ -107,17 +116,14 @@ async def verify_authentication(request: Request, call_next: Callable):
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={
                 "detail": "Authentication token has expired. Please login again.",
-                "authenticated": False
-            }
+                "authenticated": False,
+            },
         )
     except InvalidTokenError as e:
         loguru.logger.warning(f"Invalid token for {path}: {str(e)}")
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content={
-                "detail": "Invalid authentication token",
-                "authenticated": False
-            }
+            content={"detail": "Invalid authentication token", "authenticated": False},
         )
 
     response = await call_next(request)

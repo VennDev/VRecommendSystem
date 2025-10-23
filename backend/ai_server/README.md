@@ -5,7 +5,7 @@ A high-performance FastAPI-based AI server that powers the recommendation engine
 ## Features
 
 - **AI Model Management**: Create, train, and manage recommendation models with multiple algorithms
-- **Real-time Analytics**: Prometheus metrics and monitoring integration  
+- **Real-time Analytics**: Prometheus metrics and monitoring integration
 - **Task Scheduling**: Automated model training and data processing with flexible scheduling
 - **Data Pipeline**: Multiple data source connectors (CSV, SQL, NoSQL, APIs, Message Queues)
 - **Authentication**: JWT-based authentication with middleware protection
@@ -198,7 +198,7 @@ POST /api/v1/stop_scheduler
     "timeout": 30
 }
 
-# Restart scheduler  
+# Restart scheduler
 POST /api/v1/restart_scheduler
 {
     "timeout": 30
@@ -332,7 +332,7 @@ Response: {"status": "healthy", "timestamp": "2024-01-01T12:00:00Z"}
 GET /api/v1/system/status
 Response: {
     "database": "connected",
-    "redis": "connected", 
+    "redis": "connected",
     "scheduler": "running",
     "models_loaded": 5,
     "active_tasks": 3
@@ -375,11 +375,11 @@ from ai_server.models.base import BaseModel
 class MyCustomModel(BaseModel):
     def __init__(self, **params):
         super().__init__(**params)
-    
+
     def train(self, data):
         # Training logic
         pass
-    
+
     def predict(self, user_id, item_ids):
         # Prediction logic
         pass
@@ -404,7 +404,7 @@ class CustomDataChef(DataChefBase):
     def fetch_data(self):
         # Data fetching logic
         pass
-    
+
     def transform_data(self, data):
         # Data transformation logic
         pass
@@ -529,10 +529,6 @@ tail -f logs/ai_server.log
 6. Commit your changes (`git commit -m 'Add amazing feature'`)
 7. Push to the branch (`git push origin feature/amazing-feature`)
 8. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.txt](../../LICENSE.txt) file for details.
 
 ## Support
 

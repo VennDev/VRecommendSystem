@@ -1,0 +1,236 @@
+<mxfile host="app.diagrams.net" modified="2024-12-19T10:00:00.000Z" agent="5.0" etag="drawio" version="22.1.11" type="device">
+  <diagram name="Docker Architecture" id="docker-architecture">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Docker Network -->
+        <mxCell id="docker-network" value="vrecom_network (Bridge)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;fontStyle=1;dashed=1;dashPattern=8 8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120" width="1080" height="600" as="geometry" />
+        </mxCell>
+
+        <!-- Title -->
+        <mxCell id="title" value="VRecommendation Docker Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="40" width="280" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- External Access -->
+        <mxCell id="external-user" value="External User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="570" y="760" width="30" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Frontend Container -->
+        <mxCell id="frontend-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="160" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="frontend-header" value="Frontend Container" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="140" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="frontend-details" value="React + Vite&#xa;Port: 5173&#xa;Node.js 18&#xa;Container: vrecom_frontend" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="90" y="170" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- API Server Container -->
+        <mxCell id="api-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="320" y="160" width="200" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api-header" value="API Server Container" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="140" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api-details" value="Go 1.24.4&#xa;Port: 2030&#xa;JWT Auth&#xa;Session Management&#xa;Container: vrecom_api_server" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="330" y="170" width="180" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- AI Server Container -->
+        <mxCell id="ai-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="560" y="160" width="200" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ai-header" value="AI Server Container" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="140" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ai-details" value="Python 3.9.23&#xa;Port: 9999&#xa;AI/ML Processing&#xa;Poetry Package Manager&#xa;Container: vrecom_ai_server" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="570" y="170" width="180" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Redis Container -->
+        <mxCell id="redis-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="800" y="160" width="150" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="redis-header" value="Redis Container" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="140" width="150" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="redis-details" value="Redis 7 Alpine&#xa;Port: 6379&#xa;Cache &amp; Sessions&#xa;Container: vrecom_redis" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="810" y="170" width="130" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Prometheus Container -->
+        <mxCell id="prometheus-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="800" y="300" width="150" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prometheus-header" value="Prometheus" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="280" width="150" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prometheus-details" value="Prometheus Latest&#xa;Port: 9090&#xa;Monitoring AI Server&#xa;Container: vrecom_prometheus" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="810" y="310" width="130" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- External Databases -->
+        <mxCell id="external-db" value="External Databases" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;dashed=1;dashPattern=5 5;" vertex="1" parent="1">
+          <mxGeometry x="320" y="480" width="440" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mysql-db" value="MySQL Database&#xa;Port: 3306&#xa;User Data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="340" y="520" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mongodb-db" value="MongoDB Database&#xa;Port: 27017&#xa;Document Storage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="480" y="520" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Volumes -->
+        <mxCell id="volumes" value="Docker Volumes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;dashed=1;dashPattern=5 5;" vertex="1" parent="1">
+          <mxGeometry x="80" y="480" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="redis-volume" value="redis_data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="100" y="520" width="80" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prometheus-volume" value="prometheus_data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="190" y="520" width="80" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="host-volumes" value="Host Bind Mounts:&#xa;• ./backend/*/logs&#xa;• ./backend/*/config&#xa;• ./frontend/*/src" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="100" y="560" width="160" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Port Mappings -->
+        <mxCell id="port-mappings" value="Port Mappings" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="640" width="120" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="port-list" value="5173:5173 (Frontend)&#xa;2030:2030 (API Server)&#xa;9999:9999 (AI Server)&#xa;6379:6379 (Redis)&#xa;9090:9090 (Prometheus)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="440" y="660" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Connections -->
+        <!-- User to Frontend -->
+        <mxCell id="user-frontend" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#ff6b6b;" edge="1" parent="1" source="external-user" target="frontend-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="570" y="740" as="sourcePoint" />
+            <mxPoint x="620" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="user-frontend-label" value="HTTP:5173" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="user-frontend">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Frontend to API -->
+        <mxCell id="frontend-api" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#4dabf7;" edge="1" parent="1" source="frontend-container" target="api-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="220" as="sourcePoint" />
+            <mxPoint x="320" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="frontend-api-label" value="REST API" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="frontend-api">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- API to AI -->
+        <mxCell id="api-ai" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#69db7c;" edge="1" parent="1" source="api-container" target="ai-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="520" y="220" as="sourcePoint" />
+            <mxPoint x="560" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="api-ai-label" value="HTTP:9999" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="api-ai">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- API to Redis -->
+        <mxCell id="api-redis" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#9775fa;" edge="1" parent="1" source="api-container" target="redis-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="520" y="200" as="sourcePoint" />
+            <mxPoint x="800" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="api-redis-label" value="Cache/Session" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="api-redis">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AI to Databases -->
+        <mxCell id="ai-mysql" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#ffa94d;" edge="1" parent="1" source="ai-container" target="mysql-db">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="580" y="300" as="sourcePoint" />
+            <mxPoint x="420" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ai-mysql-label" value="SQL Queries" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="ai-mysql">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="ai-mongodb" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#845ef7;" edge="1" parent="1" source="ai-container" target="mongodb-db">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="640" y="300" as="sourcePoint" />
+            <mxPoint x="540" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ai-mongodb-label" value="Document Store" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="ai-mongodb">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Prometheus to AI -->
+        <mxCell id="prometheus-ai" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#51cf66;dashed=1;" edge="1" parent="1" source="prometheus-container" target="ai-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="800" y="340" as="sourcePoint" />
+            <mxPoint x="760" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="prometheus-ai-label" value="Metrics" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="prometheus-ai">
+          <mxGeometry x="-0.1" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Volume connections -->
+        <mxCell id="redis-volume-conn" value="" style="endArrow=none;html=1;rounded=0;strokeWidth=1;strokeColor=#9673a6;dashed=1;" edge="1" parent="1" source="redis-volume" target="redis-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="180" y="535" as="sourcePoint" />
+            <mxPoint x="800" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="prometheus-volume-conn" value="" style="endArrow=none;html=1;rounded=0;strokeWidth=1;strokeColor=#82b366;dashed=1;" edge="1" parent="1" source="prometheus-volume" target="prometheus-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="270" y="535" as="sourcePoint" />
+            <mxPoint x="800" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

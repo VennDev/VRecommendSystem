@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v3"
@@ -31,14 +32,18 @@ func NewAuth() {
 
 	secretKey := os.Getenv("SESSION_SECRET")
 	if secretKey == "" {
-		secretKey = googleClientSecret // fallback
+		secretKey = os.Getenv("JWT_SECRET_KEY")
+	}
+	if secretKey == "" {
+		secretKey = "default-development-secret-key-change-in-production"
 	}
 
 	store := sessions.NewCookieStore([]byte(secretKey))
 	store.MaxAge(24 * 60 * 60) // 24 hours in seconds
 	store.Options.Path = "/"
 	store.Options.HttpOnly = true
-	store.Options.Secure = false // Set false for HTTP in development
+	store.Options.Secure = false        // Set false for HTTP in development
+	store.Options.MaxAge = 24 * 60 * 60 // 24 hours
 	store.Options.SameSite = http.SameSiteLaxMode
 	store.Options.Domain = "" // Empty means current domain only
 
@@ -215,14 +220,39 @@ func CallbackHandler(c fiber.Ctx) error {
 	w := &fiberResponseWriter{ctx: c, headers: make(http.Header)}
 
 	// Save user to session manually using gorilla sessions
-	session, err := gothic.Store.Get(httpReq2, fmt.Sprintf("%s_%s", gothic.SessionName, provider))
+	sessionName := fmt.Sprintf("%s_%s", gothic.SessionName, provider)
+	fmt.Printf("Creating session with name: %s\n", sessionName)
+
+	// Try to get existing session first, create new if it fails
+	session, err := gothic.Store.Get(httpReq2, sessionName)
 	if err != nil {
-		fmt.Printf("Failed to get session: %v\n", err)
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error":   "Failed to create session",
-			"details": err.Error(),
+		fmt.Printf("Failed to get existing session, creating new one: %v\n", err)
+		// Clear any corrupted cookies first
+		c.Cookie(&fiber.Cookie{
+			Name:     sessionName,
+			Value:    "",
+			MaxAge:   -1,
+			Path:     "/",
+			HTTPOnly: true,
+			Secure:   false,
 		})
+
+		// Create a completely new session
+		session = sessions.NewSession(gothic.Store, sessionName)
+		session.IsNew = true
 	}
+
+	// Ensure proper session options
+	session.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   24 * 60 * 60, // 24 hours
+		HttpOnly: true,
+		Secure:   false, // HTTP in development
+		SameSite: http.SameSiteLaxMode,
+	}
+
+	// Clear any existing values first to avoid corruption
+	session.Values = make(map[interface{}]interface{})
 
 	// Store user data as separate fields (gob-compatible)
 	session.Values["user_id"] = user.UserID
@@ -344,6 +374,55 @@ func LogoutHandler(c fiber.Ctx) error {
 func GetUserHandler(c fiber.Ctx) error {
 	provider := c.Query("provider", "google")
 
+	// Check for JWT token first
+	authHeader := c.Get("Authorization")
+	if authHeader != "" && strings.HasPrefix(authHeader, "Bearer ") {
+		token := authHeader[7:] // Remove "Bearer " prefix
+		fmt.Printf("GetUserHandler - Found JWT token\n")
+
+		// Verify JWT token
+		secretKey := os.Getenv("JWT_SECRET_KEY")
+		if secretKey == "" {
+			secretKey = os.Getenv("SESSION_SECRET")
+		}
+		if secretKey == "" {
+			secretKey = "default-development-secret-key-change-in-production"
+		}
+
+		parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			return []byte(secretKey), nil
+		})
+
+		if err == nil && parsedToken.Valid {
+			if claims, ok := parsedToken.Claims.(jwt.MapClaims); ok {
+				userId, _ := claims["user_id"].(string)
+				email, _ := claims["email"].(string)
+				name, _ := claims["name"].(string)
+
+				fmt.Printf("GetUserHandler - JWT token valid for user: %s\n", email)
+
+				return c.JSON(fiber.Map{
+					"user": fiber.Map{
+						"id":       userId,
+						"name":     name,
+						"email":    email,
+						"provider": "google", // Default since JWT doesn't store provider
+						"picture":  "",       // JWT doesn't store picture URL
+					},
+				})
+			}
+		}
+
+		fmt.Printf("GetUserHandler - Invalid JWT token: %v\n", err)
+		// JWT token is invalid, continue to session check
+	}
+
+	// Fallback to session-based authentication
+	fmt.Printf("GetUserHandler - Checking session authentication\n")
+
 	// Debug: Print cookie header
 	cookieHeader := c.Get("Cookie")
 	fmt.Printf("GetUserHandler - Cookie header: %s\n", cookieHeader)
@@ -366,8 +445,18 @@ func GetUserHandler(c fiber.Ctx) error {
 	session, err := gothic.Store.Get(httpReq, sessionName)
 	if err != nil {
 		fmt.Printf("Failed to get session: %v\n", err)
+		// Clear corrupted cookie and return error
+		c.Cookie(&fiber.Cookie{
+			Name:     sessionName,
+			Value:    "",
+			MaxAge:   -1,
+			Path:     "/",
+			HTTPOnly: true,
+			Secure:   false,
+		})
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Not authenticated - session error",
+			"error":   "Not authenticated - session error. Please login again.",
+			"details": err.Error(),
 		})
 	}
 
@@ -447,4 +536,31 @@ func generateJWTToken(userID, email, name string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+// ClearSessionsHandler clears all session cookies for debugging
+func ClearSessionsHandler(c fiber.Ctx) error {
+	// Clear common session cookie names
+	sessionNames := []string{
+		"_gothic_session",
+		"_gothic_session_google",
+		"_gothic_session_github",
+		"auth_token",
+	}
+
+	for _, sessionName := range sessionNames {
+		c.Cookie(&fiber.Cookie{
+			Name:     sessionName,
+			Value:    "",
+			MaxAge:   -1,
+			Path:     "/",
+			HTTPOnly: true,
+			Secure:   false,
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "All sessions cleared successfully",
+		"cleared": sessionNames,
+	})
 }

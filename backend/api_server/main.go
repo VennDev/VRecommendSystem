@@ -11,10 +11,10 @@ import (
 )
 
 func main() {
-	// Load environment variables from .env file
+	// Load environment variables from .env file (optional)
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Warning: .env file not found, using environment variables")
 	}
 
 	// Load Config

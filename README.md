@@ -1,225 +1,508 @@
-# VRecommendSystem
+# VRecommendation System
 
-## 📋 Overview
+A comprehensive AI-powered recommendation system with microservices architecture, featuring real-time data processing, machine learning models, and a modern web interface.
 
-VRecommendSystem is a powerful recommendation engine with microservices architecture, supporting diverse machine learning algorithms and high scalability.
+## Architecture
 
-## 🏗️ System Architecture
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   API Server    │    │   AI Server     │
+│   (React+Vite)  │◄──►│   (Go/Fiber)    │◄──►│   (Python)      │
+│   Port: 5173    │    │   Port: 2030    │    │   Port: 9999    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+                    ┌─────────────────┐    ┌─────────────────┐
+                    │     Redis       │    │   Prometheus    │
+                    │   (Cache/DB)    │    │  (Monitoring)   │
+                    │   Port: 6379    │    │   Port: 9090    │
+                    └─────────────────┘    └─────────────────┘
+```
 
-- **API Server** (Go/Fiber): Backend API gateway handling authentication and routing
-- **AI Server** (Python/FastAPI): ML engine with support for collaborative filtering
-- **Frontend** (React/TypeScript): Management and monitoring dashboard
-- **Redis**: Caching layer
-- **Prometheus**: Monitoring and metrics
+## Quick Start
 
-## 🚀 Quick Start
+### Prerequisites
 
-### Using Docker (Recommended)
+- **Docker Desktop** (Windows/Mac) or **Docker Engine** (Linux)
+- **Docker Compose** v2.0+
+- **Git**
+- **curl** (for testing)
+
+### 1. Clone Repository
 
 ```bash
-# 1. Clone repository
 git clone <repository-url>
-cd VRecommendSystem
-
-# 2. Copy and configure environment
-cp .env.example .env
-cp frontend/project/.env.example frontend/project/.env
-
-# 3. Start all services
-./docker-start.sh up
+cd VRecommendation
 ```
 
-**Access URLs:**
-- Frontend: http://localhost:5173
-- API Server: http://localhost:2030
-- AI Server: http://localhost:9999
-- Prometheus: http://localhost:9090
-
-For detailed Docker setup, see: [DOCKER_SETUP.md](./DOCKER_SETUP.md)
-
-### Development Setup (Without Docker)
-
-#### Backend - API Server (Go)
+### 2. Environment Setup
 
 ```bash
-cd backend/api_server
-cp example-env .env
-# Configure .env as needed
-go mod download
-go run main.go
+# Copy development environment
+copy .env.development .env
+
+# Or use the Makefile
+make install
 ```
 
-#### Backend - AI Server (Python)
+### 3. Start All Services
 
 ```bash
-cd backend/ai_server
-poetry install
-poetry run server
+# Using Docker Compose
+docker-compose up -d
+
+# Or using Makefile
+make start
 ```
 
-#### Frontend
+### 4. Verify Installation
 
 ```bash
-cd frontend/project
-npm install
-npm run dev
+# Check all services
+make health
+
+# Or manually
+curl http://localhost:2030/api/v1/ping
+curl http://localhost:9999/api/v1/health
+curl http://localhost:5173
 ```
 
-## ⚙️ Port Configuration
+### 5. Access Services
 
-All ports are centrally managed in the `.env` file:
+- **Frontend**: http://localhost:5173
+- **API Server**: http://localhost:2030
+- **AI Server**: http://localhost:9999
+- **Prometheus**: http://localhost:9090
+
+## Available Commands
+
+### Using Makefile (Recommended)
+
+```bash
+# Installation & Setup
+make install          # Install dependencies and setup environment
+make build            # Build all Docker images
+
+# Service Management
+make start            # Start all services
+make stop             # Stop all services
+make restart          # Restart all services
+make status           # Show service status
+
+# Development
+make dev              # Start development environment
+make dev-api          # Run API server locally
+make dev-ai           # Run AI server locally
+make dev-frontend     # Run frontend locally
+
+# Monitoring & Logs
+make logs             # Show all service logs
+make logs-api         # Show API server logs
+make logs-ai          # Show AI server logs
+make health           # Check service health
+make urls             # Show all service URLs
+
+# Testing
+make test             # Run all tests
+make test-api         # Run API server tests
+make test-ai          # Run AI server tests
+
+# Maintenance
+make clean            # Clean containers and volumes
+make clean-all        # Full cleanup
+make backup           # Backup data
+make update           # Update services
+
+# Utilities
+make help             # Show all available commands
+```
+
+### Using Command Scripts
+
+#### Windows
+
+```cmd
+# Start services
+start.cmd
+
+# Stop services
+stop.cmd
+
+# Test system
+test-system.cmd
+```
+
+#### Linux/Mac
+
+```bash
+# Start services
+./docker-start.sh
+
+# Backend development
+./run_backend.sh
+
+# Frontend development
+./run_frontend.sh
+```
+
+## Configuration
+
+### Environment Variables
+
+Key environment variables in `.env`:
 
 ```env
+# Authentication
+JWT_SECRET_KEY=your-jwt-secret-key
+SESSION_SECRET=your-session-secret
+
 # API Server
+API_SERVER_HOST=0.0.0.0
 API_SERVER_PORT=2030
 
 # AI Server
+AI_SERVER_HOST=0.0.0.0
 AI_SERVER_PORT=9999
 
 # Frontend
 FRONTEND_PORT=5173
+VITE_API_SERVER_URL=http://localhost:2030
+VITE_AI_SERVER_URL=http://localhost:9999
 
 # Redis
+REDIS_HOST=redis
 REDIS_PORT=6379
 
-# Prometheus
-PROMETHEUS_PORT=9090
+# Database (MySQL/MongoDB)
+MYSQL_HOST=mysql
+MYSQL_PORT=3306
+MYSQL_USER=admin
+MYSQL_PASSWORD=your-password
+
+# CORS
+CORS_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
-To change ports:
-1. Update the `.env` file
-2. Restart services: `./docker-start.sh restart`
+### Service Configuration
 
-## 📦 Services
+Each service has its own configuration directory:
 
-### API Server (Port 2030)
+- **API Server**: `backend/api_server/config/`
+- **AI Server**: `backend/ai_server/config/`
+- **Frontend**: `frontend/project/`
 
-- Authentication & Authorization
-- Request routing
-- Redis caching
-- Proxy requests to AI Server
+## Testing
 
-**Health check:** `GET http://localhost:2030/api/v1/ping`
-
-### AI Server (Port 9999)
-
-- Model training & management
-- Recommendation engine
-- Data chefs (ETL pipelines)
-- Scheduler for batch jobs
-
-**Health check:** `GET http://localhost:9999/api/v1/health`
-
-### Frontend (Port 5173)
-
-- Model management dashboard
-- Task scheduler interface
-- Logs viewer
-- Metrics visualization
-
-## 📝 Docker Commands
+### System Tests
 
 ```bash
-# Start services
-./docker-start.sh up
+# Run comprehensive system tests
+make test
 
-# Stop services
-./docker-start.sh down
-
-# Rebuild images
-./docker-start.sh build
-
-# View logs
-./docker-start.sh logs
-
-# View logs for specific service
-./docker-start.sh logs api_server
-./docker-start.sh logs ai_server
-
-# Check status
-./docker-start.sh status
-
-# Clean everything
-./docker-start.sh clean
+# Or use Windows script
+test-system.cmd
 ```
 
-## 🛠️ Development
-
-### Hot reload enabled for:
-
-- Frontend: Vite HMR
-- AI Server: Volume mount for `/src`
-- API Server: Rebuild required
-
-### Testing
+### Manual Testing
 
 ```bash
 # API Server
-cd backend/api_server
-go test ./...
+curl http://localhost:2030/api/v1/ping
+curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:2030/api/v1/activity-logs/all
 
 # AI Server
-cd backend/ai_server
-poetry run pytest
+curl http://localhost:9999/api/v1/health
+curl http://localhost:9999/api/v1/list_models
+curl http://localhost:9999/api/v1/list_tasks
+
+# Frontend
+curl http://localhost:5173
 ```
 
-## 📊 Monitoring
+## Troubleshooting
 
-Prometheus metrics available at: http://localhost:9090
+### Common Issues
 
-**AI Server Metrics:**
-- Model training time
-- Task execution duration
-- Active models count
-- Scheduler status
+#### 1. Services Not Starting
 
-## 🔐 Environment Variables
+```bash
+# Check Docker
+docker --version
+docker-compose --version
 
-### API Server
-- `STATUS_DEV`: dev/test/prod
-- `HOST_ADDRESS`: Bind address
-- `HOST_PORT`: Port number
-- `AI_SERVER_URL`: AI Server URL
-- `REDIS_HOST`, `REDIS_PORT`: Redis config
+# Check service status
+make status
+docker-compose ps
 
-### AI Server
-- `HOST`: Bind address
-- `PORT`: Port number
-- `MYSQL_*`: MySQL configuration
-- `MONGODB_*`: MongoDB configuration
+# View logs
+make logs
+```
 
-### Frontend
-- `VITE_API_SERVER_URL`: API Server URL
-- `VITE_AI_SERVER_URL`: AI Server URL
-- `VITE_SUPABASE_*`: Supabase config
+#### 2. Port Conflicts
 
-## 🧪 API Testing
+Default ports used: `2030`, `9999`, `5173`, `9090`, `6379`
 
-Bruno API collection is available in the `vrecom_api/` directory for testing all endpoints.
+```bash
+# Check port usage (Windows)
+netstat -ano | findstr :2030
 
-**Available Collections:**
-- `api_server/`: API Server endpoints (Authentication, Ping)
-- `ai_server/`: AI Server endpoints (Models, Tasks, Data Chefs, Scheduler, Metrics)
+# Kill process using port (Windows)
+taskkill /PID <PID> /F
+```
 
-To use:
-1. Install [Bruno](https://www.usebruno.com/)
-2. Open the `vrecom_api` folder as a collection
-3. Start testing endpoints
+#### 3. CORS Issues
 
-## 📚 Documentation
+- Ensure `CORS_ORIGINS` includes your frontend URL
+- Check AI server logs for CORS errors
+- Verify frontend is accessing correct API URLs
 
-- [Docker Setup Guide](./DOCKER_SETUP.md)
-- [System Architecture](./diagrams/System.drawio.png)
-- [API Documentation](./vrecom_api/)
+#### 4. Authentication Issues
 
-## 🤝 Contributing
+```bash
+# Check JWT secret configuration
+echo %JWT_SECRET_KEY%
 
-1. Fork repository
-2. Create feature branch
-3. Commit changes
-4. Push to branch
-5. Create Pull Request
+# Verify token format
+# JWT tokens should start with "eyJ"
+```
 
-## 📄 License
+#### 5. Docker Issues
 
-See [LICENSE.txt](./LICENSE.txt)
+```bash
+# Clean Docker system
+make docker-clean
+
+# Full Docker reset
+make docker-reset
+
+# Rebuild images
+make rebuild
+```
+
+### Log Analysis
+
+```bash
+# View specific service logs
+make logs-api
+make logs-ai
+make logs-frontend
+
+# Follow logs in real-time
+docker-compose logs -f
+
+# Filter logs
+docker-compose logs ai_server | grep ERROR
+```
+
+## 🏃‍♂️ Development
+
+### Development Workflow
+
+1. **Setup Development Environment**
+   ```bash
+   make dev
+   ```
+
+2. **Run Services Individually**
+   ```bash
+   # API Server (Go)
+   make dev-api
+
+   # AI Server (Python)
+   make dev-ai
+
+   # Frontend (React+Vite)
+   make dev-frontend
+   ```
+
+3. **Make Changes and Test**
+   ```bash
+   # Test your changes
+   make test
+
+   # Check service health
+   make health
+   ```
+
+4. **Build and Deploy**
+   ```bash
+   make build
+   make start
+   ```
+
+### Code Structure
+
+```
+VRecommendation/
+├── backend/
+│   ├── api_server/          # Go API server
+│   │   ├── main.go
+│   │   ├── internal/
+│   │   ├── pkg/
+│   │   └── config/
+│   └── ai_server/           # Python AI server
+│       ├── src/
+│       ├── config/
+│       ├── models/
+│       └── tasks/
+├── frontend/
+│   └── project/             # React + Vite frontend
+│       ├── src/
+│       ├── public/
+│       └── package.json
+├── docs/                    # Documentation
+├── diagrams/               # Architecture diagrams
+├── docker-compose.yml      # Service orchestration
+├── Makefile               # Build automation
+└── README.md             # This file
+```
+
+## Monitoring
+
+### Service Health
+
+```bash
+# Check all services
+make health
+
+# Prometheus metrics
+curl http://localhost:9090/metrics
+
+# Service status
+make status
+```
+
+### Performance Monitoring
+
+- **Prometheus**: http://localhost:9090
+- **Service Logs**: `make logs`
+- **Redis Monitoring**: `make shell-redis`
+
+## Data Management
+
+### Backup
+
+```bash
+# Create backup
+make backup
+
+# Backup Redis data
+make db-backup
+```
+
+### Database Operations
+
+```bash
+# Reset Redis
+make db-reset
+
+# Open Redis CLI
+make shell-redis
+
+# View Redis data
+docker-compose exec redis redis-cli
+```
+
+## Production Deployment
+
+### Production Setup
+
+1. **Configure Environment**
+   ```bash
+   # Create production .env
+   cp .env.development .env.production
+   # Edit with production values
+   ```
+
+2. **Deploy**
+   ```bash
+   make prod-build
+   make prod
+   ```
+
+3. **Monitoring**
+   ```bash
+   make health
+   make logs
+   ```
+
+### Security Considerations
+
+- Change default JWT secrets
+- Use strong passwords for databases
+- Configure proper CORS origins
+- Enable HTTPS in production
+- Use Docker secrets for sensitive data
+
+## API Documentation
+
+### API Server (Go) - Port 2030
+
+```bash
+# Health check
+GET /api/v1/ping
+
+# Activity logs (requires auth)
+GET /api/v1/activity-logs/all
+```
+
+### AI Server (Python) - Port 9999
+
+```bash
+# Health check
+GET /api/v1/health
+
+# List models
+GET /api/v1/list_models
+
+# List tasks
+GET /api/v1/list_tasks
+
+# List data chefs
+GET /api/v1/list_data_chefs
+
+# Scheduler status
+GET /api/v1/get_scheduler_status
+
+# Get recommendations
+POST /api/v1/recommend
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Run the test suite
+6. Submit a pull request
+
+### Development Guidelines
+
+- Follow existing code style
+- Add tests for new features
+- Update documentation
+- Use descriptive commit messages
+
+## Support
+
+- **Issues**: Create an issue on GitHub
+- **Documentation**: Check `docs/` directory
+- **Logs**: Use `make logs` for debugging
+- **System Test**: Run `test-system.cmd` (Windows) or `make test`
+
+## Changelog
+
+### v1.0.0
+- Initial release
+- Microservices architecture
+- Docker containerization
+- Makefile automation
+- Comprehensive testing
+- CORS support
+- JWT authentication
+- Redis caching
+- Prometheus monitoring
+
+---

@@ -267,7 +267,7 @@ The application uses Google OAuth for secure authentication:
 // Example of real-time metrics component
 const MetricsDisplay: React.FC = () => {
   const { data: metrics, error } = useWebSocket('/api/v1/metrics');
-  
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <MetricCard
@@ -435,9 +435,9 @@ interface MyNewComponentProps {
   onAction: () => void;
 }
 
-export const MyNewComponent: React.FC<MyNewComponentProps> = ({ 
-  title, 
-  onAction 
+export const MyNewComponent: React.FC<MyNewComponentProps> = ({
+  title,
+  onAction
 }) => {
   return (
     <div className="card bg-base-100 shadow-xl">
@@ -464,7 +464,7 @@ export const myService = {
     const response = await api.get('/api/v1/my-data');
     return response.data;
   },
-  
+
   async createData(data: CreateMyData): Promise<MyData> {
     const response = await api.post('/api/v1/my-data', data);
     return response.data;
@@ -688,11 +688,11 @@ export const performanceMonitor = {
   markStart: (name: string) => {
     performance.mark(`${name}-start`);
   },
-  
+
   markEnd: (name: string) => {
     performance.mark(`${name}-end`);
     performance.measure(name, `${name}-start`, `${name}-end`);
-    
+
     const measures = performance.getEntriesByName(name);
     const measure = measures[measures.length - 1];
     console.log(`${name} took ${measure.duration.toFixed(2)}ms`);
@@ -720,10 +720,6 @@ export const performanceMonitor = {
 - Include unit tests for complex logic
 - Update documentation for new features
 - Verify responsive design works on all devices
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.txt](../../LICENSE.txt) file for details.
 
 ## Support
 

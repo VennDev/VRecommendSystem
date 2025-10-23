@@ -18,6 +18,7 @@ func PublicRouters(a *fiber.App) {
 	// IMPORTANT: Specific routes MUST come before wildcard routes
 	route.Get("/auth/user", handlers.GetUserHandler)
 	route.Post("/auth/logout", handlers.LogoutHandler)
+	route.Get("/debug/clear-sessions", handlers.ClearSessionsHandler)
 	route.Get("/auth/:provider/callback", handlers.CallbackHandler)
 	route.Get("/auth/:provider", handlers.BeginAuthHandler)
 
@@ -30,4 +31,7 @@ func PublicRouters(a *fiber.App) {
 
 	// Server logs routes
 	route.Get("/server-logs", handlers.GetServerLogs)
+
+	// Debug routes
+	route.Get("/debug/ip", handlers.DebugIPHandler)
 }
