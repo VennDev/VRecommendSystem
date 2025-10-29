@@ -4,6 +4,12 @@ HOST_ADDRESS=0.0.0.0
 HOST_PORT=2030
 HOST_READ_TIMEOUT=60
 
+# Google OAuth2 credentials
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GOOGLE_CALLBACK_URL=http://127.0.0.1:2030/api/v1/auth/google/callback
+SESSION_SECRET=your_strong_session_secret
+
 # AI Server Configuration
 AI_SERVER_URL=http://localhost:9999
 

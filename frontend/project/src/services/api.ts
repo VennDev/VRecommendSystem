@@ -1,9 +1,4 @@
-import {
-    API_ENDPOINTS,
-    buildAiUrl,
-    buildAuthUrl,
-    getApiConfig,
-} from "../config/api";
+import { API_ENDPOINTS, buildAuthUrl, getApiConfig } from "../config/api";
 
 const config = getApiConfig();
 
@@ -20,12 +15,6 @@ interface AuthUser {
     email: string;
     picture: string;
     provider: string;
-}
-
-interface AuthResponse {
-    success: boolean;
-    message: string;
-    user?: AuthUser;
 }
 
 // Request interfaces for API calls
@@ -173,10 +162,12 @@ class ApiService {
     private async request<T>(
         endpoint: string,
         options: RequestInit = {},
-        useAuthServer = false
+        useAuthServer = false,
     ): Promise<ApiResponse<T>> {
         try {
-            const baseUrl = useAuthServer ? config.AUTH_BASE_URL : config.AI_BASE_URL;
+            const baseUrl = useAuthServer
+                ? config.AUTH_BASE_URL
+                : config.AI_BASE_URL;
             const url = `${baseUrl}${endpoint}`;
 
             // Get JWT token from localStorage
@@ -188,7 +179,7 @@ class ApiService {
 
             // Add Authorization header if token exists
             if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
+                headers["Authorization"] = `Bearer ${token}`;
                 console.debug(`Request to ${url} with token`);
             } else {
                 console.warn(`Request to ${url} WITHOUT token`);
@@ -203,14 +194,16 @@ class ApiService {
             console.log(`API Response [${url}]:`, {
                 status: response.status,
                 statusText: response.statusText,
-                headers: Object.fromEntries(response.headers.entries())
+                headers: Object.fromEntries(response.headers.entries()),
             });
 
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
                 const text = await response.text();
                 console.error("Non-JSON response:", text);
-                throw new Error(`Expected JSON response but got: ${contentType}. Body: ${text.substring(0, 200)}`);
+                throw new Error(
+                    `Expected JSON response but got: ${contentType}. Body: ${text.substring(0, 200)}`,
+                );
             }
 
             const data = await response.json();
@@ -219,20 +212,26 @@ class ApiService {
             if (!response.ok) {
                 // Handle auth errors - token expired or invalid
                 if (response.status === 401) {
-                    console.warn("Token expired or invalid, redirecting to login...");
+                    console.warn(
+                        "Token expired or invalid, redirecting to login...",
+                    );
                     localStorage.removeItem("auth_token");
                     localStorage.removeItem("user");
                     window.location.href = "/login";
                     return { error: "Authentication required" };
                 }
-                throw new Error(data.detail || data.error || "API request failed");
+                throw new Error(
+                    data.detail || data.error || "API request failed",
+                );
             }
 
             return { data };
         } catch (error) {
             return {
                 error:
-                    error instanceof Error ? error.message : "Unknown error occurred",
+                    error instanceof Error
+                        ? error.message
+                        : "Unknown error occurred",
             };
         }
     }
@@ -244,7 +243,7 @@ class ApiService {
                 buildAuthUrl(API_ENDPOINTS.AUTH.CHECK_STATUS),
                 {
                     ...config.REQUEST_OPTIONS,
-                }
+                },
             );
 
             if (response.ok) {
@@ -255,17 +254,23 @@ class ApiService {
             return { error: "Not authenticated" };
         } catch (error) {
             return {
-                error: error instanceof Error ? error.message : "Auth check failed",
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : "Auth check failed",
             };
         }
     }
 
     async logout(): Promise<ApiResponse<any>> {
         try {
-            const response = await fetch(buildAuthUrl(API_ENDPOINTS.AUTH.LOGOUT), {
-                method: "POST",
-                ...config.REQUEST_OPTIONS,
-            });
+            const response = await fetch(
+                buildAuthUrl(API_ENDPOINTS.AUTH.LOGOUT),
+                {
+                    method: "POST",
+                    ...config.REQUEST_OPTIONS,
+                },
+            );
 
             if (response.ok) {
                 const data = await response.json();
@@ -285,7 +290,7 @@ class ApiService {
         modelId: string,
         modelName: string,
         algorithm: string,
-        message: string
+        message: string,
     ) {
         const requestBody: CreateModelRequest = {
             model_id: modelId,
@@ -319,7 +324,7 @@ class ApiService {
         taskName: string,
         modelId: string,
         dataChefId: string,
-        interval: number
+        interval: number,
     ) {
         const requestBody: AddModelTaskRequest = {
             task_name: taskName,
@@ -384,7 +389,7 @@ class ApiService {
             {
                 method: "POST",
                 body: JSON.stringify(requestBody),
-            }
+            },
         );
     }
 
@@ -399,7 +404,7 @@ class ApiService {
             {
                 method: "POST",
                 body: JSON.stringify(requestBody),
-            }
+            },
         );
     }
 
@@ -414,7 +419,7 @@ class ApiService {
             {
                 method: "POST",
                 body: JSON.stringify(requestBody),
-            }
+            },
         );
     }
 
@@ -457,7 +462,7 @@ class ApiService {
     async createDataChefFromCsv(
         dataChefId: string,
         filePath: string,
-        renameColumns: string
+        renameColumns: string,
     ) {
         const requestBody: CreateDataChefFromCsvRequest = {
             data_chef_id: dataChefId,
@@ -474,7 +479,7 @@ class ApiService {
     async createDataChefFromSql(
         dataChefId: string,
         query: string,
-        renameColumns: string
+        renameColumns: string,
     ) {
         const requestBody: CreateDataChefFromSqlRequest = {
             data_chef_id: dataChefId,
@@ -492,7 +497,7 @@ class ApiService {
         dataChefId: string,
         database: string,
         collection: string,
-        renameColumns: string
+        renameColumns: string,
     ) {
         const requestBody: CreateDataChefFromNosqlRequest = {
             data_chef_id: dataChefId,
@@ -514,7 +519,7 @@ class ApiService {
         paginated = false,
         paginationParam = "page",
         sizeParam = "size",
-        sizeValue = 100
+        sizeValue = 100,
     ) {
         const requestBody: CreateDataChefFromApiRequest = {
             data_chef_id: dataChefId,
@@ -537,7 +542,7 @@ class ApiService {
         brokers: string,
         topic: string,
         renameColumns: string,
-        groupId: string
+        groupId: string,
     ) {
         const requestBody: CreateDataChefFromMessageQueueRequest = {
             data_chef_id: dataChefId,
@@ -547,18 +552,25 @@ class ApiService {
             group_id: groupId,
         };
 
-        return this.request(API_ENDPOINTS.AI.CREATE_DATA_CHEF_FROM_MESSAGE_QUEUE, {
-            method: "POST",
-            body: JSON.stringify(requestBody),
-        });
+        return this.request(
+            API_ENDPOINTS.AI.CREATE_DATA_CHEF_FROM_MESSAGE_QUEUE,
+            {
+                method: "POST",
+                body: JSON.stringify(requestBody),
+            },
+        );
     }
 
     async listDataChefs() {
-        return this.request<Record<string, any>>(API_ENDPOINTS.AI.LIST_DATA_CHEFS);
+        return this.request<Record<string, any>>(
+            API_ENDPOINTS.AI.LIST_DATA_CHEFS,
+        );
     }
 
     async getDataChef(dataChefId: string) {
-        return this.request<DataChef>(API_ENDPOINTS.AI.GET_DATA_CHEF(dataChefId));
+        return this.request<DataChef>(
+            API_ENDPOINTS.AI.GET_DATA_CHEF(dataChefId),
+        );
     }
 
     async editDataChef(dataChefId: string, configData: Record<string, any>) {
@@ -580,19 +592,19 @@ class ApiService {
 
     async getTotalCountRunTasks() {
         return this.request<ApiResponse<number>>(
-            API_ENDPOINTS.AI.GET_TOTAL_COUNT_RUN_TASKS
+            API_ENDPOINTS.AI.GET_TOTAL_COUNT_RUN_TASKS,
         );
     }
 
     async getTotalRunningTasks() {
         return this.request<ApiResponse<number>>(
-            API_ENDPOINTS.AI.GET_TOTAL_RUNNING_TASKS
+            API_ENDPOINTS.AI.GET_TOTAL_RUNNING_TASKS,
         );
     }
 
     async getTaskRuntime() {
         return this.request<ApiResponse<number>>(
-            API_ENDPOINTS.AI.GET_TASK_RUNTIME_SECONDS
+            API_ENDPOINTS.AI.GET_TASK_RUNTIME_SECONDS,
         );
     }
 
@@ -601,27 +613,35 @@ class ApiService {
     }
 
     async getSchedulerStatus() {
-        return this.request<ApiResponse<{ is_running: boolean; status: string }>>(
-            API_ENDPOINTS.AI.GET_SCHEDULER_STATUS
-        );
+        return this.request<
+            ApiResponse<{ is_running: boolean; status: string }>
+        >(API_ENDPOINTS.AI.GET_SCHEDULER_STATUS);
     }
 
-    async getServerLogs(limit: number = 50, server: string = 'all') {
-        return this.requestAuth<ApiResponse<Array<{
-            timestamp: string;
-            message: string;
-            level: string;
-            server: string;
-            raw: string;
-        }>>>(
-            `${API_ENDPOINTS.SERVER_LOGS.GET_LOGS}?limit=${limit}&server=${server}`
+    async getServerLogs(limit: number = 50, server: string = "all") {
+        return this.request<
+            ApiResponse<
+                Array<{
+                    timestamp: string;
+                    message: string;
+                    level: string;
+                    server: string;
+                    raw: string;
+                }>
+            >
+        >(
+            `${API_ENDPOINTS.SERVER_LOGS.GET_LOGS}?limit=${limit}&server=${server}`,
+            {},
+            true,
         );
     }
 
     async getAiServerLogs(limit: number = 50) {
-        return this.request<ApiResponse<Array<{ timestamp: string; message: string; level: string }>>>(
-            `${API_ENDPOINTS.AI.GET_SERVER_LOGS}?limit=${limit}`
-        );
+        return this.request<
+            ApiResponse<
+                Array<{ timestamp: string; message: string; level: string }>
+            >
+        >(`${API_ENDPOINTS.AI.GET_SERVER_LOGS}?limit=${limit}`);
     }
 
     // Recommendation methods
@@ -643,7 +663,7 @@ class ApiService {
                 method: "POST",
                 body: JSON.stringify(requestBody),
             },
-            true
+            true,
         );
     }
 
@@ -660,7 +680,7 @@ class ApiService {
                 method: "POST",
                 body: JSON.stringify(requestBody),
             },
-            true
+            true,
         );
     }
 
@@ -670,7 +690,7 @@ class ApiService {
             {
                 method: "DELETE",
             },
-            true
+            true,
         );
     }
 
@@ -686,7 +706,7 @@ class ApiService {
                 method: "PUT",
                 body: JSON.stringify(requestBody),
             },
-            true
+            true,
         );
     }
 }

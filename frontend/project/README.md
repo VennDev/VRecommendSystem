@@ -78,23 +78,6 @@ Create a `.env` file in the project root:
 # API Endpoints
 VITE_API_SERVER_URL=http://localhost:2030
 VITE_AI_SERVER_URL=http://localhost:9999
-
-# Authentication
-VITE_GOOGLE_CLIENT_ID=your-google-client-id
-VITE_APP_URL=http://localhost:5173
-
-# Feature Flags
-VITE_ENABLE_ANALYTICS=true
-VITE_ENABLE_NOTIFICATIONS=true
-VITE_ENABLE_DEBUG_MODE=false
-
-# Theme Configuration
-VITE_DEFAULT_THEME=light
-VITE_THEME_PERSISTENCE=true
-
-# API Configuration
-VITE_API_TIMEOUT=30000
-VITE_API_RETRY_COUNT=3
 ```
 
 ### API Configuration
@@ -105,8 +88,6 @@ The application automatically configures API endpoints based on environment vari
 export const API_CONFIG = {
   API_SERVER: import.meta.env.VITE_API_SERVER_URL || 'http://localhost:2030',
   AI_SERVER: import.meta.env.VITE_AI_SERVER_URL || 'http://localhost:9999',
-  TIMEOUT: parseInt(import.meta.env.VITE_API_TIMEOUT) || 30000,
-  RETRY_COUNT: parseInt(import.meta.env.VITE_API_RETRY_COUNT) || 3,
 }
 ```
 
@@ -619,9 +600,9 @@ npm run lint
 
 ### Debug Mode
 
-Enable debug mode in `.env`:
-```env
-VITE_ENABLE_DEBUG_MODE=true
+Enable debug mode by setting Vite's development mode:
+```bash
+npm run dev
 ```
 
 This provides:
