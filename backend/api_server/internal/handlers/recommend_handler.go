@@ -43,9 +43,10 @@ func Recommend(c fiber.Ctx) error {
 		}
 	}
 
-	aiServerBaseUrl := os.Getenv("AI_SERVER_URL")
-	if aiServerBaseUrl == "" {
-		aiServerBaseUrl = "http://localhost:9999"
+	// Get AI server URL from config or environment variable
+	aiServerBaseUrl := global.Config.Server.AiServerUrl
+	if envUrl := os.Getenv("AI_SERVER_URL"); envUrl != "" {
+		aiServerBaseUrl = envUrl
 	}
 	aiServerUrl := fmt.Sprintf("%s/api/v1/recommend/%s/%s/%s", aiServerBaseUrl, userId, modelId, n)
 

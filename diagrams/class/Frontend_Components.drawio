@@ -1,0 +1,153 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="Frontend-Components" name="Frontend Components">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="Frontend Components &amp; Types (React/TypeScript)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="500" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Main Pages -->
+        <mxCell id="pages-section" value="Main Pages" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="340" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="pages-list" value="LoginPage&#xa;  - OAuth login UI&#xa;  - Provider selection&#xa;  - Error handling&#xa;&#xa;DashboardPage&#xa;  - Main user interface&#xa;  - Navigation&#xa;  - Protected route&#xa;&#xa;SuperAdminPage&#xa;  - Admin controls&#xa;  - User management&#xa;  - System settings&#xa;  - Protected route (SuperAdmin only)&#xa;&#xa;NotFoundPage&#xa;  - 404 error page" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="pages-section">
+          <mxGeometry y="26" width="340" height="234" as="geometry"/>
+        </mxCell>
+
+        <!-- Components -->
+        <mxCell id="components-section" value="Core Components" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="440" y="100" width="340" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="components-list" value="ProtectedRoute&#xa;  - Authentication guard&#xa;  - Role-based access control&#xa;  - Redirect to login&#xa;&#xa;Navbar&#xa;  - Navigation menu&#xa;  - User profile dropdown&#xa;  - Logout button&#xa;&#xa;Sidebar&#xa;  - Side navigation&#xa;  - Menu items&#xa;  - Collapsible&#xa;&#xa;LoadingSpinner&#xa;  - Loading indicator&#xa;  - Centered display&#xa;&#xa;ErrorBoundary&#xa;  - Error catching&#xa;  - Fallback UI&#xa;  - Error logging&#xa;&#xa;Toast/Notification&#xa;  - Success/Error messages&#xa;  - Auto-dismiss&#xa;  - Custom styling" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="components-section">
+          <mxGeometry y="26" width="340" height="294" as="geometry"/>
+        </mxCell>
+
+        <!-- API Services -->
+        <mxCell id="api-services" value="API Services" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="840" y="100" width="340" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="api-services-list" value="authService&#xa;  + login(provider: string)&#xa;  + logout()&#xa;  + getCurrentUser()&#xa;  + refreshToken()&#xa;&#xa;apiService&#xa;  + get(endpoint: string)&#xa;  + post(endpoint: string, data: any)&#xa;  + put(endpoint: string, data: any)&#xa;  + delete(endpoint: string)&#xa;&#xa;recommendationService&#xa;  + getRecommendations(userId: string)&#xa;  + getRatedItems(userId: string)&#xa;  + rateItem(userId: string, itemId: string, rating: number)&#xa;&#xa;adminService&#xa;  + getUsers()&#xa;  + updateUser(userId: string, data: any)&#xa;  + deleteUser(userId: string)&#xa;  + getSystemStats()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="api-services">
+          <mxGeometry y="26" width="340" height="254" as="geometry"/>
+        </mxCell>
+
+        <!-- Context/State Management -->
+        <mxCell id="context-section" value="Context &amp; State" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="100" width="340" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="context-list" value="AuthContext&#xa;  - user: User | null&#xa;  - isAuthenticated: boolean&#xa;  - isLoading: boolean&#xa;  - login(provider: string)&#xa;  - logout()&#xa;  - checkAuth()&#xa;&#xa;ThemeContext&#xa;  - theme: 'light' | 'dark'&#xa;  - toggleTheme()&#xa;&#xa;NotificationContext&#xa;  - notifications: Notification[]&#xa;  - addNotification(message: string, type: string)&#xa;  - removeNotification(id: string)&#xa;&#xa;AppContext&#xa;  - Global app state&#xa;  - Settings&#xa;  - Preferences" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="context-section">
+          <mxGeometry y="26" width="340" height="214" as="geometry"/>
+        </mxCell>
+
+        <!-- Hooks -->
+        <mxCell id="hooks-section" value="Custom Hooks" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="340" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="hooks-list" value="useAuth()&#xa;  - Access AuthContext&#xa;  - Returns user, login, logout, etc.&#xa;&#xa;useApi(endpoint: string)&#xa;  - Fetch data from API&#xa;  - Returns data, loading, error&#xa;  - Auto-retry on failure&#xa;&#xa;useLocalStorage(key: string, initialValue: any)&#xa;  - Persist state to localStorage&#xa;  - Returns [value, setValue]&#xa;&#xa;useDebounce(value: any, delay: number)&#xa;  - Debounce value changes&#xa;&#xa;usePermission(permission: string)&#xa;  - Check user permissions&#xa;  - Returns hasPermission: boolean&#xa;&#xa;useTheme()&#xa;  - Access ThemeContext&#xa;  - Returns theme, toggleTheme" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="hooks-section">
+          <mxGeometry y="26" width="340" height="234" as="geometry"/>
+        </mxCell>
+
+        <!-- Utils -->
+        <mxCell id="utils-section" value="Utility Functions" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="440" y="480" width="340" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="utils-list" value="formatDate(date: Date): string&#xa;  - Format date for display&#xa;&#xa;formatNumber(num: number): string&#xa;  - Format numbers with commas&#xa;&#xa;truncateText(text: string, length: number): string&#xa;  - Truncate long text&#xa;&#xa;validateEmail(email: string): boolean&#xa;  - Email validation&#xa;&#xa;getErrorMessage(error: any): string&#xa;  - Extract error messages&#xa;&#xa;classNames(...classes: any[]): string&#xa;  - Combine CSS classes&#xa;&#xa;generateId(): string&#xa;  - Generate unique IDs" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="utils-section">
+          <mxGeometry y="26" width="340" height="194" as="geometry"/>
+        </mxCell>
+
+        <!-- Router Configuration -->
+        <mxCell id="router-section" value="Router Configuration" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#b1ddf0;strokeColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="840" y="440" width="340" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="router-list" value="Routes:&#xa;&#xa;/&#xa;  - Home/Landing page&#xa;  - Redirects to /dashboard if authenticated&#xa;&#xa;/login&#xa;  - Login page&#xa;  - OAuth provider selection&#xa;&#xa;/dashboard&#xa;  - Protected route&#xa;  - Main dashboard&#xa;  - Requires authentication&#xa;&#xa;/superadmin&#xa;  - Protected route&#xa;  - SuperAdmin only&#xa;  - Requires SuperAdmin role&#xa;&#xa;/profile&#xa;  - User profile page&#xa;  - Protected route&#xa;&#xa;*&#xa;  - 404 Not Found page" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="router-section">
+          <mxGeometry y="26" width="340" height="234" as="geometry"/>
+        </mxCell>
+
+        <!-- TypeScript Interfaces -->
+        <mxCell id="interfaces-title" value="TypeScript Interfaces &amp; Types" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="780" width="340" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- AuthResponse Type -->
+        <mxCell id="authresponse-type" value="interface AuthResponse" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="820" width="340" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="authresponse-fields" value="+ access_token: string&#xa;+ token_type: string&#xa;+ user: User" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="authresponse-type">
+          <mxGeometry y="26" width="340" height="74" as="geometry"/>
+        </mxCell>
+
+        <!-- Session Type -->
+        <mxCell id="session-type" value="interface Session" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="930" width="340" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="session-fields" value="+ id: string&#xa;+ userId: string&#xa;+ accessToken: string&#xa;+ expiresAt: Date&#xa;+ createdAt: Date" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="session-type">
+          <mxGeometry y="26" width="340" height="94" as="geometry"/>
+        </mxCell>
+
+        <!-- User Type -->
+        <mxCell id="user-type" value="interface User" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="440" y="820" width="340" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="user-type-fields" value="+ id: string&#xa;+ email: string&#xa;+ name: string&#xa;+ avatar?: string&#xa;+ provider: string&#xa;+ createdAt: Date&#xa;+ lastLogin: Date" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="user-type">
+          <mxGeometry y="26" width="340" height="114" as="geometry"/>
+        </mxCell>
+
+        <!-- ActivityLog Type -->
+        <mxCell id="activitylog-type" value="interface ActivityLog" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="440" y="980" width="340" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="activitylog-fields" value="+ id: string&#xa;+ userId: string&#xa;+ action: string&#xa;+ description: string&#xa;+ metadata?: any&#xa;+ createdAt: Date" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="activitylog-type">
+          <mxGeometry y="26" width="340" height="114" as="geometry"/>
+        </mxCell>
+
+        <!-- ApiError Type -->
+        <mxCell id="apierror-type" value="interface ApiError" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="840" y="820" width="340" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="apierror-fields" value="+ status: number&#xa;+ message: string&#xa;+ detail?: string&#xa;+ errors?: any" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="apierror-type">
+          <mxGeometry y="26" width="340" height="94" as="geometry"/>
+        </mxCell>
+
+        <!-- Recommendation Type -->
+        <mxCell id="recommendation-type" value="interface Recommendation" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="840" y="960" width="340" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="recommendation-fields" value="+ userId: string&#xa;+ itemId: string&#xa;+ score: number&#xa;+ rank: number&#xa;+ metadata?: any&#xa;+ createdAt: Date" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="recommendation-type">
+          <mxGeometry y="26" width="340" height="114" as="geometry"/>
+        </mxCell>
+
+        <!-- Environment Config -->
+        <mxCell id="env-section" value="Environment Configuration" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="440" width="340" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="env-list" value="Environment Variables:&#xa;&#xa;VITE_API_URL&#xa;  - Backend API URL&#xa;  - Default: http://localhost:8000&#xa;&#xa;VITE_OAUTH_REDIRECT_URI&#xa;  - OAuth callback URL&#xa;  - Default: http://localhost:5173/auth/callback&#xa;&#xa;VITE_APP_NAME&#xa;  - Application name&#xa;  - Default: VRecommendation&#xa;&#xa;VITE_ENABLE_ANALYTICS&#xa;  - Enable/disable analytics&#xa;  - Default: false" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="env-section">
+          <mxGeometry y="26" width="340" height="174" as="geometry"/>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Legend" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="820" width="340" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-pages" value="Pages/Views" style="text;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="legend">
+          <mxGeometry y="26" width="340" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-components" value="Components" style="text;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="legend">
+          <mxGeometry y="52" width="340" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-services" value="Services/API" style="text;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="legend">
+          <mxGeometry y="78" width="340" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-types" value="TypeScript Interfaces" style="text;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="legend">
+          <mxGeometry y="104" width="340" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-context" value="Context/State Management" style="text;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="legend">
+          <mxGeometry y="130" width="340" height="26" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

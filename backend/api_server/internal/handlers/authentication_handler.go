@@ -16,6 +16,7 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
+	"github.com/venndev/vrecommendation/global"
 )
 
 func NewAuth() {
@@ -317,8 +318,14 @@ func CallbackHandler(c fiber.Ctx) error {
 		userData.Set("token", jwtToken)
 	}
 
+	// Get frontend URL from config or environment variable
+	frontendUrl := global.Config.Server.FrontendUrl
+	if envUrl := os.Getenv("FRONTEND_URL"); envUrl != "" {
+		frontendUrl = envUrl
+	}
+
 	// Redirect to frontend with user data and token
-	redirectURL := fmt.Sprintf("http://localhost:5173/auth/callback?%s", userData.Encode())
+	redirectURL := fmt.Sprintf("%s/auth/callback?%s", frontendUrl, userData.Encode())
 
 	fmt.Printf("Redirecting to: %s\n", redirectURL)
 

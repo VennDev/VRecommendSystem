@@ -176,8 +176,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const login = () => {
-        // Redirect to Google OAuth
-        window.location.href = "http://localhost:2030/api/v1/auth/google";
+        // Redirect to Google OAuth using centralized API config
+        window.location.href = buildAuthUrl(API_ENDPOINTS.AUTH.LOGIN("google"));
     };
 
     const logout = async () => {

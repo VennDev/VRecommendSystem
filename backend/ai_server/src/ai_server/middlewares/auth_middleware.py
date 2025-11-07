@@ -1,19 +1,13 @@
+import os
+from typing import Callable
+
+import jwt
+import loguru
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
-from typing import Callable
-import loguru
-import os
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
-try:
-    import jwt
-    from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
-
-    jwt_decode = jwt.decode
-except (ImportError, AttributeError):
-    import PyJWT as jwt
-    from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
-
-    jwt_decode = jwt.decode
+jwt_decode = jwt.decode
 
 
 async def verify_authentication(request: Request, call_next: Callable):

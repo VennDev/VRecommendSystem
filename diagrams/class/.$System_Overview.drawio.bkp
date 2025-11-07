@@ -1,0 +1,185 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="System-Overview" name="System Overview">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="VRecommendation System - High Level Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="600" y="20" width="600" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Frontend Layer -->
+        <mxCell id="frontend" value="Frontend (React + TypeScript)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="100" y="100" width="400" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="frontend-content" value="Port: 5173 (Vite Dev Server)&#xa;&#xa;Core Features:&#xa;• OAuth Authentication (Google)&#xa;• User Dashboard&#xa;• SuperAdmin Panel&#xa;• Activity Logs Viewer&#xa;• Whitelist Management&#xa;• Server Logs Viewer&#xa;• Model Management UI&#xa;• Recommendation Interface&#xa;&#xa;Technology Stack:&#xa;• React 18&#xa;• TypeScript&#xa;• Vite&#xa;• React Router&#xa;• Axios&#xa;• Tailwind CSS&#xa;&#xa;State Management:&#xa;• Context API (Auth, Theme)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="frontend">
+          <mxGeometry y="26" width="400" height="254" as="geometry"/>
+        </mxCell>
+
+        <!-- API Server -->
+        <mxCell id="api-server" value="API Server (FastAPI + Python)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="600" y="100" width="450" height="380" as="geometry"/>
+        </mxCell>
+        <mxCell id="api-server-content" value="Port: 2030&#xa;&#xa;Core Responsibilities:&#xa;• User Authentication &amp; Authorization&#xa;• Session Management&#xa;• OAuth 2.0 Integration&#xa;• User Management&#xa;• Activity Logging&#xa;• Whitelist Management&#xa;• API Gateway to AI Server&#xa;• Rate Limiting&#xa;• Security &amp; Access Control&#xa;&#xa;Key Endpoints:&#xa;• /auth/* - Authentication routes&#xa;• /users/* - User management&#xa;• /admin/* - Admin operations&#xa;• /logs/* - Activity &amp; server logs&#xa;• /whitelist/* - Whitelist CRUD&#xa;• /ai/* - Proxy to AI Server&#xa;&#xa;Database:&#xa;• PostgreSQL (Primary)&#xa;• Tables: users, sessions, activity_logs,&#xa;  whitelisted_emails, server_logs&#xa;&#xa;Technology Stack:&#xa;• FastAPI&#xa;• SQLAlchemy ORM&#xa;• Pydantic&#xa;• OAuth2 with JWT&#xa;• Uvicorn ASGI Server" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="api-server">
+          <mxGeometry y="26" width="450" height="354" as="geometry"/>
+        </mxCell>
+
+        <!-- AI Server -->
+        <mxCell id="ai-server" value="AI/ML Server (FastAPI + Python)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="100" width="500" height="480" as="geometry"/>
+        </mxCell>
+        <mxCell id="ai-server-content" value="Port: 9999&#xa;&#xa;Core Responsibilities:&#xa;• Machine Learning Model Training&#xa;• Recommendation Generation&#xa;• Model Management &amp; Registry&#xa;• Data Processing (DataChef)&#xa;• Background Task Scheduling&#xa;• Model Evaluation&#xa;&#xa;Key Components:&#xa;&#xa;1. Model Service&#xa;   • Train, load, save ML models&#xa;   • Support multiple algorithms (NMF, SVD, ALS, etc.)&#xa;   • Batch predictions&#xa;   • Model versioning&#xa;&#xa;2. DataChef Service&#xa;   • ETL from various sources (SQL, NoSQL, CSV, API)&#xa;   • Data transformation&#xa;   • Feature engineering&#xa;&#xa;3. Scheduler Service&#xa;   • Background task execution&#xa;   • Cron-based scheduling&#xa;   • Task monitoring&#xa;&#xa;4. Database Service&#xa;   • Multi-database support&#xa;   • Connection pooling&#xa;&#xa;Supported Algorithms:&#xa;• NMF (Non-negative Matrix Factorization)&#xa;• SVD (Singular Value Decomposition)&#xa;• ALS (Alternating Least Squares)&#xa;• KNN (K-Nearest Neighbors)&#xa;• Deep Learning models&#xa;&#xa;Database:&#xa;• MongoDB (Task execution history)&#xa;• PostgreSQL (Training data, metadata)&#xa;&#xa;Technology Stack:&#xa;• FastAPI&#xa;• Scikit-learn, Surprise, TensorFlow&#xa;• Pandas, NumPy&#xa;• APScheduler&#xa;• Motor (MongoDB driver)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="ai-server">
+          <mxGeometry y="26" width="500" height="454" as="geometry"/>
+        </mxCell>
+
+        <!-- PostgreSQL Database -->
+        <mxCell id="postgres-db" value="PostgreSQL Database" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="100" y="500" width="400" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="postgres-content" value="Port: 5432&#xa;&#xa;Tables (API Server):&#xa;• users&#xa;  - User accounts and profiles&#xa;  - OAuth provider information&#xa;&#xa;• sessions&#xa;  - User session management&#xa;  - Access tokens&#xa;&#xa;• activity_logs&#xa;  - User activity tracking&#xa;  - Audit trail&#xa;&#xa;• whitelisted_emails&#xa;  - Email whitelist for access control&#xa;&#xa;• server_logs&#xa;  - Application logs from both servers&#xa;&#xa;Tables (AI Server):&#xa;• interactions&#xa;  - User-item interactions&#xa;  - Ratings, views, purchases&#xa;&#xa;• models_metadata&#xa;  - Trained model information&#xa;  - Training metrics" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="postgres-db">
+          <mxGeometry y="26" width="400" height="254" as="geometry"/>
+        </mxCell>
+
+        <!-- MongoDB Database -->
+        <mxCell id="mongo-db" value="MongoDB Database" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="600" y="600" width="450" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="mongo-content" value="Port: 27017&#xa;&#xa;Collections:&#xa;&#xa;• task_executions&#xa;  - Background task execution history&#xa;  - Task results and metrics&#xa;  - Error logs&#xa;&#xa;• data_chef_configs&#xa;  - DataChef configurations&#xa;  - Data source connections&#xa;&#xa;• model_training_logs&#xa;  - Detailed training logs&#xa;  - Hyperparameter experiments" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="mongo-db">
+          <mxGeometry y="26" width="450" height="154" as="geometry"/>
+        </mxCell>
+
+        <!-- External Services -->
+        <mxCell id="external-services" value="External Services" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="650" width="500" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="external-content" value="OAuth Providers:&#xa;• Google OAuth 2.0&#xa;  - User authentication&#xa;  - Profile information&#xa;&#xa;Future Integrations:&#xa;• Email service (SMTP)&#xa;• Cloud storage (S3, GCS)&#xa;• Message queue (RabbitMQ, Kafka)&#xa;• Monitoring (Prometheus, Grafana)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="external-services">
+          <mxGeometry y="26" width="500" height="104" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationships -->
+
+        <!-- Frontend to API Server -->
+        <mxCell id="rel-frontend-api" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="frontend" target="api-server">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="520" y="300" as="sourcePoint"/>
+            <mxPoint x="570" y="250" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-frontend-api-label" value="HTTP/REST&#xa;JSON" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-frontend-api">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint y="-15" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- API Server to AI Server -->
+        <mxCell id="rel-api-ai" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="api-server" target="ai-server">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1070" y="300" as="sourcePoint"/>
+            <mxPoint x="1120" y="250" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-api-ai-label" value="HTTP/REST&#xa;Model requests" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-api-ai">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint y="-15" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- API Server to PostgreSQL -->
+        <mxCell id="rel-api-postgres" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="api-server" target="postgres-db">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="510" y="490" as="sourcePoint"/>
+            <mxPoint x="560" y="440" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-api-postgres-label" value="SQL&#xa;User data, logs" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-api-postgres">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint x="20" y="5" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AI Server to PostgreSQL -->
+        <mxCell id="rel-ai-postgres" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="ai-server" target="postgres-db">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="680" y="490" as="sourcePoint"/>
+            <mxPoint x="410" y="510" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-ai-postgres-label" value="SQL&#xa;Training data" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-ai-postgres">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint x="-40" y="-10" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AI Server to MongoDB -->
+        <mxCell id="rel-ai-mongo" value="" style="endArrow=classic;startArrow=classic;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ai-server" target="mongo-db">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1160" y="590" as="sourcePoint"/>
+            <mxPoint x="510" y="580" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-ai-mongo-label" value="NoSQL&#xa;Task history" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-ai-mongo">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint x="10" y="5" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- API Server to External Services -->
+        <mxCell id="rel-api-external" value="" style="endArrow=classic;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="api-server" target="external-services">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1060" y="490" as="sourcePoint"/>
+            <mxPoint x="1110" y="440" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-api-external-label" value="OAuth&#xa;Authentication" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-api-external">
+          <mxGeometry x="-0.1" y="2" relative="1" as="geometry">
+            <mxPoint x="-10" y="-15" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- System Architecture Notes -->
+        <mxCell id="architecture-notes" value="System Architecture Notes" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="100" y="860" width="550" height="400" as="geometry"/>
+        </mxCell>
+        <mxCell id="architecture-notes-content" value="Architecture Patterns:&#xa;&#xa;1. Microservices Architecture&#xa;   • Separation of concerns (Auth vs ML)&#xa;   • Independent scaling&#xa;   • Technology flexibility&#xa;&#xa;2. Layered Architecture&#xa;   • Presentation Layer (Frontend)&#xa;   • Application Layer (API Server)&#xa;   • Business Logic Layer (AI Server)&#xa;   • Data Layer (Databases)&#xa;&#xa;3. API Gateway Pattern&#xa;   • API Server acts as gateway&#xa;   • Request routing to AI Server&#xa;   • Authentication &amp; authorization&#xa;&#xa;4. Background Processing&#xa;   • Scheduler for async tasks&#xa;   • Model training in background&#xa;   • Task queue management&#xa;&#xa;Communication:&#xa;• REST APIs (HTTP/JSON)&#xa;• Database connections (SQL, NoSQL)&#xa;• OAuth 2.0 for authentication&#xa;&#xa;Security:&#xa;• JWT tokens for sessions&#xa;• OAuth 2.0 integration&#xa;• Email whitelist for access control&#xa;• CORS configuration&#xa;• Environment-based secrets&#xa;&#xa;Scalability:&#xa;• Horizontal scaling of servers&#xa;• Database connection pooling&#xa;• Caching strategies (future)&#xa;• Load balancing (future)&#xa;&#xa;Monitoring &amp; Logging:&#xa;• Activity logs (user actions)&#xa;• Server logs (application events)&#xa;• Task execution history&#xa;• Error tracking" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="architecture-notes">
+          <mxGeometry y="26" width="550" height="374" as="geometry"/>
+        </mxCell>
+
+        <!-- Data Flow -->
+        <mxCell id="data-flow" value="Typical Data Flow" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#b1ddf0;strokeColor=#10739e;" vertex="1" parent="1">
+          <mxGeometry x="720" y="860" width="550" height="400" as="geometry"/>
+        </mxCell>
+        <mxCell id="data-flow-content" value="User Authentication Flow:&#xa;1. User clicks Login on Frontend&#xa;2. Frontend redirects to Google OAuth&#xa;3. User authorizes app&#xa;4. Google redirects to API Server callback&#xa;5. API Server creates session, returns JWT&#xa;6. Frontend stores token, user logged in&#xa;&#xa;Recommendation Request Flow:&#xa;1. User requests recommendations (Frontend)&#xa;2. Frontend sends request to API Server with JWT&#xa;3. API Server validates token, checks permissions&#xa;4. API Server forwards request to AI Server&#xa;5. AI Server loads model, generates recommendations&#xa;6. AI Server returns predictions&#xa;7. API Server formats response, returns to Frontend&#xa;8. Frontend displays recommendations to user&#xa;&#xa;Model Training Flow:&#xa;1. Admin triggers training via Frontend&#xa;2. Request sent to API Server, forwarded to AI Server&#xa;3. AI Server creates background task&#xa;4. Scheduler executes ModelTrainerTask:&#xa;   a. DataChef fetches training data&#xa;   b. Data preprocessed and split&#xa;   c. Model trained with specified algorithm&#xa;   d. Model evaluated on test set&#xa;   e. Model saved to disk&#xa;   f. Metrics stored in database&#xa;5. Task completion logged to MongoDB&#xa;6. Results available via API&#xa;&#xa;Activity Logging Flow:&#xa;1. User performs action (Frontend)&#xa;2. Action sent to API Server&#xa;3. API Server processes request&#xa;4. Activity log entry created in PostgreSQL&#xa;5. Logs viewable in Dashboard&#xa;&#xa;Whitelist Check Flow:&#xa;1. User attempts login&#xa;2. API Server checks email in whitelist table&#xa;3. If not whitelisted, deny access&#xa;4. If whitelisted, proceed with authentication" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="data-flow">
+          <mxGeometry y="26" width="550" height="374" as="geometry"/>
+        </mxCell>
+
+        <!-- Deployment Information -->
+        <mxCell id="deployment" value="Deployment Configuration" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="860" width="420" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="deployment-content" value="Docker Containers:&#xa;&#xa;1. frontend&#xa;   • Node.js + Vite&#xa;   • Port: 5173&#xa;   • Build: npm run dev&#xa;&#xa;2. api-server&#xa;   • Python 3.11 + FastAPI&#xa;   • Port: 2030&#xa;   • Command: uvicorn main:app&#xa;&#xa;3. ai-server&#xa;   • Python 3.11 + FastAPI&#xa;   • Port: 9999&#xa;   • Command: uvicorn main:app&#xa;&#xa;4. postgres&#xa;   • PostgreSQL 15&#xa;   • Port: 5432&#xa;   • Volume: postgres_data&#xa;&#xa;5. mongodb&#xa;   • MongoDB 6&#xa;   • Port: 27017&#xa;   • Volume: mongo_data&#xa;&#xa;Orchestration:&#xa;• docker-compose.yml&#xa;• Shared network: vrecom_network&#xa;• Health checks enabled&#xa;• Auto-restart policies&#xa;&#xa;Environment Variables:&#xa;• .env files for configuration&#xa;• Secrets management&#xa;• Database credentials&#xa;• OAuth keys" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="deployment">
+          <mxGeometry y="26" width="420" height="294" as="geometry"/>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Legend" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="1220" width="420" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-frontend" value="Frontend Layer" style="text;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="legend">
+          <mxGeometry y="26" width="420" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-api" value="API/Gateway Layer" style="text;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="legend">
+          <mxGeometry y="52" width="420" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-ai" value="AI/ML Processing Layer" style="text;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="legend">
+          <mxGeometry y="78" width="420" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-data" value="Data Storage Layer" style="text;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="legend">
+          <mxGeometry y="104" width="420" height="26" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

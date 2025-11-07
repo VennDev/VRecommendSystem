@@ -2,28 +2,43 @@ package utils
 
 import (
 	"context"
-	"github.com/venndev/vrecommendation/global"
+	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/venndev/vrecommendation/global"
 	"go.uber.org/zap"
 )
 
 func buildStringConnection() string {
+	// Get host from environment variable or config
 	host := os.Getenv("HOST_ADDRESS")
 	if host == "" {
-		host = "localhost"
+		host = global.Config.Server.Host
+		if host == "" {
+			host = "localhost"
+		}
 	}
 
-	port := os.Getenv("HOST_PORT")
-	if port == "" {
-		port = "3000"
+	// Get port from environment variable or config
+	var port int
+	if envPort := os.Getenv("HOST_PORT"); envPort != "" {
+		if p, err := strconv.Atoi(envPort); err == nil {
+			port = p
+		}
+	}
+	if port == 0 {
+		port = global.Config.Server.Port
+		if port == 0 {
+			port = 3000
+		}
 	}
 
-	return host + ":" + port
+	return fmt.Sprintf("%s:%d", host, port)
 }
 
 func StartServer(app *fiber.App) {

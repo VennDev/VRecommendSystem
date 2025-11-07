@@ -1,0 +1,245 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="Database-Schema" name="Database Schema">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="VRecommendation System - Database Schema" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="500" y="20" width="600" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Redis Database -->
+        <mxCell id="redis-section" value="REDIS DATABASE (API Server)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="400" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Sessions -->
+        <mxCell id="redis-sessions" value="sessions:*" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="400" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-sessions-desc" value="Key Pattern: sessions:{session_id}&#xa;Type: Hash&#xa;TTL: 24 hours" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="redis-sessions">
+          <mxGeometry y="26" width="400" height="54" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-sessions-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="redis-sessions">
+          <mxGeometry y="80" width="400" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-sessions-fields" value="Fields:&#xa;+ session_id: string&#xa;+ user_id: string&#xa;+ email: string&#xa;+ provider: string (google, github, etc.)&#xa;+ created_at: timestamp&#xa;+ expires_at: timestamp&#xa;+ state: string (OAuth state parameter)&#xa;&#xa;Used for OAuth authentication flow" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="redis-sessions">
+          <mxGeometry y="88" width="400" height="112" as="geometry"/>
+        </mxCell>
+
+        <!-- JWT Tokens -->
+        <mxCell id="redis-tokens" value="tokens:*" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="480" y="160" width="400" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-tokens-desc" value="Key Pattern: tokens:{user_id}&#xa;Type: Hash&#xa;TTL: Configurable (default: 24 hours)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="redis-tokens">
+          <mxGeometry y="26" width="400" height="54" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-tokens-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="redis-tokens">
+          <mxGeometry y="80" width="400" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-tokens-fields" value="Fields:&#xa;+ user_id: string&#xa;+ access_token: string (JWT)&#xa;+ refresh_token: string (JWT)&#xa;+ issued_at: timestamp&#xa;+ expires_at: timestamp&#xa;&#xa;Used for JWT token storage and validation" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="redis-tokens">
+          <mxGeometry y="88" width="400" height="92" as="geometry"/>
+        </mxCell>
+
+        <!-- Cache -->
+        <mxCell id="redis-cache" value="cache:*" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="920" y="160" width="400" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-cache-desc" value="Key Pattern: cache:{resource}:{id}&#xa;Type: String (JSON)&#xa;TTL: Varies by resource type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="redis-cache">
+          <mxGeometry y="26" width="400" height="54" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-cache-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="redis-cache">
+          <mxGeometry y="80" width="400" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="redis-cache-fields" value="Examples:&#xa;+ cache:whitelist:all (list of whitelisted emails)&#xa;+ cache:user:{user_id} (user profile data)&#xa;+ cache:logs:stats (activity log statistics)&#xa;&#xa;Used for caching frequently accessed data&#xa;to reduce database load" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="redis-cache">
+          <mxGeometry y="88" width="400" height="92" as="geometry"/>
+        </mxCell>
+
+        <!-- SQL Database Section -->
+        <mxCell id="sql-section" value="SQL DATABASE (AI Server - Optional)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="400" width="500" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Users Table -->
+        <mxCell id="users-table" value="users" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="380" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="users-table-desc" value="Table: users&#xa;Description: User information" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="users-table">
+          <mxGeometry y="26" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="users-table-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="users-table">
+          <mxGeometry y="60" width="380" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="users-table-fields" value="Columns:&#xa;+ id: VARCHAR(36) PRIMARY KEY (UUID)&#xa;+ email: VARCHAR(255) UNIQUE NOT NULL&#xa;+ name: VARCHAR(255)&#xa;+ avatar_url: TEXT&#xa;+ provider: VARCHAR(50) (google, github, etc.)&#xa;+ provider_user_id: VARCHAR(255)&#xa;+ is_active: BOOLEAN DEFAULT TRUE&#xa;+ created_at: TIMESTAMP DEFAULT NOW()&#xa;+ updated_at: TIMESTAMP DEFAULT NOW()&#xa;+ last_login: TIMESTAMP&#xa;&#xa;Indexes:&#xa;- idx_users_email ON email&#xa;- idx_users_provider_user_id ON provider_user_id&#xa;&#xa;Used for storing user authentication data" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="users-table">
+          <mxGeometry y="68" width="380" height="212" as="geometry"/>
+        </mxCell>
+
+        <!-- Interactions Table -->
+        <mxCell id="interactions-table" value="interactions" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="460" y="460" width="380" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="interactions-table-desc" value="Table: interactions&#xa;Description: User-item interaction data for ML" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="interactions-table">
+          <mxGeometry y="26" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="interactions-table-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="interactions-table">
+          <mxGeometry y="60" width="380" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="interactions-table-fields" value="Columns:&#xa;+ id: BIGINT PRIMARY KEY AUTO_INCREMENT&#xa;+ user_id: VARCHAR(36) NOT NULL&#xa;+ item_id: VARCHAR(36) NOT NULL&#xa;+ rating: DECIMAL(3,2) (optional, 0.00-5.00)&#xa;+ interaction_type: VARCHAR(50) (view, click, purchase)&#xa;+ timestamp: TIMESTAMP DEFAULT NOW()&#xa;+ context: JSON (additional context data)&#xa;+ created_at: TIMESTAMP DEFAULT NOW()&#xa;&#xa;Indexes:&#xa;- idx_interactions_user_id ON user_id&#xa;- idx_interactions_item_id ON item_id&#xa;- idx_interactions_timestamp ON timestamp&#xa;- idx_interactions_user_item ON (user_id, item_id)&#xa;&#xa;Foreign Keys:&#xa;- FOREIGN KEY (user_id) REFERENCES users(id)&#xa;- FOREIGN KEY (item_id) REFERENCES items(id)&#xa;&#xa;Used as training data for recommendation models" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="interactions-table">
+          <mxGeometry y="68" width="380" height="232" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationship: interactions -> users -->
+        <mxCell id="rel-interactions-users" value="" style="endArrow=none;endFill=0;startArrow=diamondThin;startFill=0;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="interactions-table" target="users-table">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="450" y="535" as="sourcePoint"/>
+            <mxPoint x="430" y="680" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-interactions-users-label" value="user_id" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-interactions-users">
+          <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+            <mxPoint y="-10" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Relationship: interactions -> items -->
+        <mxCell id="rel-interactions-items" value="" style="endArrow=none;endFill=0;startArrow=diamondThin;startFill=0;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="interactions-table" target="items-table">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="850" y="535" as="sourcePoint"/>
+            <mxPoint x="870" y="680" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-interactions-items-label" value="item_id" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-interactions-items">
+          <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+            <mxPoint y="-10" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Items Table -->
+        <mxCell id="items-table" value="items" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="880" y="460" width="380" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="items-table-desc" value="Table: items&#xa;Description: Items/products to recommend" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="items-table">
+          <mxGeometry y="26" width="380" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="items-table-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="items-table">
+          <mxGeometry y="60" width="380" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="items-table-fields" value="Columns:&#xa;+ id: VARCHAR(36) PRIMARY KEY (UUID)&#xa;+ name: VARCHAR(255) NOT NULL&#xa;+ description: TEXT&#xa;+ category: VARCHAR(100)&#xa;+ features: JSON (item features for ML)&#xa;+ metadata: JSON (additional metadata)&#xa;+ is_active: BOOLEAN DEFAULT TRUE&#xa;+ created_at: TIMESTAMP DEFAULT NOW()&#xa;+ updated_at: TIMESTAMP DEFAULT NOW()&#xa;&#xa;Indexes:&#xa;- idx_items_category ON category&#xa;- idx_items_name ON name&#xa;- idx_items_is_active ON is_active&#xa;&#xa;Used for item catalog and features" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="items-table">
+          <mxGeometry y="68" width="380" height="212" as="geometry"/>
+        </mxCell>
+
+        <!-- Models Table -->
+        <mxCell id="models-table" value="models" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="800" width="400" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="models-table-desc" value="Table: models&#xa;Description: ML model metadata" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="models-table">
+          <mxGeometry y="26" width="400" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="models-table-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="models-table">
+          <mxGeometry y="60" width="400" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="models-table-fields" value="Columns:&#xa;+ id: VARCHAR(36) PRIMARY KEY (UUID)&#xa;+ name: VARCHAR(255) NOT NULL&#xa;+ model_type: VARCHAR(50) (collaborative, content_based, hybrid)&#xa;+ algorithm: VARCHAR(50) (nmf, svd, als, bpr, ncf, etc.)&#xa;+ status: VARCHAR(50) (training, trained, failed, ready)&#xa;+ hyperparameters: JSON&#xa;+ metrics: JSON (rmse, mae, precision, recall, etc.)&#xa;+ file_path: TEXT (path to saved model file)&#xa;+ version: VARCHAR(50)&#xa;+ created_by: VARCHAR(36)&#xa;+ created_at: TIMESTAMP DEFAULT NOW()&#xa;+ updated_at: TIMESTAMP DEFAULT NOW()&#xa;+ trained_at: TIMESTAMP&#xa;&#xa;Indexes:&#xa;- idx_models_status ON status&#xa;- idx_models_algorithm ON algorithm&#xa;- idx_models_created_at ON created_at&#xa;&#xa;Used for tracking trained ML models" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="models-table">
+          <mxGeometry y="68" width="400" height="252" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationship: models -> users (created_by) -->
+        <mxCell id="rel-models-users" value="" style="endArrow=none;endFill=0;startArrow=diamondThin;startFill=0;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="models-table" target="users-table">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="40" y="950" as="sourcePoint"/>
+            <mxPoint x="135" y="750" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-models-users-label" value="created_by" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-models-users">
+          <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+            <mxPoint x="15" y="5" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Training Jobs Table -->
+        <mxCell id="training-jobs-table" value="training_jobs" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="480" y="800" width="400" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="training-jobs-table-desc" value="Table: training_jobs&#xa;Description: Model training job history" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="training-jobs-table">
+          <mxGeometry y="26" width="400" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="training-jobs-table-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="training-jobs-table">
+          <mxGeometry y="60" width="400" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="training-jobs-table-fields" value="Columns:&#xa;+ id: VARCHAR(36) PRIMARY KEY (UUID)&#xa;+ model_id: VARCHAR(36) NOT NULL&#xa;+ status: VARCHAR(50) (pending, running, completed, failed)&#xa;+ config: JSON (training configuration)&#xa;+ data_source: JSON (data source configuration)&#xa;+ started_at: TIMESTAMP&#xa;+ completed_at: TIMESTAMP&#xa;+ duration_seconds: INT&#xa;+ error_message: TEXT&#xa;+ metrics: JSON (training metrics)&#xa;+ created_by: VARCHAR(36)&#xa;+ created_at: TIMESTAMP DEFAULT NOW()&#xa;&#xa;Indexes:&#xa;- idx_training_jobs_model_id ON model_id&#xa;- idx_training_jobs_status ON status&#xa;- idx_training_jobs_created_at ON created_at&#xa;&#xa;Foreign Keys:&#xa;- FOREIGN KEY (model_id) REFERENCES models(id)&#xa;&#xa;Used for tracking model training history" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="training-jobs-table">
+          <mxGeometry y="68" width="400" height="252" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationship: training_jobs -> models -->
+        <mxCell id="rel-training-jobs-models" value="" style="endArrow=none;endFill=0;startArrow=diamondThin;startFill=0;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="training-jobs-table" target="models-table">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="470" y="880" as="sourcePoint"/>
+            <mxPoint x="450" y="1040" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-training-jobs-models-label" value="model_id" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-training-jobs-models">
+          <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+            <mxPoint y="-10" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Relationship: training_jobs -> users (created_by) -->
+        <mxCell id="rel-training-jobs-users" value="" style="endArrow=none;endFill=0;startArrow=diamondThin;startFill=0;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="training-jobs-table" target="users-table">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="580" y="790" as="sourcePoint"/>
+            <mxPoint x="325" y="750" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-training-jobs-users-label" value="created_by" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="rel-training-jobs-users">
+          <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+            <mxPoint x="-15" y="5" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Scheduler Tasks Table -->
+        <mxCell id="scheduler-tasks-table" value="scheduler_tasks" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="920" y="800" width="400" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="scheduler-tasks-table-desc" value="Table: scheduler_tasks&#xa;Description: Scheduled background tasks" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="scheduler-tasks-table">
+          <mxGeometry y="26" width="400" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="scheduler-tasks-table-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="scheduler-tasks-table">
+          <mxGeometry y="60" width="400" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="scheduler-tasks-table-fields" value="Columns:&#xa;+ id: VARCHAR(36) PRIMARY KEY (UUID)&#xa;+ task_name: VARCHAR(255) NOT NULL&#xa;+ task_type: VARCHAR(50) (model_trainer, data_sync, etc.)&#xa;+ config: JSON (task configuration)&#xa;+ schedule_type: VARCHAR(50) (cron, interval, date)&#xa;+ cron_expression: VARCHAR(100)&#xa;+ interval_seconds: INT&#xa;+ start_date: TIMESTAMP&#xa;+ end_date: TIMESTAMP&#xa;+ next_run: TIMESTAMP&#xa;+ last_run: TIMESTAMP&#xa;+ is_enabled: BOOLEAN DEFAULT TRUE&#xa;+ created_at: TIMESTAMP DEFAULT NOW()&#xa;+ updated_at: TIMESTAMP DEFAULT NOW()&#xa;&#xa;Indexes:&#xa;- idx_scheduler_tasks_task_type ON task_type&#xa;- idx_scheduler_tasks_is_enabled ON is_enabled&#xa;- idx_scheduler_tasks_next_run ON next_run&#xa;&#xa;Used for managing scheduled tasks" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="scheduler-tasks-table">
+          <mxGeometry y="68" width="400" height="272" as="geometry"/>
+        </mxCell>
+
+        <!-- MongoDB Collections Section -->
+        <mxCell id="mongodb-section" value="MONGODB DATABASE (AI Server - Optional)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="40" y="1180" width="550" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Interactions Collection -->
+        <mxCell id="interactions-collection" value="interactions" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1240" width="420" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="interactions-collection-desc" value="Collection: interactions&#xa;Description: User-item interactions (NoSQL)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="interactions-collection">
+          <mxGeometry y="26" width="420" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="interactions-collection-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="interactions-collection">
+          <mxGeometry y="60" width="420" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="interactions-collection-fields" value="Document Structure:&#xa;{&#xa;  _id: ObjectId,&#xa;  user_id: String,&#xa;  item_id: String,&#xa;  rating: Number (optional),&#xa;  interaction_type: String,&#xa;  timestamp: ISODate,&#xa;  context: Object {&#xa;    device: String,&#xa;    location: String,&#xa;    session_id: String,&#xa;    // custom fields&#xa;  },&#xa;  created_at: ISODate&#xa;}&#xa;&#xa;Indexes:&#xa;- { user_id: 1, timestamp: -1 }&#xa;- { item_id: 1, timestamp: -1 }&#xa;- { user_id: 1, item_id: 1 }&#xa;- { timestamp: 1 }&#xa;&#xa;Flexible schema for diverse interaction data" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Courier New;fontSize=11;" vertex="1" parent="interactions-collection">
+          <mxGeometry y="68" width="420" height="232" as="geometry"/>
+        </mxCell>
+
+        <!-- Task Executions Collection -->
+        <mxCell id="task-executions-collection" value="task_executions" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="500" y="1240" width="420" height="320" as="geometry"/>
+        </mxCell>
+        <mxCell id="task-executions-collection-desc" value="Collection: task_executions&#xa;Description: Task execution history (NoSQL)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1
+;" vertex="1" parent="task-executions-collection">
+          <mxGeometry y="26" width="420" height="44" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

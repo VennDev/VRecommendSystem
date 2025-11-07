@@ -2,10 +2,18 @@ package setting
 
 type Config struct {
 	// From local.yml
+	Server   Server   `yaml:"server" mapstructure:"server"`
 	Logger   Logger   `yaml:"logger" mapstructure:"logger"`
 	JWT      JWT      `yaml:"jwt" mapstructure:"jwt"`
 	Database Database `yaml:"database" mapstructure:"database"`
 	Redis    Redis    `yaml:"redis" mapstructure:"redis"`
+}
+
+type Server struct {
+	Host        string `yaml:"host" mapstructure:"host"`
+	Port        int    `yaml:"port" mapstructure:"port"`
+	AiServerUrl string `yaml:"ai_server_url" mapstructure:"ai_server_url"`
+	FrontendUrl string `yaml:"frontend_url" mapstructure:"frontend_url"`
 }
 
 type Logger struct {
@@ -37,17 +45,17 @@ type Database struct {
 }
 
 type Redis struct {
-	Host            string `yaml:"host" mapstructure:"host"`
-	Port            int    `yaml:"port" mapstructure:"port"`
-	Password        string `yaml:"password" mapstructure:"password"`
-	DB              int    `yaml:"db" mapstructure:"db"`
-	SSL             bool   `yaml:"ssl" mapstructure:"ssl"`
-	MaxRetries      int    `yaml:"max_retries" mapstructure:"max_retries"`
-	PoolSize        int    `yaml:"pool_size" mapstructure:"pool_size"`
-	MinIdleConns    int    `yaml:"min_idle_conns" mapstructure:"min_idle_conns"`
-	MaxConnAge      int    `yaml:"max_conn_age" mapstructure:"max_conn_age"`
-	PoolTimeout     int    `yaml:"pool_timeout" mapstructure:"pool_timeout"`
-	IdleTimeout     int    `yaml:"idle_timeout" mapstructure:"idle_timeout"`
-	ReadTimeout     int    `yaml:"read_timeout" mapstructure:"read_timeout"`
-	WriteTimeout    int    `yaml:"write_timeout" mapstructure:"write_timeout"`
+	Host         string `yaml:"host" mapstructure:"host"`
+	Port         int    `yaml:"port" mapstructure:"port"`
+	Password     string `yaml:"password" mapstructure:"password"`
+	DB           int    `yaml:"db" mapstructure:"db"`
+	SSL          bool   `yaml:"ssl" mapstructure:"ssl"`
+	MaxRetries   int    `yaml:"max_retries" mapstructure:"max_retries"`
+	PoolSize     int    `yaml:"pool_size" mapstructure:"pool_size"`
+	MinIdleConns int    `yaml:"min_idle_conns" mapstructure:"min_idle_conns"`
+	MaxConnAge   int    `yaml:"max_conn_age" mapstructure:"max_conn_age"`
+	PoolTimeout  int    `yaml:"pool_timeout" mapstructure:"pool_timeout"`
+	IdleTimeout  int    `yaml:"idle_timeout" mapstructure:"idle_timeout"`
+	ReadTimeout  int    `yaml:"read_timeout" mapstructure:"read_timeout"`
+	WriteTimeout int    `yaml:"write_timeout" mapstructure:"write_timeout"`
 }

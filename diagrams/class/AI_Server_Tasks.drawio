@@ -1,0 +1,118 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
+  <diagram id="AI-Server-Tasks" name="AI Server - Tasks">
+    <mxGraphModel dx="1512" dy="777" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="AI Server - Background Tasks" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="550" y="20" width="500" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="base-task" value="«abstract»&#xa;BaseTask" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="600" y="100" width="400" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="base-task-attrs" value="# Attributes&#xa;+ task_id: str&#xa;+ task_type: str&#xa;+ config: Dict[str, Any]&#xa;+ status: str&#xa;+ created_at: datetime&#xa;+ last_run: Optional[datetime]&#xa;+ next_run: Optional[datetime]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="base-task" vertex="1">
+          <mxGeometry y="40" width="400" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="base-task-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="base-task" vertex="1">
+          <mxGeometry y="160" width="400" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="base-task-methods" value="# Abstract Methods&#xa;+ execute() -&gt; Dict[str, Any]  # Must be implemented&#xa;+ validate_config() -&gt; bool  # Must be implemented&#xa;&#xa;# Concrete Methods&#xa;+ on_success(result: Dict)&#xa;+ on_failure(error: Exception)&#xa;+ get_status() -&gt; str&#xa;+ get_config() -&gt; Dict&#xa;+ update_config(config: Dict)&#xa;+ get_execution_history() -&gt; List[Dict]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="base-task" vertex="1">
+          <mxGeometry y="168" width="400" height="172" as="geometry" />
+        </mxCell>
+        <mxCell id="model-trainer-task" value="ModelTrainerTask" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="100" y="500" width="400" height="440" as="geometry" />
+        </mxCell>
+        <mxCell id="model-trainer-attrs" value="# Attributes&#xa;+ model_service: ModelService&#xa;+ datachef_service: DataChefService&#xa;+ data_chef_id: str&#xa;+ model_config: Dict&#xa;+ training_config: Dict&#xa;+ evaluation_config: Optional[Dict]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="model-trainer-task" vertex="1">
+          <mxGeometry y="26" width="400" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="model-trainer-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="model-trainer-task" vertex="1">
+          <mxGeometry y="130" width="400" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="model-trainer-methods" value="# Implemented Abstract Methods&#xa;+ execute() -&gt; Dict[str, Any]&#xa;+ validate_config() -&gt; bool&#xa;&#xa;# Specific Methods&#xa;- fetch_training_data() -&gt; DataFrame&#xa;- prepare_data(data: DataFrame) -&gt; DataFrame&#xa;- train_model(data: DataFrame) -&gt; str&#xa;- evaluate_model(model_id: str, test_data: DataFrame) -&gt; Dict&#xa;- save_results(model_id: str, metrics: Dict)&#xa;- cleanup_resources()&#xa;&#xa;# Workflow&#xa;1. Validate configuration&#xa;2. Fetch data using DataChefService&#xa;3. Prepare and split data&#xa;4. Train model using ModelService&#xa;5. Evaluate model (optional)&#xa;6. Save results and metrics&#xa;7. Cleanup and notify" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="model-trainer-task" vertex="1">
+          <mxGeometry y="138" width="400" height="302" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-trainer-model-service" value="" style="endArrow=diamondThin;endFill=0;endSize=12;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="model-trainer-task" target="base-task" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="510" y="610" as="sourcePoint" />
+            <mxPoint x="590" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-trainer-model-service-label" value="1&#xa;model_service" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel-trainer-model-service" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+            <mxPoint x="10" y="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-trainer-chef-service" value="" style="endArrow=diamondThin;endFill=0;endSize=12;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="model-trainer-task" target="base-task" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="510" y="720" as="sourcePoint" />
+            <mxPoint x="610" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-trainer-chef-service-label" value="1&#xa;datachef_service" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel-trainer-chef-service" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+            <mxPoint x="10" y="10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="data-sync-task" value="DataSyncTask&#xa;(Planned)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="500" width="400" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="data-sync-desc" value="# Purpose&#xa;Synchronize data from external sources&#xa;&#xa;# Key Features&#xa;- Scheduled data fetching&#xa;- Incremental updates&#xa;- Data validation&#xa;- Error handling and retry logic&#xa;- Notification on completion" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="data-sync-task" vertex="1">
+          <mxGeometry y="40" width="400" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="model-eval-task" value="ModelEvaluationTask&#xa;(Planned)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="1100" y="500" width="400" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="model-eval-desc" value="# Purpose&#xa;Periodic model performance evaluation&#xa;&#xa;# Key Features&#xa;- Automated testing on latest data&#xa;- Performance metrics calculation&#xa;- Drift detection&#xa;- Alert on degradation&#xa;- Historical comparison" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="model-eval-task" vertex="1">
+          <mxGeometry y="40" width="400" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="cleanup-task" value="DataCleanupTask&#xa;(Planned)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="720" width="400" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="cleanup-desc" value="# Purpose&#xa;Clean up old data and temporary files&#xa;&#xa;# Key Features&#xa;- Remove old training data&#xa;- Archive historical models&#xa;- Clean temporary files&#xa;- Optimize storage&#xa;- Generate cleanup reports" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="cleanup-task" vertex="1">
+          <mxGeometry y="40" width="400" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="report-task" value="ReportGenerationTask&#xa;(Planned)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="1100" y="720" width="400" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="report-desc" value="# Purpose&#xa;Generate periodic analytics and reports&#xa;&#xa;# Key Features&#xa;- Model performance reports&#xa;- User activity analytics&#xa;- System health metrics&#xa;- Email/notification delivery&#xa;- Export to various formats" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="report-task" vertex="1">
+          <mxGeometry y="40" width="400" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-trainer-base" value="" style="endArrow=block;endFill=0;endSize=12;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" parent="1" source="model-trainer-task" target="base-task" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="300" y="450" as="sourcePoint" />
+            <mxPoint x="460" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-trainer-base-label" value="extends" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel-trainer-base" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+            <mxPoint x="10" y="10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-sync-base" value="" style="endArrow=block;endFill=0;endSize=12;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;" parent="1" source="data-sync-task" target="base-task" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="310" y="510" as="sourcePoint" />
+            <mxPoint x="621" y="430" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-eval-base" value="" style="endArrow=block;endFill=0;endSize=12;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;dashed=1;" parent="1" source="model-eval-task" target="base-task" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="810" y="510" as="sourcePoint" />
+            <mxPoint x="810" y="430" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend" value="Legend" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="100" y="980" width="380" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-abstract" value="Abstract Base Class" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="legend" vertex="1">
+          <mxGeometry y="26" width="380" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-concrete" value="Concrete Task Implementation" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="legend" vertex="1">
+          <mxGeometry y="52" width="380" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-future" value="Planned/Future Tasks (dashed)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="legend" vertex="1">
+          <mxGeometry y="78" width="380" height="26" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

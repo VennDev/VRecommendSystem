@@ -1,0 +1,235 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
+  <diagram id="AI-Server-Schemas" name="AI Server - Schemas">
+    <mxGraphModel dx="1512" dy="777" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="AI Server - Schemas Package (Pydantic Models)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="500" y="20" width="600" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="base-schema" value="BaseSchema" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="40" y="100" width="340" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="base-schema-desc" value="Base schema class that all other&#xa;schemas inherit from.&#xa;Extends Pydantic BaseModel." style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="base-schema" vertex="1">
+          <mxGeometry y="26" width="340" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="base-schema-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="base-schema" vertex="1">
+          <mxGeometry y="80" width="340" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="base-schema-note" value="from pydantic import BaseModel" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=2" parent="base-schema" vertex="1">
+          <mxGeometry y="88" width="340" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="enum-title" value="Enumerations" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="440" y="100" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="model-status" value="«enumeration»&#xa;ModelStatus" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="440" y="150" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="model-status-values" value="TRAINING&#xa;TRAINED&#xa;FAILED&#xa;LOADING&#xa;READY&#xa;DELETED" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="model-status" vertex="1">
+          <mxGeometry y="40" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="model-type" value="«enumeration»&#xa;ModelType" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="680" y="150" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="model-type-values" value="COLLABORATIVE&#xa;CONTENT_BASED&#xa;HYBRID&#xa;DEEP_LEARNING" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="model-type" vertex="1">
+          <mxGeometry y="40" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="algorithm-type" value="«enumeration»&#xa;AlgorithmType" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="920" y="150" width="200" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="algorithm-type-values" value="ALS&#xa;BPR&#xa;NCF&#xa;TFIDF&#xa;FEATURE_BASED&#xa;NMF&#xa;SVD" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="algorithm-type" vertex="1">
+          <mxGeometry y="40" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="config-title" value="Model Configuration Classes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="250" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="base-model-config" value="BaseModelConfig" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="40" y="300" width="340" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="base-model-config-fields" value="+ model_id: Optional[str]&#xa;+ model_type: ModelType&#xa;+ algorithm: AlgorithmType&#xa;+ description: Optional[str]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="base-model-config" vertex="1">
+          <mxGeometry y="26" width="340" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="base-model-config-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="base-model-config" vertex="1">
+          <mxGeometry y="100" width="340" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="base-model-config-note" value="Base class for all model configs" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=2" parent="base-model-config" vertex="1">
+          <mxGeometry y="108" width="340" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="als-config" value="ALSModelConfig" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="40" y="470" width="340" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="als-config-fields" value="+ factors: int = 50&#xa;+ regularization: float = 0.01&#xa;+ iterations: int = 15&#xa;+ alpha: float = 1.0&#xa;+ use_gpu: bool = False" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="als-config" vertex="1">
+          <mxGeometry y="26" width="340" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="als-config-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="als-config" vertex="1">
+          <mxGeometry y="110" width="340" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="als-config-methods" value="@validator&#xa;def validate_factors(cls, v)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="als-config" vertex="1">
+          <mxGeometry y="118" width="340" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-als-base" value="" style="endArrow=block;endFill=0;endSize=12;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" parent="1" source="als-config" target="base-model-config" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="210" y="450" as="sourcePoint" />
+            <mxPoint x="370" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-als-base-label" value="extends" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel-als-base" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+            <mxPoint x="10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ncf-config" value="NCFModelConfig" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="420" y="330" width="340" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="ncf-config-fields" value="+ embedding_dim: int = 64&#xa;+ hidden_units: List[int] = [128, 64, 32]&#xa;+ dropout_rate: float = 0.2&#xa;+ learning_rate: float = 0.001&#xa;+ epochs: int = 10&#xa;+ batch_size: int = 256" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="ncf-config" vertex="1">
+          <mxGeometry y="26" width="340" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="ncf-config-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="ncf-config" vertex="1">
+          <mxGeometry y="130" width="340" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ncf-config-methods" value="@validator&#xa;def validate_hidden_units(cls, v)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="ncf-config" vertex="1">
+          <mxGeometry y="138" width="340" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-ncf-base" value="" style="endArrow=block;endFill=0;endSize=12;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" parent="1" source="ncf-config" target="base-model-config" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="220" y="480" as="sourcePoint" />
+            <mxPoint x="135" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-ncf-base-label" value="extends" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel-ncf-base" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+            <mxPoint x="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="request-title" value="Request &amp; Response Schemas" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="820" y="330" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="training-request" value="ModelTrainingRequest" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="820" y="380" width="380" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="training-request-fields" value="+ model_config: BaseModelConfig&#xa;+ data_source: Dict[str, Any]&#xa;+ train_test_split: float = 0.8&#xa;+ validation_split: Optional[float]&#xa;+ early_stopping: bool = False&#xa;+ save_model: bool = True&#xa;+ evaluation_metrics: List[str]&#xa;+ tags: Optional[Dict[str, str]]&#xa;+ notes: Optional[str]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="training-request" vertex="1">
+          <mxGeometry y="26" width="380" height="144" as="geometry" />
+        </mxCell>
+        <mxCell id="training-request-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="training-request" vertex="1">
+          <mxGeometry y="170" width="380" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="training-request-methods" value="class Config:&#xa;    json_schema_extra = {&#xa;        &quot;example&quot;: { ... }&#xa;    }&#xa;&#xa;Validators for data_source format" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=2" parent="training-request" vertex="1">
+          <mxGeometry y="178" width="380" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-training-request-base-config" value="" style="endArrow=open;endFill=0;endSize=12;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" parent="1" source="training-request" target="base-model-config-fields" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="800" y="450" as="sourcePoint" />
+            <mxPoint x="400" y="363" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-training-request-config-label" value="&lt;&lt;uses&gt;&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel-training-request-base-config" vertex="1" connectable="0">
+          <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+            <mxPoint x="-10" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="training-result" value="ModelTrainingResult" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="1240" y="380" width="340" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="training-result-fields" value="+ model_id: str&#xa;+ status: ModelStatus&#xa;+ metrics: Dict[str, float]&#xa;+ training_time: float&#xa;+ message: Optional[str]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="training-result" vertex="1">
+          <mxGeometry y="26" width="340" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="training-result-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="training-result" vertex="1">
+          <mxGeometry y="110" width="340" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="training-result-methods" value="def to_dict(self) -&gt; Dict[str, Any]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="training-result" vertex="1">
+          <mxGeometry y="118" width="340" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-training-result-status" value="" style="endArrow=open;endFill=0;endSize=12;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" parent="1" source="training-result" target="model-status-values" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="1410" y="300" as="sourcePoint" />
+            <mxPoint x="650" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-training-result-status-label" value="&lt;&lt;uses&gt;&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel-training-result-status" vertex="1" connectable="0">
+          <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+            <mxPoint x="20" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="model-info" value="ModelInfo" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="820" y="700" width="380" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="model-info-fields" value="+ model_id: str&#xa;+ model_type: ModelType&#xa;+ algorithm: AlgorithmType&#xa;+ status: ModelStatus&#xa;+ hyperparameters: Dict[str, Any]&#xa;+ metrics: Dict[str, float]&#xa;+ training_stats: Dict[str, Any]&#xa;+ created_at: datetime&#xa;+ updated_at: datetime&#xa;+ is_fitted: bool&#xa;+ description: Optional[str]&#xa;+ tags: Optional[Dict[str, str]]&#xa;+ version: Optional[str]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="model-info" vertex="1">
+          <mxGeometry y="26" width="380" height="214" as="geometry" />
+        </mxCell>
+        <mxCell id="model-info-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="model-info" vertex="1">
+          <mxGeometry y="240" width="380" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="model-info-methods" value="def to_dict(self) -&gt; Dict[str, Any]&#xa;&#xa;class Config:&#xa;    json_schema_extra = { ... }" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="model-info" vertex="1">
+          <mxGeometry y="248" width="380" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="rel-model-info-enums" value="" style="endArrow=open;endFill=0;endSize=12;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;" parent="1" source="model-info" target="model-type" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="915" y="650" as="sourcePoint" />
+            <mxPoint x="780" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-model-info-enums-label" value="&lt;&lt;uses&gt;&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel-model-info-enums" vertex="1" connectable="0">
+          <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+            <mxPoint x="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-model-info-algorithm" value="" style="endArrow=open;endFill=0;endSize=12;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;" parent="1" source="model-info" target="algorithm-type" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="925" y="710" as="sourcePoint" />
+            <mxPoint x="790" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel-model-info-algorithm-label" value="&lt;&lt;uses&gt;&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel-model-info-algorithm" vertex="1" connectable="0">
+          <mxGeometry x="-0.2" y="1" relative="1" as="geometry">
+            <mxPoint x="10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="predict-request" value="ModelPredictRequest" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="1240" y="580" width="340" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="predict-request-fields" value="+ model_id: str&#xa;+ user_ids: List[str]&#xa;+ n_recommendations: int = 10&#xa;+ filter_seen: bool = True&#xa;+ context: Optional[Dict[str, Any]]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="predict-request" vertex="1">
+          <mxGeometry y="26" width="340" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="predict-request-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="predict-request" vertex="1">
+          <mxGeometry y="110" width="340" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="predict-request-methods" value="@validator&#xa;def validate_user_ids(cls, v)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="predict-request" vertex="1">
+          <mxGeometry y="118" width="340" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="predict-result" value="ModelPredictResult" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="1240" y="780" width="340" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="predict-result-fields" value="+ model_id: str&#xa;+ user_id: str&#xa;+ recommendations: List[Dict[str, Any]]&#xa;+ timestamp: datetime&#xa;+ processing_time: float&#xa;+ metadata: Optional[Dict[str, Any]]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="predict-result" vertex="1">
+          <mxGeometry y="26" width="340" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="predict-result-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="predict-result" vertex="1">
+          <mxGeometry y="130" width="340" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="predict-result-methods" value="def to_dict(self) -&gt; Dict[str, Any]&#xa;&#xa;Format: [{item_id, score, rank}, ...]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=2" parent="predict-result" vertex="1">
+          <mxGeometry y="138" width="340" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="error-response" value="ErrorResponse" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="1240" y="1000" width="340" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="error-response-fields" value="+ error: str&#xa;+ message: str&#xa;+ details: Optional[Dict[str, Any]]&#xa;+ timestamp: datetime&#xa;+ request_id: Optional[str]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="error-response" vertex="1">
+          <mxGeometry y="26" width="340" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="error-response-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="error-response" vertex="1">
+          <mxGeometry y="110" width="340" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="error-response-note" value="Standard error response schema" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=2" parent="error-response" vertex="1">
+          <mxGeometry y="118" width="340" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="eval-result" value="ModelEvaluationResult" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+          <mxGeometry x="40" y="680" width="340" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="eval-result-fields" value="+ model_id: str&#xa;+ metrics: Dict[str, float]&#xa;+ test_size: int&#xa;+ evaluation_time: float&#xa;+ timestamp: datetime&#xa;+ details: Optional[Dict[str, Any]]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="eval-result" vertex="1">
+          <mxGeometry y="26" width="340" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="eval-result-separator" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="eval-result" vertex="1">
+          <mxGeometry y="130" width="340" height="8" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
