@@ -1,7 +1,7 @@
 {
   "model_id": "my_model",
   "model_type": "SVDRecommendationModel",
-  "saved_at": "2025-11-07T02:18:11.482091",
+  "saved_at": "2025-11-07T02:29:10.665556",
   "file_path": "models/my_model.pkl",
   "hyperparameters": {
     "n_components": 2,
@@ -24,7 +24,7 @@
     "max_rating": 10.0
   },
   "metrics": {
-    "training_time": 0.00839,
+    "training_time": 0.007547,
     "explained_variance_ratio": 1.0000000000000002,
     "n_users": 2,
     "n_items": 13,
