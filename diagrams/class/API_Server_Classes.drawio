@@ -50,13 +50,13 @@
           <mxGeometry y="98" width="280" height="52" as="geometry" />
         </mxCell>
         <mxCell id="jwt-config" value="JWT" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
-          <mxGeometry x="720" y="290" width="280" height="120" as="geometry" />
+          <mxGeometry x="670" y="414" width="280" height="120" as="geometry" />
         </mxCell>
         <mxCell id="jwt-fields" value="+ SecretKey: string&#xa;+ ExpireMinsCount: int&#xa;+ RefreshKey: string&#xa;+ RefreshExpireHoursCount: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="jwt-config" vertex="1">
           <mxGeometry y="26" width="280" height="94" as="geometry" />
         </mxCell>
         <mxCell id="database-config" value="Database" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
-          <mxGeometry x="720" y="450" width="280" height="180" as="geometry" />
+          <mxGeometry x="980" y="405" width="280" height="180" as="geometry" />
         </mxCell>
         <mxCell id="database-fields" value="+ Type: string&#xa;+ Host: string&#xa;+ Port: int&#xa;+ User: string&#xa;+ Password: string&#xa;+ DB: string&#xa;+ SSL: bool&#xa;+ MaxIdleConns: int&#xa;+ MaxOpenConns: int&#xa;+ ConnMaxLifetime: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="database-config" vertex="1">
           <mxGeometry y="26" width="280" height="154" as="geometry" />
