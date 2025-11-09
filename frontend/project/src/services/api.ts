@@ -23,6 +23,7 @@ interface CreateModelRequest {
     model_name: string;
     algorithm: string;
     message: string;
+    hyperparameters?: Record<string, any>;
 }
 
 interface AddModelTaskRequest {
@@ -291,12 +292,14 @@ class ApiService {
         modelName: string,
         algorithm: string,
         message: string,
+        hyperparameters?: Record<string, any>,
     ) {
         const requestBody: CreateModelRequest = {
             model_id: modelId,
             model_name: modelName,
             algorithm,
             message,
+            hyperparameters,
         };
 
         return this.request(API_ENDPOINTS.AI.CREATE_MODEL, {
@@ -317,6 +320,36 @@ class ApiService {
         return this.request(API_ENDPOINTS.AI.DELETE_MODEL(modelId), {
             method: "DELETE",
         });
+    }
+
+    async getAvailableAlgorithms() {
+        return this.request(API_ENDPOINTS.AI.GET_AVAILABLE_ALGORITHMS);
+    }
+
+    async updateModelHyperparameters(
+        modelId: string,
+        hyperparameters: Record<string, any>,
+    ) {
+        return this.request(
+            API_ENDPOINTS.AI.UPDATE_MODEL_HYPERPARAMETERS(modelId),
+            {
+                method: "PUT",
+                body: JSON.stringify({ hyperparameters }),
+            },
+        );
+    }
+
+    async validateHyperparameters(
+        algorithm: string,
+        hyperparameters: Record<string, any>,
+    ) {
+        return this.request(
+            API_ENDPOINTS.AI.VALIDATE_HYPERPARAMETERS(algorithm),
+            {
+                method: "POST",
+                body: JSON.stringify(hyperparameters),
+            },
+        );
     }
 
     // Task Management

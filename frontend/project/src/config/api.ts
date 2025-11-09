@@ -69,6 +69,9 @@ export const API_ENDPOINTS = {
     LIST_MODELS: '/list_models',
     GET_MODEL_INFO: (modelId: string) => `/get_model_info/${modelId}`,
     DELETE_MODEL: (modelId: string) => `/delete_model/${modelId}`,
+    GET_AVAILABLE_ALGORITHMS: '/get_available_algorithms',
+    UPDATE_MODEL_HYPERPARAMETERS: (modelId: string) => `/update_model_hyperparameters/${modelId}`,
+    VALIDATE_HYPERPARAMETERS: (algorithm: string) => `/validate_hyperparameters/${algorithm}`,
     
     // Tasks
     ADD_MODEL_TASK: '/add_model_task',

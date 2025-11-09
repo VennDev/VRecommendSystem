@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
+from datetime import datetime
+import json
 
 from ai_server.metrics import scheduler_metrics, model_metrics
 from ai_server.services.model_service import ModelService, SAMPLE_INTERACTION_DATA
@@ -18,6 +20,17 @@ class CreateModelRequest(BaseModel):
     model_name: str
     algorithm: str
     message: str
+    hyperparameters: Optional[Dict[str, Any]] = None
+
+
+class UpdateModelHyperparametersRequest(BaseModel):
+    """Request model for updating model hyperparameters"""
+    hyperparameters: Dict[str, Any]
+
+
+class GetModelInfoRequest(BaseModel):
+    """Request model for getting model information"""
+    model_id: str
 
 
 class AddModelTaskRequest(BaseModel):
@@ -129,7 +142,8 @@ def create_model(request: CreateModelRequest) -> dict:
             model_id=request.model_id,
             model_name=request.model_name,
             algorithm=request.algorithm,
-            message=request.message
+            message=request.message,
+            hyperparameters=request.hyperparameters
         )
         service.train_batch(request.model_id, SAMPLE_INTERACTION_DATA)
         service.finalize_training(request.model_id)
@@ -151,6 +165,107 @@ async def list_models() -> dict:
         service = ModelService()
         models = await service.list_models()
         return models
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_model_info/{model_id}")
+def get_model_info(model_id: str) -> dict:
+    """
+    Get detailed information about a specific model.
+
+    :param model_id: ID of the model
+    :return: Model information including hyperparameters
+    """
+    try:
+        service = ModelService()
+        model_info = service.get_model_info(model_id)
+        return model_info
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/update_model_hyperparameters/{model_id}")
+def update_model_hyperparameters(model_id: str, request: UpdateModelHyperparametersRequest) -> dict:
+    """
+    Update hyperparameters of a model. Model will need to be retrained after update.
+
+    :param model_id: ID of the model to update
+    :param request: Request containing new hyperparameters
+    :return: A confirmation message
+    """
+    try:
+        service = ModelService()
+
+        if model_id not in service.model_configs:
+            raise ValueError(f"Model {model_id} not found")
+
+        config = service.model_configs[model_id]
+        old_hyperparameters = config.get("hyperparameters", {})
+
+        config["hyperparameters"].update(request.hyperparameters)
+
+        config["status"] = "modified"
+        config["modified_at"] = datetime.now().isoformat()
+
+        config_path = service.models_dir / f"{model_id}_config.json"
+        with open(config_path, "w") as f:
+            json.dump(config, f, indent=2, default=str)
+
+        return {
+            "message": f"Hyperparameters updated for model {model_id}. Model needs to be retrained.",
+            "old_hyperparameters": old_hyperparameters,
+            "new_hyperparameters": config["hyperparameters"],
+            "status": "modified"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/get_available_algorithms")
+def get_available_algorithms() -> dict:
+    """
+    Get list of available algorithms and their default hyperparameters.
+
+    :return: Dictionary of available algorithms with details
+    """
+    try:
+        service = ModelService()
+        algorithms = service.get_algorithm_details()
+        return {"algorithms": algorithms}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/validate_hyperparameters/{algorithm}")
+def validate_hyperparameters(algorithm: str, hyperparameters: Dict[str, Any] = Body(...)) -> dict:
+    """
+    Validate hyperparameters for a specific algorithm.
+
+    :param algorithm: Algorithm to validate parameters for
+    :param hyperparameters: Hyperparameters to validate
+    :return: Validation result with errors/warnings
+    """
+    try:
+        service = ModelService()
+        validation_result = service.validate_algorithm_parameters(algorithm, hyperparameters)
+        return validation_result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/delete_model/{model_id}")
+def delete_model(model_id: str) -> dict:
+    """
+    Delete a model and all its associated files.
+
+    :param model_id: ID of the model to delete
+    :return: A confirmation message
+    """
+    try:
+        service = ModelService()
+        result = service.delete_model(model_id)
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -1,4 +1,4 @@
-import { Cpu, Eye, Play, Plus, Trash2 } from "lucide-react";
+import { Cpu, Eye, Play, Plus, Trash2, Settings, Save } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
@@ -12,6 +12,7 @@ interface Model {
   status: string;
   created_at: string;
   training_completed_at?: string;
+  hyperparameters?: Record<string, any>;
   model_metrics?: {
     training_time: number;
     n_users: number;
@@ -28,41 +29,55 @@ interface Model {
   };
 }
 
+interface AlgorithmInfo {
+  algorithm: string;
+  model_type: string;
+  default_params: Record<string, any>;
+  description: string;
+  use_case: string;
+}
+
 const ModelsPage: React.FC = () => {
   const { user } = useAuth();
   const [models, setModels] = useState<Model[]>([]);
   const [loading, setLoading] = useState(true);
+  const [algorithms, setAlgorithms] = useState<Record<string, AlgorithmInfo>>({});
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showEditHyperparametersModal, setShowEditHyperparametersModal] = useState(false);
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
   const [formData, setFormData] = useState({
     modelId: "",
     modelName: "",
     algorithm: "nmf",
     message: "",
+    hyperparameters: {} as Record<string, any>,
   });
   const [isCreating, setIsCreating] = useState(false);
-
-  const algorithms = [
-    "nmf",
-    "nmf_fast",
-    "nmf_accurate",
-    "svd",
-    "svd_fast",
-    "svd_accurate",
-    "hybrid_nmf",
-  ];
+  const [isSavingHyperparameters, setIsSavingHyperparameters] = useState(false);
 
   useEffect(() => {
     fetchModels();
+    fetchAlgorithms();
   }, []);
+
+  const fetchAlgorithms = async () => {
+    try {
+      const response = await apiService.getAvailableAlgorithms();
+      if (response.data?.algorithms) {
+        setAlgorithms(response.data.algorithms);
+      }
+    } catch (error) {
+      console.error("Failed to fetch algorithms:", error);
+    }
+  };
 
   const fetchModels = async () => {
     try {
       const response = await apiService.listModels();
       if (response.data) {
-        setModels(response.data);
+        setModels(Object.values(response.data));
       }
     } catch (error) {
       console.error("Failed to fetch models:", error);
@@ -80,7 +95,10 @@ const ModelsPage: React.FC = () => {
         formData.modelId,
         formData.modelName,
         formData.algorithm,
-        formData.message
+        formData.message,
+        Object.keys(formData.hyperparameters).length > 0
+          ? formData.hyperparameters
+          : undefined
       );
 
       if (response.error) {
@@ -106,6 +124,7 @@ const ModelsPage: React.FC = () => {
           modelName: "",
           algorithm: "nmf",
           message: "",
+          hyperparameters: {},
         });
         fetchModels();
       }
@@ -142,9 +161,99 @@ const ModelsPage: React.FC = () => {
     }
   };
 
-  const handleViewDetails = (model: Model) => {
-    setSelectedModel(model);
-    setShowDetailsModal(true);
+  const handleViewDetails = async (model: Model) => {
+    try {
+      const response = await apiService.getModelInfo(model.model_id);
+      if (response.data) {
+        setSelectedModel(response.data);
+        setShowDetailsModal(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch model details:", error);
+      setSelectedModel(model);
+      setShowDetailsModal(true);
+    }
+  };
+
+  const handleEditHyperparameters = async (model: Model) => {
+    try {
+      const response = await apiService.getModelInfo(model.model_id);
+      if (response.data) {
+        setSelectedModel(response.data);
+        setFormData({
+          ...formData,
+          hyperparameters: response.data.hyperparameters || {},
+        });
+        setShowEditHyperparametersModal(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch model details:", error);
+      alert("Failed to load model hyperparameters");
+    }
+  };
+
+  const handleSaveHyperparameters = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedModel) return;
+
+    setIsSavingHyperparameters(true);
+    try {
+      const response = await apiService.updateModelHyperparameters(
+        selectedModel.model_id,
+        formData.hyperparameters
+      );
+
+      if (response.error) {
+        alert("Error: " + response.error);
+      } else {
+        alert("Hyperparameters updated successfully! Model needs to be retrained.");
+
+        if (user) {
+          await activityLogger.log(user.id, user.email, {
+            action: "update_hyperparameters",
+            resourceType: "model",
+            resourceId: selectedModel.model_id,
+            details: {
+              hyperparameters: formData.hyperparameters,
+            },
+          });
+        }
+
+        setShowEditHyperparametersModal(false);
+        fetchModels();
+      }
+    } catch (error) {
+      alert("Failed to update hyperparameters");
+    } finally {
+      setIsSavingHyperparameters(false);
+    }
+  };
+
+  const handleHyperparameterChange = (key: string, value: any) => {
+    setFormData({
+      ...formData,
+      hyperparameters: {
+        ...formData.hyperparameters,
+        [key]: value,
+      },
+    });
+  };
+
+  const handleAlgorithmChange = (algorithm: string) => {
+    const algorithmInfo = algorithms[algorithm];
+    if (algorithmInfo) {
+      setFormData({
+        ...formData,
+        algorithm,
+        hyperparameters: { ...algorithmInfo.default_params },
+      });
+    } else {
+      setFormData({
+        ...formData,
+        algorithm,
+        hyperparameters: {},
+      });
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -155,6 +264,8 @@ const ModelsPage: React.FC = () => {
         return "badge-warning";
       case "failed":
         return "badge-error";
+      case "modified":
+        return "badge-info";
       default:
         return "badge-ghost";
     }
@@ -162,6 +273,53 @@ const ModelsPage: React.FC = () => {
 
   const formatAlgorithmName = (algorithm: string) => {
     return algorithm.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase());
+  };
+
+  const renderHyperparameterInput = (key: string, value: any) => {
+    if (typeof value === "boolean") {
+      return (
+        <input
+          type="checkbox"
+          checked={value}
+          onChange={(e) => handleHyperparameterChange(key, e.target.checked)}
+          className="checkbox checkbox-primary"
+        />
+      );
+    } else if (typeof value === "number") {
+      return (
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => handleHyperparameterChange(key, parseFloat(e.target.value))}
+          className="input input-bordered input-sm w-full"
+          step="any"
+        />
+      );
+    } else if (typeof value === "string") {
+      return (
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => handleHyperparameterChange(key, e.target.value)}
+          className="input input-bordered input-sm w-full"
+        />
+      );
+    } else {
+      return (
+        <input
+          type="text"
+          value={JSON.stringify(value)}
+          onChange={(e) => {
+            try {
+              handleHyperparameterChange(key, JSON.parse(e.target.value));
+            } catch {
+              handleHyperparameterChange(key, e.target.value);
+            }
+          }}
+          className="input input-bordered input-sm w-full font-mono text-xs"
+        />
+      );
+    }
   };
 
   if (loading) {
@@ -197,7 +355,7 @@ const ModelsPage: React.FC = () => {
 
       {/* Models Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Object.values(models).map((model) => (
+        {models.map((model) => (
           <div
             key={model.model_id}
             className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-200"
@@ -233,16 +391,7 @@ const ModelsPage: React.FC = () => {
                 </div>
               )}
 
-              <div className="mb-4">
-                <div className="text-xs font-semibold text-base-content/70 mb-1">
-                  API Endpoint:
-                </div>
-                <code className="text-xs bg-base-200 p-2 rounded block break-all">
-                  GET /api/v1/recommend?user_id=USER_ID&model_id={model.model_id}&n=10
-                </code>
-              </div>
-
-              <div className="card-actions justify-end">
+              <div className="card-actions justify-end flex-wrap gap-2">
                 <button
                   onClick={() => handleViewDetails(model)}
                   className="btn btn-info btn-sm gap-1"
@@ -250,9 +399,12 @@ const ModelsPage: React.FC = () => {
                   <Eye className="h-4 w-4" />
                   <span>Details</span>
                 </button>
-                <button className="btn btn-primary btn-sm gap-1">
-                  <Play className="h-4 w-4" />
-                  <span>Train</span>
+                <button
+                  onClick={() => handleEditHyperparameters(model)}
+                  className="btn btn-secondary btn-sm gap-1"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>Settings</span>
                 </button>
                 <button
                   onClick={() => handleDeleteModel(model.model_id)}
@@ -276,15 +428,67 @@ const ModelsPage: React.FC = () => {
         </div>
       )}
 
+      {/* Edit Hyperparameters Modal */}
+      {showEditHyperparametersModal && selectedModel && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-2xl">
+            <h2 className="text-xl font-bold text-base-content mb-4">
+              Edit Hyperparameters: {selectedModel.model_name}
+            </h2>
+
+            <form onSubmit={handleSaveHyperparameters} className="space-y-4">
+              <div className="alert alert-info">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span className="text-sm">
+                  After updating hyperparameters, the model will need to be retrained.
+                </span>
+              </div>
+
+              <div className="max-h-96 overflow-y-auto space-y-3">
+                {Object.entries(formData.hyperparameters).map(([key, value]) => (
+                  <div key={key} className="form-control">
+                    <label className="label">
+                      <span className="label-text font-semibold">{key}</span>
+                      <span className="label-text-alt text-xs">
+                        {typeof value}
+                      </span>
+                    </label>
+                    {renderHyperparameterInput(key, value)}
+                  </div>
+                ))}
+              </div>
+
+              <div className="modal-action">
+                <button
+                  type="submit"
+                  disabled={isSavingHyperparameters}
+                  className="btn btn-primary gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  {isSavingHyperparameters ? "Saving..." : "Save Changes"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowEditHyperparametersModal(false)}
+                  className="btn btn-ghost"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Model Details Modal */}
       {showDetailsModal && selectedModel && (
         <div className="modal modal-open">
-          <div className="modal-box max-w-2xl">
+          <div className="modal-box max-w-3xl">
             <h2 className="text-xl font-bold text-base-content mb-4">
               Model Details: {selectedModel.model_name}
             </h2>
 
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-96 overflow-y-auto">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label">
@@ -319,6 +523,23 @@ const ModelsPage: React.FC = () => {
                   </p>
                 </div>
               </div>
+
+              {selectedModel.hyperparameters && (
+                <div>
+                  <label className="label">
+                    <span className="label-text font-semibold">Hyperparameters</span>
+                  </label>
+                  <div className="bg-base-200 p-4 rounded-lg">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      {Object.entries(selectedModel.hyperparameters).map(([key, value]) => (
+                        <div key={key}>
+                          <span className="font-semibold">{key}:</span> {JSON.stringify(value)}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {selectedModel.model_metrics && (
                 <div>
@@ -411,26 +632,6 @@ const ModelsPage: React.FC = () => {
                   </div>
                 )}
               </div>
-
-              <div>
-                <label className="label">
-                  <span className="label-text font-semibold">
-                    Recommendation API Endpoint
-                  </span>
-                </label>
-                <div className="bg-base-200 p-4 rounded-lg">
-                  <code className="text-sm break-all">
-                    GET /api/v1/recommend?user_id=USER_ID&model_id={selectedModel.model_id}&n=10
-                  </code>
-                  <p className="text-xs text-base-content/60 mt-2">
-                    Replace USER_ID with the actual user ID to get recommendations.
-                    The 'n' parameter controls the number of recommendations (default: 10).
-                  </p>
-                  <p className="text-xs text-base-content/60 mt-1">
-                    This endpoint uses Redis caching with 5-minute TTL for improved performance.
-                  </p>
-                </div>
-              </div>
             </div>
 
             <div className="modal-action">
@@ -444,10 +645,11 @@ const ModelsPage: React.FC = () => {
           </div>
         </div>
       )}
+
       {/* Create Model Modal */}
       {showCreateModal && (
         <div className="modal modal-open">
-          <div className="modal-box">
+          <div className="modal-box max-w-2xl">
             <h2 className="text-xl font-bold text-base-content mb-4">
               Create New Model
             </h2>
@@ -490,17 +692,20 @@ const ModelsPage: React.FC = () => {
                 </label>
                 <select
                   value={formData.algorithm}
-                  onChange={(e) =>
-                    setFormData({ ...formData, algorithm: e.target.value })
-                  }
+                  onChange={(e) => handleAlgorithmChange(e.target.value)}
                   className="select select-bordered w-full"
                 >
-                  {algorithms.map((algo) => (
+                  {Object.keys(algorithms).map((algo) => (
                     <option key={algo} value={algo}>
                       {formatAlgorithmName(algo)}
                     </option>
                   ))}
                 </select>
+                {algorithms[formData.algorithm] && (
+                  <p className="text-xs text-base-content/60 mt-1">
+                    {algorithms[formData.algorithm].description}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -517,6 +722,28 @@ const ModelsPage: React.FC = () => {
                   placeholder="Model description..."
                 />
               </div>
+
+              {/* Hyperparameters Section */}
+              {Object.keys(formData.hyperparameters).length > 0 && (
+                <div>
+                  <label className="label">
+                    <span className="label-text font-semibold">Hyperparameters</span>
+                  </label>
+                  <div className="bg-base-200 p-4 rounded-lg max-h-60 overflow-y-auto space-y-3">
+                    {Object.entries(formData.hyperparameters).map(([key, value]) => (
+                      <div key={key} className="form-control">
+                        <label className="label">
+                          <span className="label-text text-sm">{key}</span>
+                          <span className="label-text-alt text-xs">
+                            {typeof value}
+                          </span>
+                        </label>
+                        {renderHyperparameterInput(key, value)}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="modal-action">
                 <button
