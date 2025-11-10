@@ -1,100 +1,135 @@
-import { supabase } from './supabase';
-import type { Product, UserInteraction, Recommendation } from '../types';
+import type { Product } from '../types';
 
-const AI_SERVER_URL = import.meta.env.VITE_AI_SERVER_URL || 'http://localhost:9999';
-const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL || 'http://localhost:2030';
+const LOCAL_SERVER_URL = 'http://localhost:3001';
+const AI_SERVER_URL = 'http://localhost:9999';
+const API_SERVER_URL = 'http://localhost:2030';
+
+export const authService = {
+  async login(username: string): Promise<any> {
+    try {
+      const response = await fetch(`${LOCAL_SERVER_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to login');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw error;
+    }
+  }
+};
 
 export const productService = {
   async getAll(): Promise<Product[]> {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const response = await fetch(`${LOCAL_SERVER_URL}/api/products`);
 
-    if (error) throw error;
-    return data || [];
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+
+      const result = await response.json();
+      return result.products || [];
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      throw error;
+    }
   },
 
   async getByCategory(category: string): Promise<Product[]> {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('category', category)
-      .order('created_at', { ascending: false });
+    try {
+      const response = await fetch(`${LOCAL_SERVER_URL}/api/products?category=${category}`);
 
-    if (error) throw error;
-    return data || [];
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+
+      const result = await response.json();
+      return result.products || [];
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      throw error;
+    }
   },
 
   async getCategories(): Promise<string[]> {
-    const { data, error } = await supabase
-      .from('products')
-      .select('category')
-      .order('category');
+    try {
+      const response = await fetch(`${LOCAL_SERVER_URL}/api/products/categories`);
 
-    if (error) throw error;
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
 
-    const categories = [...new Set((data || []).map(p => p.category))];
-    return categories;
+      const result = await response.json();
+      return result.categories || [];
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      throw error;
+    }
   }
 };
 
 export const interactionService = {
-  async create(userId: string, productId: string, type: string, rating?: number): Promise<UserInteraction> {
-    const { data, error } = await supabase
-      .from('user_interactions')
-      .insert({
-        user_id: userId,
-        product_id: productId,
-        interaction_type: type,
-        rating: rating
-      })
-      .select()
-      .single();
+  async create(userId: string, productId: string, type: string, rating?: number): Promise<any> {
+    try {
+      const response = await fetch(`${LOCAL_SERVER_URL}/api/interactions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          productId,
+          type,
+          value: rating,
+        }),
+      });
 
-    if (error) throw error;
-    return data;
+      if (!response.ok) {
+        throw new Error('Failed to create interaction');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating interaction:', error);
+      throw error;
+    }
   },
 
-  async getUserInteractions(userId: string): Promise<UserInteraction[]> {
-    const { data, error } = await supabase
-      .from('user_interactions')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+  async getUserInteractions(userId: string): Promise<any[]> {
+    try {
+      const response = await fetch(`${LOCAL_SERVER_URL}/api/interactions/${userId}`);
 
-    if (error) throw error;
-    return data || [];
+      if (!response.ok) {
+        throw new Error('Failed to fetch interactions');
+      }
+
+      const result = await response.json();
+      return result.interactions || [];
+    } catch (error) {
+      console.error('Error fetching interactions:', error);
+      throw error;
+    }
   },
 
-  async getProductInteraction(userId: string, productId: string): Promise<UserInteraction | null> {
-    const { data, error } = await supabase
-      .from('user_interactions')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('product_id', productId)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (error) throw error;
-    return data;
+  async getProductInteraction(userId: string, productId: string): Promise<any | null> {
+    try {
+      const interactions = await this.getUserInteractions(userId);
+      const productInteractions = interactions.filter((i: any) => i.productId === productId);
+      return productInteractions.length > 0 ? productInteractions[0] : null;
+    } catch (error) {
+      console.error('Error fetching product interaction:', error);
+      return null;
+    }
   },
-
-  async update(id: string, type: string, rating?: number): Promise<UserInteraction> {
-    const { data, error } = await supabase
-      .from('user_interactions')
-      .update({
-        interaction_type: type,
-        rating: rating
-      })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
 };
 
 export const recommendationService = {
@@ -120,35 +155,6 @@ export const recommendationService = {
       throw error;
     }
   },
-
-  async saveRecommendations(userId: string, recommendations: Array<{product_id: string, model_id: string, score: number}>): Promise<void> {
-    const records = recommendations.map(rec => ({
-      user_id: userId,
-      product_id: rec.product_id,
-      model_id: rec.model_id,
-      score: rec.score
-    }));
-
-    const { error } = await supabase
-      .from('recommendations')
-      .insert(records);
-
-    if (error) throw error;
-  },
-
-  async getUserRecommendations(userId: string): Promise<Recommendation[]> {
-    const { data, error } = await supabase
-      .from('recommendations')
-      .select(`
-        *,
-        product:products(*)
-      `)
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data || [];
-  }
 };
 
 export const modelService = {

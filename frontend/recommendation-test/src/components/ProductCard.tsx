@@ -1,9 +1,9 @@
-import { Heart, Star, Eye } from 'lucide-react';
-import type { Product, UserInteraction } from '../types';
+import { Heart, Star } from 'lucide-react';
+import type { Product } from '../types';
 
 interface ProductCardProps {
   product: Product;
-  interaction: UserInteraction | null;
+  interaction: any | null;
   onLike: (productId: string) => void;
   onDislike: (productId: string) => void;
   onRate: (productId: string, rating: number) => void;
@@ -11,9 +11,9 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, interaction, onLike, onDislike, onRate, onView }: ProductCardProps) {
-  const isLiked = interaction?.interaction_type === 'like';
-  const isDisliked = interaction?.interaction_type === 'dislike';
-  const currentRating = interaction?.rating || 0;
+  const isLiked = interaction?.type === 'like';
+  const isDisliked = interaction?.type === 'dislike';
+  const currentRating = interaction?.value || 0;
 
   const handleImageClick = () => {
     onView(product.id);
@@ -23,7 +23,7 @@ export function ProductCard({ product, interaction, onLike, onDislike, onRate, o
     <div className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow duration-200">
       <figure className="relative h-48 overflow-hidden cursor-pointer" onClick={handleImageClick}>
         <img
-          src={product.image_url}
+          src={product.image}
           alt={product.name}
           className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
         />
@@ -71,7 +71,7 @@ export function ProductCard({ product, interaction, onLike, onDislike, onRate, o
 
         {interaction && (
           <div className="text-xs text-base-content/50 mt-2">
-            Last interaction: {new Date(interaction.created_at).toLocaleString()}
+            Last interaction: {new Date(interaction.timestamp).toLocaleString()}
           </div>
         )}
       </div>

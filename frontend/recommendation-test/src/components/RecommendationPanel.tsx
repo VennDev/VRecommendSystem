@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Sparkles, RefreshCw } from 'lucide-react';
 import { recommendationService, modelService, productService } from '../services/api';
-import { getUserId } from '../utils/session';
+import { ensureUser } from '../utils/session';
 import type { Product } from '../types';
 
 interface RecommendationPanelProps {
@@ -45,7 +45,7 @@ export function RecommendationPanel({ onRecommendationsGenerated }: Recommendati
     setRecommendations([]);
 
     try {
-      const userId = getUserId();
+      const userId = await ensureUser();
       const result = await recommendationService.getRecommendations(
         userId,
         selectedModel,
@@ -70,15 +70,6 @@ export function RecommendationPanel({ onRecommendationsGenerated }: Recommendati
 
         recsWithScores.sort((a, b) => b.score - a.score);
         setRecommendations(recsWithScores);
-
-        await recommendationService.saveRecommendations(
-          userId,
-          productIds.map(id => ({
-            product_id: id,
-            model_id: selectedModel,
-            score: result.data.recommendations[id]
-          }))
-        );
 
         onRecommendationsGenerated();
       } else {
@@ -177,7 +168,7 @@ export function RecommendationPanel({ onRecommendationsGenerated }: Recommendati
             {recommendations.map((product: any, index) => (
               <div key={product.id} className="card bg-base-100 shadow-md hover:shadow-lg transition-shadow">
                 <figure className="relative h-32">
-                  <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                   <div className="absolute top-2 left-2 badge badge-primary">
                     #{index + 1}
                   </div>

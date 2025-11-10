@@ -3,12 +3,12 @@ import { ShoppingBag, User, BarChart3 } from 'lucide-react';
 import { ProductCard } from './components/ProductCard';
 import { RecommendationPanel } from './components/RecommendationPanel';
 import { productService, interactionService } from './services/api';
-import { getUserId, clearUserId } from './utils/session';
-import type { Product, UserInteraction } from './types';
+import { ensureUser, clearUser } from './utils/session';
+import type { Product } from './types';
 
 function App() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [interactions, setInteractions] = useState<Map<string, UserInteraction>>(new Map());
+  const [interactions, setInteractions] = useState<Map<string, any>>(new Map());
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [loading, setLoading] = useState(true);
@@ -16,26 +16,35 @@ function App() {
   const [showStats, setShowStats] = useState(false);
 
   useEffect(() => {
-    const id = getUserId();
-    setUserId(id);
-    loadData();
+    initUser();
   }, []);
 
-  const loadData = async () => {
+  const initUser = async () => {
+    try {
+      const id = await ensureUser();
+      setUserId(id);
+      loadData(id);
+    } catch (error) {
+      console.error('Failed to initialize user:', error);
+    }
+  };
+
+  const loadData = async (uid?: string) => {
     setLoading(true);
     try {
+      const currentUserId = uid || userId;
       const [productsData, categoriesData, interactionsData] = await Promise.all([
         productService.getAll(),
         productService.getCategories(),
-        interactionService.getUserInteractions(getUserId())
+        interactionService.getUserInteractions(currentUserId)
       ]);
 
       setProducts(productsData);
       setCategories(['All', ...categoriesData]);
 
-      const interactionMap = new Map<string, UserInteraction>();
-      interactionsData.forEach(interaction => {
-        interactionMap.set(interaction.product_id, interaction);
+      const interactionMap = new Map<string, any>();
+      interactionsData.forEach((interaction: any) => {
+        interactionMap.set(interaction.productId, interaction);
       });
       setInteractions(interactionMap);
     } catch (error) {
@@ -47,17 +56,10 @@ function App() {
 
   const handleInteraction = async (productId: string, type: string, rating?: number) => {
     try {
-      const existingInteraction = interactions.get(productId);
-
-      let updatedInteraction: UserInteraction;
-      if (existingInteraction) {
-        updatedInteraction = await interactionService.update(existingInteraction.id, type, rating);
-      } else {
-        updatedInteraction = await interactionService.create(userId, productId, type, rating);
-      }
+      const updatedInteraction = await interactionService.create(userId, productId, type, rating);
 
       const newInteractions = new Map(interactions);
-      newInteractions.set(productId, updatedInteraction);
+      newInteractions.set(productId, updatedInteraction.interaction);
       setInteractions(newInteractions);
     } catch (error) {
       console.error('Failed to save interaction:', error);
@@ -71,7 +73,7 @@ function App() {
 
   const handleResetSession = () => {
     if (confirm('Are you sure you want to reset your session? All your interactions will be cleared.')) {
-      clearUserId();
+      clearUser();
       window.location.reload();
     }
   };
@@ -82,10 +84,10 @@ function App() {
 
   const stats = {
     totalInteractions: interactions.size,
-    likes: Array.from(interactions.values()).filter(i => i.interaction_type === 'like').length,
-    dislikes: Array.from(interactions.values()).filter(i => i.interaction_type === 'dislike').length,
-    ratings: Array.from(interactions.values()).filter(i => i.interaction_type === 'rating').length,
-    views: Array.from(interactions.values()).filter(i => i.interaction_type === 'view').length,
+    likes: Array.from(interactions.values()).filter(i => i.type === 'like').length,
+    dislikes: Array.from(interactions.values()).filter(i => i.type === 'dislike').length,
+    ratings: Array.from(interactions.values()).filter(i => i.type === 'rating').length,
+    views: Array.from(interactions.values()).filter(i => i.type === 'view').length,
   };
 
   if (loading) {
