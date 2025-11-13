@@ -154,12 +154,12 @@ app.get('/dashboard', requireAuth, async (req, res) => {
   });
 });
 
-app.get('/api/products', requireAuth, async (req, res) => {
+app.get('/api/products', async (req, res) => {
   const products = await readJSONFile(PRODUCTS_FILE);
   res.json(products);
 });
 
-app.get('/api/products/:id', requireAuth, async (req, res) => {
+app.get('/api/products/:id', async (req, res) => {
   const products = await readJSONFile(PRODUCTS_FILE);
   const product = products.find(p => p.id === parseInt(req.params.id));
 
@@ -167,7 +167,9 @@ app.get('/api/products/:id', requireAuth, async (req, res) => {
     return res.status(404).json({ error: 'Product not found' });
   }
 
-  await logUserAction(req.session.user.id, product.id, 'view');
+  if (req.session.user) {
+    await logUserAction(req.session.user.id, product.id, 'view');
+  }
 
   res.json(product);
 });
