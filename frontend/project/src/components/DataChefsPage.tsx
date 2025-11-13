@@ -56,6 +56,8 @@ const DataChefsPage: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     fetchDataChefs();
@@ -353,6 +355,46 @@ const DataChefsPage: React.FC = () => {
     }
   };
 
+  const renderColumnMappingHelp = () => (
+    <div>
+      <label className="label">
+        <span className="label-text font-semibold">Column Mapping (Required for Training)</span>
+      </label>
+      <input
+        type="text"
+        value={formData.renameColumns}
+        onChange={(e) =>
+          setFormData({ ...formData, renameColumns: e.target.value })
+        }
+        className="input input-bordered w-full"
+        placeholder="userId->user_id,productId->item_id,rating->rating"
+      />
+      <div className="alert alert-info mt-2 text-xs">
+        <div className="w-full">
+          <div className="font-semibold mb-1">📋 Required Columns for Model Training:</div>
+          <ul className="list-disc list-inside space-y-1 ml-2">
+            <li><strong>user_id</strong>: User identifier (string/number)</li>
+            <li><strong>item_id</strong>: Item/Product identifier (string/number)</li>
+            <li><strong>rating</strong>: Interaction score (number, optional - defaults to 1.0)</li>
+          </ul>
+          <div className="mt-2 pt-2 border-t border-info/30">
+            <div className="font-semibold mb-1">🔄 Mapping Format:</div>
+            <code className="bg-base-200 px-2 py-1 rounded">original_name-&gt;new_name,another_col-&gt;target_col</code>
+            <div className="mt-1">Example: <code className="bg-base-200 px-2 py-1 rounded">userId-&gt;user_id,productId-&gt;item_id,clicks-&gt;rating</code></div>
+          </div>
+          <div className="mt-2 pt-2 border-t border-info/30">
+            <div className="font-semibold mb-1">💡 Tips for Different Sources:</div>
+            <ul className="list-disc list-inside space-y-1 ml-2">
+              <li><strong>CSV/Excel:</strong> Map your column names to required format</li>
+              <li><strong>JSON API:</strong> Map JSON keys (e.g., "id-&gt;user_id,product-&gt;item_id")</li>
+              <li><strong>SQL:</strong> Use aliases in query: <code className="bg-base-200 px-1 rounded">SELECT userId as user_id, productId as item_id</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -370,20 +412,46 @@ const DataChefsPage: React.FC = () => {
     switch (selectedType) {
       case "csv":
         return (
-          <div>
-            <label className="label">
-              <span className="label-text">File Path</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={formData.filePath}
-              onChange={(e) =>
-                setFormData({ ...formData, filePath: e.target.value })
-              }
-              className="input input-bordered w-full"
-              placeholder="/path/to/data.csv"
-            />
+          <div className="space-y-3">
+            <div>
+              <label className="label">
+                <span className="label-text">File Upload</span>
+              </label>
+              <input
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setSelectedFile(file);
+                  }
+                }}
+                className="file-input file-input-bordered w-full"
+              />
+              {selectedFile && (
+                <p className="text-xs text-success mt-1">
+                  Selected: {selectedFile.name}
+                </p>
+              )}
+            </div>
+            <div className="divider text-xs">OR</div>
+            <div>
+              <label className="label">
+                <span className="label-text">File Path (on server)</span>
+              </label>
+              <input
+                type="text"
+                value={formData.filePath}
+                onChange={(e) =>
+                  setFormData({ ...formData, filePath: e.target.value })
+                }
+                className="input input-bordered w-full"
+                placeholder="/path/to/data.csv"
+              />
+              <p className="text-xs text-base-content/50 mt-1">
+                Use this if file is already on the server
+              </p>
+            </div>
           </div>
         );
       case "sql":
@@ -845,23 +913,7 @@ const DataChefsPage: React.FC = () => {
 
               {renderFormFields()}
 
-              <div>
-                <label className="label">
-                  <span className="label-text">Column Mapping</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.renameColumns}
-                  onChange={(e) =>
-                    setFormData({ ...formData, renameColumns: e.target.value })
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="old_col1->new_col1,old_col2->new_col2"
-                />
-                <p className="text-xs text-base-content/50 mt-1">
-                  Optional: Map column names (comma-separated)
-                </p>
-              </div>
+              {renderColumnMappingHelp()}
 
               <div className="modal-action">
                 <button
@@ -931,23 +983,7 @@ const DataChefsPage: React.FC = () => {
 
               {renderFormFields()}
 
-              <div>
-                <label className="label">
-                  <span className="label-text">Column Mapping</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.renameColumns}
-                  onChange={(e) =>
-                    setFormData({ ...formData, renameColumns: e.target.value })
-                  }
-                  className="input input-bordered w-full"
-                  placeholder="old_col1->new_col1,old_col2->new_col2"
-                />
-                <p className="text-xs text-base-content/50 mt-1">
-                  Optional: Map column names (comma-separated)
-                </p>
-              </div>
+              {renderColumnMappingHelp()}
 
               <div className="modal-action">
                 <button

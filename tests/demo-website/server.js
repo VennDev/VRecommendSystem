@@ -236,6 +236,21 @@ app.get('/api/user/actions', requireAuth, async (req, res) => {
   res.json(userActions);
 });
 
+app.get('/api/training/interactions', async (req, res) => {
+  const actions = await readJSONFile(ACTIONS_FILE);
+
+  const interactions = actions
+    .filter(a => a.action === 'like' || a.action === 'view')
+    .map(a => ({
+      user_id: a.userId,
+      item_id: a.productId.toString(),
+      rating: a.action === 'like' ? 5.0 : 1.0,
+      timestamp: a.timestamp
+    }));
+
+  res.json(interactions);
+});
+
 async function logUserAction(userId, productId, action) {
   const actions = await readJSONFile(ACTIONS_FILE);
 

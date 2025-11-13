@@ -70,6 +70,7 @@ services:
             - ./backend/ai_server/tasks:/app/tasks
             - ./backend/ai_server/logs:/app/logs
             - ./backend/ai_server/models:/app/models
+            - ./data/uploads:/app/data/uploads
         networks:
             - vrecom_network
         restart: unless-stopped
