@@ -306,11 +306,13 @@ class ModelTrainerTask(BaseTask):
                         loguru.logger.warning(f"Invalid 'interval' value in {json_file}: {interval}")
                         continue
 
-                    # Load model configuration
-                    model_file_path = models_folder / f"{model_id}.json"
+                    # Load model configuration - try both formats
+                    model_file_path = models_folder / f"{model_id}_config.json"
                     if not model_file_path.exists():
-                        loguru.logger.warning(f"Model file not found: {model_file_path}")
-                        continue
+                        model_file_path = models_folder / f"{model_id}.json"
+                        if not model_file_path.exists():
+                            loguru.logger.warning(f"Model config file not found: {model_id}_config.json or {model_id}.json")
+                            continue
 
                     try:
                         with open(model_file_path, "r", encoding="utf-8") as model_file:

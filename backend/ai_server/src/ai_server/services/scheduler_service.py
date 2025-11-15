@@ -188,9 +188,10 @@ class SchedulerService:
         }
 
         with open(task_file, 'w') as f:
-            json.dump(task_config, f)
+            json.dump(task_config, f, indent=2)
 
         loguru.logger.info(f"Task {task_name} added for model {model_id} with interval {interval} seconds.")
+        loguru.logger.info(f"Note: Restart scheduler to activate this task.")
 
     def remove_model_task(self, task_name: str) -> None:
         """
