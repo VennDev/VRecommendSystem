@@ -18,6 +18,6 @@ data_5:
   topic: data_topic
   type: messaging
 data_a:
-  query: SELECT * FROM interactions
-  rename_columns: userId->user_id,productId->item_id,clicks->rating
   type: sql
+  query: SELECT user_id, item_id, rating FROM interactions
+  rename_columns: ""
