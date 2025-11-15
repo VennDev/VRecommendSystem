@@ -87,7 +87,10 @@ All data is stored in JSON files under the `data/` directory:
 
 - `GET /api/products` - Get all products
 - `GET /api/products/:id` - Get product details (tracks view if authenticated)
-- `GET /api/training/interactions` - Get all interaction data in model-ready format
+- `GET /api/training/interactions` - **Get all interaction data in model-ready format** ⭐
+  - Returns JSON array with `user_id`, `item_id`, `rating`, `timestamp`
+  - Perfect for AI model training with VRecommendation system
+  - No authentication required - can be used as REST API data source
 
 ### Protected Routes (Require Authentication)
 

@@ -60,6 +60,12 @@ const ModelsPage: React.FC = () => {
   useEffect(() => {
     fetchModels();
     fetchAlgorithms();
+
+    const interval = setInterval(() => {
+      fetchModels();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchAlgorithms = async () => {
@@ -257,14 +263,17 @@ const ModelsPage: React.FC = () => {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    switch (status?.toLowerCase()) {
       case "completed":
         return "badge-success";
       case "training":
+      case "initializing":
         return "badge-warning";
       case "failed":
+      case "stopped":
         return "badge-error";
       case "modified":
+      case "validating":
         return "badge-info";
       default:
         return "badge-ghost";
@@ -341,7 +350,7 @@ const ModelsPage: React.FC = () => {
             AI Models
           </h1>
           <p className="text-base-content/70">
-            Manage and monitor your AI models
+            Manage and monitor your AI models <span className="text-xs text-base-content/50">(Auto-refreshes every 5s)</span>
           </p>
         </div>
         <button
@@ -365,8 +374,13 @@ const ModelsPage: React.FC = () => {
                 <div className="bg-primary/10 p-2 rounded-lg">
                   <Cpu className="h-6 w-6 text-primary" />
                 </div>
-                <div className={`badge ${getStatusColor(model.status)}`}>
-                  {model.status}
+                <div className="flex items-center gap-2">
+                  {model.status === 'training' && (
+                    <span className="loading loading-spinner loading-xs"></span>
+                  )}
+                  <div className={`badge ${getStatusColor(model.status)}`}>
+                    {model.status}
+                  </div>
                 </div>
               </div>
 
