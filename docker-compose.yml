@@ -1,22 +1,4 @@
 services:
-    # MySQL Service
-    mysql:
-        image: mysql:8.0
-        container_name: vrecom_mysql
-        ports:
-            - "${MYSQL_PORT:-3306}:3306"
-        environment:
-            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword}
-            - MYSQL_DATABASE=${MYSQL_DATABASE:-shop}
-            - MYSQL_USER=${MYSQL_USER:-admin}
-            - MYSQL_PASSWORD=${MYSQL_PASSWORD:-pokiwar0981}
-        volumes:
-            - mysql_data:/var/lib/mysql
-            - ./database/init:/docker-entrypoint-initdb.d
-        networks:
-            - vrecom_network
-        restart: unless-stopped
-
     # Redis Service
     redis:
         image: redis:7-alpine
@@ -58,7 +40,6 @@ services:
             - vrecom_network
         depends_on:
             - redis
-            - mysql
         restart: unless-stopped
 
     # AI Server (Python)
@@ -92,8 +73,6 @@ services:
             - ./data/uploads:/app/data/uploads
         networks:
             - vrecom_network
-        depends_on:
-            - mysql
         restart: unless-stopped
 
     # Prometheus (Monitoring for AI Server)
@@ -138,6 +117,5 @@ networks:
         driver: bridge
 
 volumes:
-    mysql_data:
     redis_data:
     prometheus_data:
