@@ -324,18 +324,33 @@ class ModelTrainerTask(BaseTask):
                     model_name = config.get("task_name", os.path.basename(json_file))
                     loguru.logger.info(f"Scheduling task for {model_name} with interval: {interval} seconds")
 
-                    # Schedule the training task to run every interval second
-                    scheduler.minutely(
-                        timing=datetime.time(second=interval),
-                        handle=_train_model_task_async,
-                        args=(
-                            model_data,
-                            json_file,
-                            interactions_data_chef_id,
-                            item_features_data_chef_id,
-                            user_features_data_chef_id,
+                    # Schedule the training task based on interval
+                    # For intervals < 60, use minutely with second parameter
+                    # For intervals >= 60, use cyclic with interval parameter
+                    if interval < 60:
+                        scheduler.minutely(
+                            timing=datetime.time(second=interval),
+                            handle=_train_model_task_async,
+                            args=(
+                                model_data,
+                                json_file,
+                                interactions_data_chef_id,
+                                item_features_data_chef_id,
+                                user_features_data_chef_id,
+                            )
                         )
-                    )
+                    else:
+                        scheduler.cyclic(
+                            datetime.timedelta(seconds=interval),
+                            handle=_train_model_task_async,
+                            args=(
+                                model_data,
+                                json_file,
+                                interactions_data_chef_id,
+                                item_features_data_chef_id,
+                                user_features_data_chef_id,
+                            )
+                        )
                     scheduled_count += 1
 
                 except json.JSONDecodeError as e:
