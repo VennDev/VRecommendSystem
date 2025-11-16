@@ -294,23 +294,72 @@
             const container = document.getElementById('recommendations-container');
 
             try {
-                const response = await fetch('/api/recommendations?n=5');
+                const response = await fetch('/api/recommendations?model_id=model_test&n=5');
                 const data = await response.json();
 
-                if (response.ok && data.recommendations && data.recommendations.length > 0) {
+                console.log('Recommendations response:', data);
+
+                // Check if we have recommendations
+                let recommendations = [];
+
+                if (data.recommendations && data.recommendations.length > 0) {
+                    recommendations = data.recommendations;
+                } else if (data.predictions) {
+                    // Fallback: extract from predictions object
+                    const userId = '<%= user.id %>';
+                    if (data.predictions[userId]) {
+                        recommendations = data.predictions[userId];
+                    }
+                }
+
+                if (recommendations.length > 0) {
+                    // Fetch product details
+                    const productsResponse = await fetch('/api/products');
+                    const allProducts = await productsResponse.json();
+
+                    // Map products by ID for quick lookup
+                    const productsMap = {};
+                    allProducts.forEach(p => {
+                        productsMap[p.id.toString()] = p;
+                    });
+
                     container.innerHTML = `
                         <div class="products-grid">
-                            ${data.recommendations.map(item => `
-                                <div class="product-card" onclick="viewProduct(${item.item_id})">
-                                    <div class="product-name">Product #${item.item_id}</div>
-                                    <div class="product-description">
-                                        Confidence Score: ${(item.score * 100).toFixed(1)}%
+                            ${recommendations.map((item, index) => {
+                                const product = productsMap[item.item_id];
+                                if (!product) {
+                                    return `
+                                        <div class="product-card">
+                                            <div class="product-name">Product #${item.item_id}</div>
+                                            <div class="product-description">
+                                                AI Score: ${item.score.toFixed(3)}
+                                            </div>
+                                            <div class="product-footer">
+                                                <div class="product-price">Rank #${item.rank || index + 1}</div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }
+                                return `
+                                    <div class="product-card" onclick="viewProduct(${product.id})">
+                                        <span class="category-badge">${product.category}</span>
+                                        <div class="product-name">${product.name}</div>
+                                        <div class="product-description">${product.description}</div>
+                                        <div style="margin: 8px 0; padding: 6px; background: #f0f0f0; border-radius: 4px; font-size: 12px;">
+                                            <strong>AI Score:</strong> ${item.score.toFixed(3)} | <strong>Rank:</strong> #${item.rank || index + 1}
+                                        </div>
+                                        <div class="product-footer">
+                                            <div class="product-price">$${product.price}</div>
+                                            <button class="like-btn" onclick="event.stopPropagation(); toggleLike(${product.id}, this)">
+                                                🤍
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="product-footer">
-                                        <div class="product-price">Rank #${item.rank}</div>
-                                    </div>
-                                </div>
-                            `).join('')}
+                                `;
+                            }).join('')}
+                        </div>
+                        <div style="margin-top: 15px; padding: 12px; background: #e8f5e9; border-radius: 6px; font-size: 13px; color: #2e7d32;">
+                            ✨ Showing ${recommendations.length} AI-powered recommendations based on your activity
                         </div>
                     `;
                 } else {
@@ -320,6 +369,9 @@
                             <p style="font-size: 14px; margin-top: 10px;">
                                 ${data.message || 'Try liking some products to get personalized recommendations!'}
                             </p>
+                            <p style="font-size: 12px; margin-top: 8px; color: #999;">
+                                Model: ${data.model_id || 'model_test'} | Status: ${data.status || 'unknown'}
+                            </p>
                         </div>
                     `;
                 }
@@ -327,8 +379,10 @@
                 console.error('Error loading recommendations:', error);
                 container.innerHTML = `
                     <div class="error-message">
-                        Failed to load recommendations from AI server.
-                        Make sure the API server and AI server are running.
+                        <strong>Failed to load recommendations</strong>
+                        <p style="font-size: 13px; margin-top: 8px;">
+                            ${error.message || 'Make sure the API server and AI server are running.'}
+                        </p>
                     </div>
                 `;
             }

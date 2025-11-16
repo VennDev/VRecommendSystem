@@ -1,0 +1,35 @@
+{
+  "model_id": "demo_model",
+  "model_type": "SVDRecommendationModel",
+  "saved_at": "2025-11-15T16:49:58.914707",
+  "file_path": "models/demo_model.pkl",
+  "hyperparameters": {
+    "n_components": 3,
+    "algorithm": "randomized",
+    "n_iter": 10,
+    "random_state": 42,
+    "tol": 0.0
+  },
+  "training_stats": {
+    "n_users": 2,
+    "n_items": 4,
+    "n_interactions": 7,
+    "sparsity": 0.125,
+    "density": 0.875,
+    "avg_interactions_per_user": 3.5,
+    "avg_interactions_per_item": 1.75,
+    "mean_rating": 2.7142857142857144,
+    "std_rating": 2.138089935299395,
+    "min_rating": 1.0,
+    "max_rating": 5.0
+  },
+  "metrics": {
+    "training_time": 0.005836,
+    "explained_variance_ratio": 1.0000000000000004,
+    "n_users": 2,
+    "n_items": 4,
+    "n_interactions": 7,
+    "sparsity": 0.125,
+    "n_components": 3
+  }
+}

@@ -21,3 +21,8 @@ data_a:
   query: SELECT * FROM interactions
   rename_columns: userId->user_id,productId->item_id,clicks->rating
   type: sql
+data_test:
+  paginated: false
+  rename_columns: ''
+  type: api
+  url: http://192.168.2.12:3500/api/training/interactions
