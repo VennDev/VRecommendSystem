@@ -232,7 +232,7 @@ The AI server supports multiple data source types through the Data Chef system:
 2. **SQL Databases**: MySQL, PostgreSQL, etc.
 3. **NoSQL Databases**: MongoDB, etc.
 4. **REST APIs**: External API endpoints
-5. **Message Queues**: Kafka, RabbitMQ, etc.
+5. **Message Queues**: Kafka.
 
 ### Creating Data Chefs
 
