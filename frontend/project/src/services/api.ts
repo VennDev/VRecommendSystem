@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, buildAuthUrl, getApiConfig } from "../config/api";
+import { API_CONFIG, API_ENDPOINTS, buildAuthUrl, getApiConfig } from "../config/api";
 
 const config = getApiConfig();
 
