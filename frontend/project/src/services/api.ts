@@ -492,6 +492,39 @@ class ApiService {
     }
 
     // Data Chef Management
+    async uploadCsvFile(
+        dataChefId: string,
+        file: File,
+        renameColumns: string,
+    ) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('data_chef_id', dataChefId);
+        formData.append('rename_columns', renameColumns);
+
+        const baseUrl = API_CONFIG.AI_BASE_URL;
+        const url = `${baseUrl}/upload_csv`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return { data, error: null };
+        } catch (error: any) {
+            console.error('Upload CSV failed:', error);
+            return { data: null, error: error.message || 'Upload failed' };
+        }
+    }
+
     async createDataChefFromCsv(
         dataChefId: string,
         filePath: string,

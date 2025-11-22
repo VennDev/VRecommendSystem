@@ -237,11 +237,23 @@ const DataChefsPage: React.FC = () => {
 
       switch (selectedType) {
         case "csv":
-          response = await apiService.createDataChefFromCsv(
-            formData.dataChefId,
-            formData.filePath,
-            formData.renameColumns
-          );
+          if (selectedFile) {
+            response = await apiService.uploadCsvFile(
+              formData.dataChefId,
+              selectedFile,
+              formData.renameColumns
+            );
+          } else if (formData.filePath) {
+            response = await apiService.createDataChefFromCsv(
+              formData.dataChefId,
+              formData.filePath,
+              formData.renameColumns
+            );
+          } else {
+            alert("Please select a file to upload or provide a file path");
+            setIsCreating(false);
+            return;
+          }
           break;
         case "sql":
           response = await apiService.createDataChefFromSql(
@@ -319,6 +331,8 @@ const DataChefsPage: React.FC = () => {
       renameColumns: "",
     });
     setSelectedType("csv");
+    setSelectedFile(null);
+    setUploadProgress(0);
   };
 
   const getTypeIcon = (type: string) => {

@@ -1,8 +1,11 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, UploadFile, File, Form
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
 from datetime import datetime
 import json
+import os
+import shutil
+from pathlib import Path
 
 from ai_server.metrics import scheduler_metrics, model_metrics
 from ai_server.services.model_service import ModelService, SAMPLE_INTERACTION_DATA
@@ -456,10 +459,52 @@ def restart_scheduler(request: RestartSchedulerRequest) -> dict:
 
 
 # Data Chef Creation Endpoints
+@router.post("/upload_csv")
+async def upload_csv(
+    file: UploadFile = File(...),
+    data_chef_id: str = Form(...),
+    rename_columns: str = Form("")
+) -> dict:
+    """
+    Upload a CSV file and create a data chef from it.
+
+    :param file: The CSV file to upload
+    :param data_chef_id: ID for the data chef
+    :param rename_columns: Column rename mapping
+    :return: A confirmation message with file path
+    """
+    try:
+        upload_dir = Path("/app/uploaded_data")
+        upload_dir.mkdir(parents=True, exist_ok=True)
+
+        file_extension = Path(file.filename).suffix if file.filename else ".csv"
+        safe_filename = f"{data_chef_id}{file_extension}"
+        file_path = upload_dir / safe_filename
+
+        with file_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        data_chef_service.DataChefService().create_data_chef_csv(
+            name=data_chef_id,
+            path=str(file_path),
+            rename_columns=rename_columns
+        )
+
+        return {
+            "message": f"File uploaded and data chef {data_chef_id} created successfully",
+            "file_path": str(file_path),
+            "original_filename": file.filename
+        }
+    except Exception as e:
+        if file_path.exists():
+            file_path.unlink()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/create_data_chef_from_csv")
 def create_data_chef_from_csv(request: CreateDataChefFromCsvRequest) -> dict:
     """
-    Create a new data chef from a CSV file.
+    Create a new data chef from a CSV file path (file must already exist on server).
 
     :param request: Request containing CSV data chef parameters
     :return: A confirmation message
