@@ -505,15 +505,24 @@ class ApiService {
         const baseUrl = API_CONFIG.AI_BASE_URL;
         const url = `${baseUrl}/upload_csv`;
 
+        const authToken = this.getAuthToken();
+        const headers: HeadersInit = {};
+
+        if (authToken) {
+            headers['Authorization'] = `Bearer ${authToken}`;
+        }
+
         try {
             const response = await fetch(url, {
                 method: 'POST',
+                headers,
                 body: formData,
                 credentials: 'include',
             });
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
+                console.error('Upload failed with status:', response.status, errorData);
                 throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
             }
 
@@ -523,6 +532,17 @@ class ApiService {
             console.error('Upload CSV failed:', error);
             return { data: null, error: error.message || 'Upload failed' };
         }
+    }
+
+    private getAuthToken(): string | null {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'auth_token') {
+                return value;
+            }
+        }
+        return null;
     }
 
     async createDataChefFromCsv(

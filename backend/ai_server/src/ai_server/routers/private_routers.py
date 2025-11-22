@@ -473,6 +473,7 @@ async def upload_csv(
     :param rename_columns: Column rename mapping
     :return: A confirmation message with file path
     """
+    file_path = None
     try:
         upload_dir = Path("/app/uploaded_data")
         upload_dir.mkdir(parents=True, exist_ok=True)
@@ -496,7 +497,7 @@ async def upload_csv(
             "original_filename": file.filename
         }
     except Exception as e:
-        if file_path.exists():
+        if file_path and file_path.exists():
             file_path.unlink()
         raise HTTPException(status_code=500, detail=str(e))
 
