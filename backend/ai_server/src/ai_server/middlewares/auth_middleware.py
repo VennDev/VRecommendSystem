@@ -9,6 +9,13 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 jwt_decode = jwt.decode
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Methods": "*",
+    "Access-Control-Allow-Headers": "*",
+}
+
 
 async def verify_authentication(request: Request, call_next: Callable):
     """
@@ -70,6 +77,7 @@ async def verify_authentication(request: Request, call_next: Callable):
                 "detail": "Authentication required. Please login to access this resource.",
                 "authenticated": False,
             },
+            headers=CORS_HEADERS,
         )
 
     try:
@@ -82,6 +90,7 @@ async def verify_authentication(request: Request, call_next: Callable):
                     "detail": "Server configuration error",
                     "authenticated": False,
                 },
+                headers=CORS_HEADERS,
             )
 
         payload = jwt_decode(auth_token, secret_key, algorithms=["HS256"])
@@ -97,6 +106,7 @@ async def verify_authentication(request: Request, call_next: Callable):
                     "detail": "Invalid authentication token",
                     "authenticated": False,
                 },
+                headers=CORS_HEADERS,
             )
 
         loguru.logger.info(f"Authenticated request to {path} from user {email}")
@@ -112,12 +122,14 @@ async def verify_authentication(request: Request, call_next: Callable):
                 "detail": "Authentication token has expired. Please login again.",
                 "authenticated": False,
             },
+            headers=CORS_HEADERS,
         )
     except InvalidTokenError as e:
         loguru.logger.warning(f"Invalid token for {path}: {str(e)}")
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={"detail": "Invalid authentication token", "authenticated": False},
+            headers=CORS_HEADERS,
         )
 
     response = await call_next(request)
