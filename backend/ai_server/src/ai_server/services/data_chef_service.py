@@ -40,6 +40,9 @@ def _cook_sql(query: str) -> Generator[Dict[str, Any], None, None]:
     :return: Generator yielding rows from the SQL query result as dictionaries.
     :raises ValueError: If the query execution fails.
     """
+    if not query or query.strip() == "":
+        raise ValueError("SQL query is empty or not provided")
+
     service = DatabaseService().get_sql()
     try:
         with service.connect() as conn:
@@ -74,6 +77,11 @@ def _cook_nosql(
     :return: Generator yielding documents from the NoSQL collection as dictionaries.
     :raises ValueError: If the collection is not found or if an error occurs.
     """
+    if not database or database.strip() == "":
+        raise ValueError("NoSQL database name is empty or not provided")
+    if not collection or collection.strip() == "":
+        raise ValueError("NoSQL collection name is empty or not provided")
+
     service = DatabaseService().get_nosql()
     db = service[database]
     coln = db[collection]
@@ -113,6 +121,9 @@ def _cook_csv(path: str) -> Generator[Dict[str, Any], None, None]:
     :return: Generator yielding rows from the CSV file as dictionaries.
     :raises ValueError: If file didn't find or invalid CSV.
     """
+    if not path or path.strip() == "":
+        raise ValueError("CSV file path is empty or not provided")
+
     try:
         for chunk in pd.read_csv(path, chunksize=get_batch_size()):
             # Convert to records (list of dicts) then yield each dict
@@ -145,6 +156,9 @@ def _cook_api(url: str) -> Generator[Dict[str, Any], None, None]:
     :return: Generator yielding JSON objects from the API response as dictionaries.
     :raises ValueError: If the API request fails or if the response is not valid JSON.
     """
+    if not url or url.strip() == "":
+        raise ValueError("API URL is empty or not provided")
+
     try:
         response = requests.get(url, stream=True, timeout=10)
         response.raise_for_status()
@@ -192,6 +206,9 @@ def _cook_api_paginated(
     :return: Generator yielding JSON objects from the API response as dictionaries.
     :raises ValueError: If the API request fails.
     """
+    if not base_url or base_url.strip() == "":
+        raise ValueError("Paginated API base URL is empty or not provided")
+
     page = 1
 
     while True:
@@ -266,6 +283,11 @@ def _cook_messaging_queue(
     :return: Generator yielding messages from the queue as dictionaries.
     :raises ValueError: If connection fails or message processing fails.
     """
+    if not brokers or brokers.strip() == "":
+        raise ValueError("Messaging queue brokers address is empty or not provided")
+    if not topic or topic.strip() == "":
+        raise ValueError("Messaging queue topic is empty or not provided")
+
     conf = {
         'bootstrap.servers': brokers,
         'group.id': group_id,
