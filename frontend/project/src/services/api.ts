@@ -535,6 +535,11 @@ class ApiService {
     }
 
     private getAuthToken(): string | null {
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+            return token;
+        }
+
         const cookies = document.cookie.split(';');
         for (const cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
