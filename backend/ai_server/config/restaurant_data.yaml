@@ -22,7 +22,6 @@ data_a:
   rename_columns: userId->user_id,productId->item_id,clicks->rating
   type: sql
 data_test:
-  paginated: false
+  path: /tmp/cc-agent/60130575/project/tests/test-data/interactions.csv
   rename_columns: ''
-  type: api
-  url: http://192.168.2.12:3500/api/training/interactions
+  type: csv
