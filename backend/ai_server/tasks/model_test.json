@@ -1,8 +1,0 @@
-{
-  "task_name": "model_test",
-  "model_id": "model_test",
-  "interactions_data_chef_id": "data_test",
-  "user_features_data_chef_id": null,
-  "item_features_data_chef_id": null,
-  "interval": 60
-}

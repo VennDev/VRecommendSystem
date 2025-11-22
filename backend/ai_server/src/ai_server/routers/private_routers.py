@@ -475,7 +475,7 @@ async def upload_csv(
     """
     file_path = None
     try:
-        upload_dir = Path("/app/uploaded_data")
+        upload_dir = Path("/app/data/uploads")
         upload_dir.mkdir(parents=True, exist_ok=True)
 
         file_extension = Path(file.filename).suffix if file.filename else ".csv"
