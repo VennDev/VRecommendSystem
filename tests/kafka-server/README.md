@@ -170,9 +170,95 @@ docker-compose down -v
 docker-compose up -d
 ```
 
+## Sending Test Data to Kafka
+
+A Python script is provided to populate Kafka with test interaction data.
+
+### Setup
+
+```bash
+# Install required packages
+pip install -r requirements.txt
+```
+
+### Usage
+
+```bash
+# Run the producer script
+python kafka_producer.py
+```
+
+The script offers three modes:
+1. **Batch mode**: Send all data once
+2. **Batch with delay**: Send all data with configurable delay between messages
+3. **Continuous stream**: Loop forever sending data continuously
+
+### Example Output
+
+```
+VRecommendation Kafka Producer
+Loaded 60 interactions from CSV
+Connecting to Kafka broker: localhost:9092
+Sending 60 messages to Kafka topic 'interactions'...
+
+SUCCESS: Message delivered to interactions [0] at offset 0
+SUCCESS: Message delivered to interactions [0] at offset 1
+Progress: 10/60 messages sent
+...
+
+SUMMARY:
+  Total messages: 60
+  Successful: 60
+  Failed: 0
+```
+
+### Consuming Messages
+
+After sending data, verify messages in Kafka:
+
+```bash
+# Using Kafka console consumer
+docker exec -it test_kafka kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic interactions \
+  --from-beginning
+
+# Or use Kafka UI at http://localhost:8080
+```
+
+### Integration with VRecommendation
+
+Create a Data Chef to consume from Kafka:
+
+```bash
+curl -X POST http://localhost:9999/api/v1/create_data_chef_from_messaging_queue \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "kafka_test_data",
+    "brokers": "localhost:9092",
+    "topic": "interactions",
+    "group_id": "vrecom_consumer",
+    "rename_columns": ""
+  }'
+```
+
+Then use this data chef for model training:
+
+```bash
+curl -X POST http://localhost:9999/api/v1/add_model_task \
+  -H "Content-Type: application/json" \
+  -d '{
+    "task_name": "kafka_training",
+    "model_id": "kafka_model",
+    "interactions_data_chef_id": "kafka_test_data",
+    "interval": 3600
+  }'
+```
+
 ## Notes
 
 - This setup uses a single broker with replication factor 1, suitable for testing only
 - Data persists in Docker volumes. Use `docker-compose down -v` to remove all data
 - Kafka UI provides a web interface for easier topic and message management
 - This is completely isolated from the main VRecom project
+- The producer script reads data from `../test-data/interactions.csv`

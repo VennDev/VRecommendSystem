@@ -1,8 +1,9 @@
-import { Calendar, Clock, CreditCard as Edit, Plus, Trash2 } from "lucide-react";
+import { Calendar, Clock, CreditCard as Edit, Plus, Trash2, Copy, ExternalLink } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { activityLogger } from "../services/activityLogger";
+import { API_CONFIG } from "../config/api";
 
 interface Task {
   model_id: string;
@@ -303,6 +304,19 @@ const TasksPage: React.FC = () => {
     }
   };
 
+  const getRecommendUrl = (modelId: string) => {
+    const apiUrl = API_CONFIG.AUTH_SERVER_URL;
+    return `${apiUrl}/api/v1/recommend?user_id={USER_ID}&model_id=${modelId}&n=10`;
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Recommendation URL copied to clipboard!");
+    }).catch(() => {
+      alert("Failed to copy URL");
+    });
+  };
+
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center">
@@ -363,6 +377,26 @@ const TasksPage: React.FC = () => {
                 <p className="text-sm text-base-content/70">
                   Model: <span className="font-medium">{task.model_id}</span>
                 </p>
+
+                <div className="bg-base-200 p-2 rounded-lg">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-base-content/60 font-semibold flex items-center gap-1">
+                      <ExternalLink className="h-3 w-3" />
+                      Recommendation API
+                    </span>
+                    <button
+                      onClick={() => copyToClipboard(getRecommendUrl(task.model_id))}
+                      className="btn btn-ghost btn-xs"
+                      title="Copy URL"
+                    >
+                      <Copy className="h-3 w-3" />
+                    </button>
+                  </div>
+                  <code className="text-xs text-base-content/80 break-all block">
+                    {getRecommendUrl(task.model_id)}
+                  </code>
+                </div>
+
                 <p className="text-sm text-base-content/70">
                   Interactions Data:{" "}
                   <span className="font-medium">
