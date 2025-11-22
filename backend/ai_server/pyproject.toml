@@ -8,6 +8,7 @@ packages = [{ include = "ai_server", from = "src" }]
 [tool.poetry.dependencies]
 python = ">3.9.1,<4.0"
 fastapi = "0.116.1"
+python-multipart = "0.0.20"
 graphviz = "0.21"
 prometheus-client = "0.22.1"
 prometheus-fastapi-instrumentator = "7.1.0"
