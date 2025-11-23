@@ -1,28 +1,27 @@
 import datetime
-import os
 import glob
 import json
+import os
 import threading
+from pathlib import Path
 from typing import Optional
 
 import loguru
-from pathlib import Path
-
 from scheduler import Scheduler
 
-from ai_server.metrics import scheduler_metrics, model_metrics
+from ai_server.metrics import model_metrics, scheduler_metrics
 from ai_server.services.data_chef_service import DataChefService
 from ai_server.services.model_service import ModelService
-from ai_server.utils.result_processing import dict_to_dataframe
 from ai_server.tasks.base_task import BaseTask
+from ai_server.utils.result_processing import dict_to_dataframe
 
 
 def _train_model_task_async(
-        config: dict,
-        json_file: str,
-        interactions_data_chef_id: str,
-        item_features_data_chef_id: Optional[str] = None,
-        user_features_data_chef_id: Optional[str] = None,
+    config: dict,
+    json_file: str,
+    interactions_data_chef_id: str,
+    item_features_data_chef_id: Optional[str] = None,
+    user_features_data_chef_id: Optional[str] = None,
 ) -> None:
     """
     Non-blocking training task that spawns training in separate thread
@@ -43,8 +42,10 @@ def _train_model_task_async(
     try:
         current_status = service.get_training_status(model_id)
 
-        if current_status and current_status.get('status') == 'training':
-            loguru.logger.warning(f"Model {model_id} is already training. Skipping this iteration.")
+        if current_status and current_status.get("status") == "training":
+            loguru.logger.warning(
+                f"Model {model_id} is already training. Skipping this iteration."
+            )
             return
     except Exception as e:
         loguru.logger.error(f"Error checking training status for {model_id}: {e}")
@@ -52,20 +53,30 @@ def _train_model_task_async(
     # Create a separate thread for the actual training
     training_thread = threading.Thread(
         target=_execute_training_in_background,
-        args=(config, json_file, interactions_data_chef_id, item_features_data_chef_id, user_features_data_chef_id),
+        args=(
+            config,
+            json_file,
+            interactions_data_chef_id,
+            item_features_data_chef_id,
+            user_features_data_chef_id,
+        ),
         daemon=False,  # Changed to False for better debugging
-        name=f"Training-{model_id}"
+        name=f"Training-{model_id}",
     )
 
     training_thread.start()
-    loguru.logger.info(f"Training started in background thread for {model_name} (Thread: {training_thread.name})")
+    loguru.logger.info(
+        f"Training started in background thread for {model_name} (Thread: {training_thread.name})"
+    )
 
     # Optional: Monitor thread for debugging
     def monitor_thread():
         try:
             training_thread.join(timeout=300)  # Wait max 5 minutes
             if training_thread.is_alive():
-                loguru.logger.warning(f"Training thread for {model_name} is still alive after 5 minutes")
+                loguru.logger.warning(
+                    f"Training thread for {model_name} is still alive after 5 minutes"
+                )
             else:
                 loguru.logger.info(f"Training thread for {model_name} completed")
         except Exception as e:
@@ -73,16 +84,18 @@ def _train_model_task_async(
         finally:
             loguru.logger.info(f"Monitor thread for {model_name} is finishing")
 
-    monitor_thread_instance = threading.Thread(target=monitor_thread, daemon=True, name=f"Monitor-{model_id}")
+    monitor_thread_instance = threading.Thread(
+        target=monitor_thread, daemon=True, name=f"Monitor-{model_id}"
+    )
     monitor_thread_instance.start()
 
 
 def _execute_training_in_background(
-        config: dict,
-        json_file: str,
-        interactions_data_chef_id: str,
-        item_features_data_chef_id: Optional[str] = None,
-        user_features_data_chef_id: Optional[str] = None,
+    config: dict,
+    json_file: str,
+    interactions_data_chef_id: str,
+    item_features_data_chef_id: Optional[str] = None,
+    user_features_data_chef_id: Optional[str] = None,
 ) -> None:
     """
     The actual training logic that runs in background thread
@@ -107,7 +120,9 @@ def _execute_training_in_background(
             )
             loguru.logger.info(f"Training initialization completed for {model_name}")
         except Exception as init_error:
-            loguru.logger.error(f"Error during training initialization for {model_name}: {str(init_error)}")
+            loguru.logger.error(
+                f"Error during training initialization for {model_name}: {str(init_error)}"
+            )
             loguru.logger.exception("Full initialization error traceback:")
             raise
 
@@ -118,29 +133,45 @@ def _execute_training_in_background(
             interactions_gen = data_chef.cook(interactions_data_chef_id)
             loguru.logger.info(f"Interactions data generator created for {model_name}")
         except Exception as data_error:
-            loguru.logger.error(f"Error creating interactions data generator for {model_name}: {str(data_error)}")
+            loguru.logger.error(
+                f"Error creating interactions data generator for {model_name}: {str(data_error)}"
+            )
             raise
 
         item_features_gen = None
         if item_features_data_chef_id is not None:
             try:
                 item_features_gen = data_chef.cook(item_features_data_chef_id)
-                loguru.logger.info(f"Item features data generator created for {model_name}")
+                loguru.logger.info(
+                    f"Item features data generator created for {model_name}"
+                )
             except Exception as item_error:
-                loguru.logger.warning(f"Error creating item features generator for {model_name}: {str(item_error)}")
+                loguru.logger.warning(
+                    f"Error creating item features generator for {model_name}: {str(item_error)}"
+                )
 
         user_features_gen = None
         if user_features_data_chef_id is not None:
             try:
                 user_features_gen = data_chef.cook(user_features_data_chef_id)
-                loguru.logger.info(f"User features data generator created for {model_name}")
+                loguru.logger.info(
+                    f"User features data generator created for {model_name}"
+                )
             except Exception as user_error:
-                loguru.logger.warning(f"Error creating user features generator for {model_name}: {str(user_error)}")
+                loguru.logger.warning(
+                    f"Error creating user features generator for {model_name}: {str(user_error)}"
+                )
 
         # Process batches with error handling
         batch_count = 0
+        loguru.logger.info(
+            f"Starting to consume interactions generator for {model_name}"
+        )
         try:
             for interactions_data in interactions_gen:
+                loguru.logger.debug(
+                    f"Received interactions_data batch #{batch_count + 1} for {model_name}: {type(interactions_data)}"
+                )
                 try:
                     interactions_df = dict_to_dataframe(interactions_data)
 
@@ -148,48 +179,75 @@ def _execute_training_in_background(
                     if item_features_gen:
                         try:
                             item_data = next(item_features_gen)
-                            item_features_df = dict_to_dataframe(item_data) if item_data else None
+                            item_features_df = (
+                                dict_to_dataframe(item_data) if item_data else None
+                            )
                         except StopIteration:
-                            loguru.logger.warning("Item features generator exhausted, using None")
+                            loguru.logger.warning(
+                                "Item features generator exhausted, using None"
+                            )
                         except Exception as item_batch_error:
-                            loguru.logger.warning(f"Error processing item features batch: {item_batch_error}")
+                            loguru.logger.warning(
+                                f"Error processing item features batch: {item_batch_error}"
+                            )
 
                     user_features_df = None
                     if user_features_gen:
                         try:
                             user_data = next(user_features_gen)
-                            user_features_df = dict_to_dataframe(user_data) if user_data else None
+                            user_features_df = (
+                                dict_to_dataframe(user_data) if user_data else None
+                            )
                         except StopIteration:
-                            loguru.logger.warning("User features generator exhausted, using None")
+                            loguru.logger.warning(
+                                "User features generator exhausted, using None"
+                            )
                         except Exception as user_batch_error:
-                            loguru.logger.warning(f"Error processing user features batch: {user_batch_error}")
+                            loguru.logger.warning(
+                                f"Error processing user features batch: {user_batch_error}"
+                            )
 
                     # Train batch with error handling
-                    service.train_batch(model_id, interactions_df, item_features=item_features_df,
-                                        user_features=user_features_df)
+                    service.train_batch(
+                        model_id,
+                        interactions_df,
+                        item_features=item_features_df,
+                        user_features=user_features_df,
+                    )
                     batch_count += 1
 
                     # Non-blocking progress logging
                     try:
                         # progress = service.get_training_status(model_id)
-                        loguru.logger.info(f"Training progress for {model_name}: batch {batch_count}")
+                        loguru.logger.info(
+                            f"Training progress for {model_name}: batch {batch_count}"
+                        )
                     except Exception as progress_error:
-                        loguru.logger.warning(f"Could not get training progress: {progress_error}")
+                        loguru.logger.warning(
+                            f"Could not get training progress: {progress_error}"
+                        )
 
                 except Exception as batch_error:
                     loguru.logger.error(
-                        f"Error processing batch {batch_count + 1} for {model_name}: {str(batch_error)}")
+                        f"Error processing batch {batch_count + 1} for {model_name}: {str(batch_error)}"
+                    )
                     # Continue with the next batch instead of stopping
                     continue
 
-            loguru.logger.info(f"Completed processing {batch_count} batches for {model_name}")
+            loguru.logger.info(
+                f"Generator exhausted. Completed processing {batch_count} batches for {model_name}"
+            )
 
         except Exception as batch_loop_error:
-            loguru.logger.error(f"Error in batch processing loop for {model_name}: {str(batch_loop_error)}")
+            loguru.logger.error(
+                f"Error in batch processing loop for {model_name}: {str(batch_loop_error)}"
+            )
             raise
 
         # The critical finalize_training call with enhanced error handling
-        loguru.logger.info(f"Starting finalization for {model_name} (this may take time...)")
+        loguru.logger.info(
+            f"Starting finalization for {model_name} (this may take time...)"
+        )
         try:
             # Set a reasonable timeout for finalization if your service supports it
             service.finalize_training(model_id)
@@ -200,19 +258,27 @@ def _execute_training_in_background(
                 service.save_model(model_id)
                 loguru.logger.info(f"Model saved successfully for {model_name}")
             except Exception as save_error:
-                loguru.logger.error(f"Error saving model for {model_name}: {str(save_error)}")
+                loguru.logger.error(
+                    f"Error saving model for {model_name}: {str(save_error)}"
+                )
                 # Don't raise here, training was successful even if save failed
 
         except Exception as finalize_error:
-            loguru.logger.critical(f"Error during finalization for {model_name}: {str(finalize_error)}")
+            loguru.logger.critical(
+                f"Error during finalization for {model_name}: {str(finalize_error)}"
+            )
             loguru.logger.exception("Full finalization error traceback:")
 
             # Try to update training status to fail
             try:
-                if hasattr(service, 'update_training_status'):
-                    service.update_training_status(model_id, 'failed', str(finalize_error))
+                if hasattr(service, "update_training_status"):
+                    service.update_training_status(
+                        model_id, "failed", str(finalize_error)
+                    )
             except Exception as status_error:
-                loguru.logger.error(f"Could not update training status to failed: {status_error}")
+                loguru.logger.error(
+                    f"Could not update training status to failed: {status_error}"
+                )
 
             raise  # Re-raise to ensure the error is not silently ignored
 
@@ -224,8 +290,8 @@ def _execute_training_in_background(
 
         # Ensure training status is updated to failed
         try:
-            if service and hasattr(service, 'update_training_status'):
-                service.update_training_status(model_id, 'failed', str(e))
+            if service and hasattr(service, "update_training_status"):
+                service.update_training_status(model_id, "failed", str(e))
         except Exception as status_error:
             loguru.logger.error(f"Could not update training status: {status_error}")
 
@@ -252,7 +318,9 @@ class ModelTrainerTask(BaseTask):
             tasks_folder = project_root / "tasks"
             models_folder = project_root / "models"
 
-            loguru.logger.info(f"Looking for JSON files in tasks folder at: {tasks_folder}")
+            loguru.logger.info(
+                f"Looking for JSON files in tasks folder at: {tasks_folder}"
+            )
             loguru.logger.info(f"Models folder: {models_folder}")
 
             if not tasks_folder.exists():
@@ -286,8 +354,12 @@ class ModelTrainerTask(BaseTask):
                     interval = config.get("interval")
                     model_id = config.get("model_id")
                     interactions_data_chef_id = config.get("interactions_data_chef_id")
-                    item_features_data_chef_id = config.get("item_features_data_chef_id")
-                    user_features_data_chef_id = config.get("user_features_data_chef_id")
+                    item_features_data_chef_id = config.get(
+                        "item_features_data_chef_id"
+                    )
+                    user_features_data_chef_id = config.get(
+                        "user_features_data_chef_id"
+                    )
 
                     # Validate required fields
                     if interval is None:
@@ -299,11 +371,15 @@ class ModelTrainerTask(BaseTask):
                         continue
 
                     if interactions_data_chef_id is None:
-                        loguru.logger.warning(f"No 'interactions_data_chef_id' found in {json_file}")
+                        loguru.logger.warning(
+                            f"No 'interactions_data_chef_id' found in {json_file}"
+                        )
                         continue
 
                     if not isinstance(interval, (int, float)) or interval <= 0:
-                        loguru.logger.warning(f"Invalid 'interval' value in {json_file}: {interval}")
+                        loguru.logger.warning(
+                            f"Invalid 'interval' value in {json_file}: {interval}"
+                        )
                         continue
 
                     # Load model configuration - try both formats
@@ -311,18 +387,24 @@ class ModelTrainerTask(BaseTask):
                     if not model_file_path.exists():
                         model_file_path = models_folder / f"{model_id}.json"
                         if not model_file_path.exists():
-                            loguru.logger.warning(f"Model config file not found: {model_id}_config.json or {model_id}.json")
+                            loguru.logger.warning(
+                                f"Model config file not found: {model_id}_config.json or {model_id}.json"
+                            )
                             continue
 
                     try:
                         with open(model_file_path, "r", encoding="utf-8") as model_file:
                             model_data = json.load(model_file)
                     except Exception as model_load_error:
-                        loguru.logger.error(f"Error loading model file {model_file_path}: {model_load_error}")
+                        loguru.logger.error(
+                            f"Error loading model file {model_file_path}: {model_load_error}"
+                        )
                         continue
 
                     model_name = config.get("task_name", os.path.basename(json_file))
-                    loguru.logger.info(f"Scheduling task for {model_name} with interval: {interval} seconds")
+                    loguru.logger.info(
+                        f"Scheduling task for {model_name} with interval: {interval} seconds"
+                    )
 
                     # Schedule the training task based on interval
                     # For intervals < 60, use minutely with second parameter
@@ -337,7 +419,7 @@ class ModelTrainerTask(BaseTask):
                                 interactions_data_chef_id,
                                 item_features_data_chef_id,
                                 user_features_data_chef_id,
-                            )
+                            ),
                         )
                     else:
                         scheduler.cyclic(
@@ -349,7 +431,7 @@ class ModelTrainerTask(BaseTask):
                                 interactions_data_chef_id,
                                 item_features_data_chef_id,
                                 user_features_data_chef_id,
-                            )
+                            ),
                         )
                     scheduled_count += 1
 
@@ -358,7 +440,9 @@ class ModelTrainerTask(BaseTask):
                 except Exception as e:
                     loguru.logger.error(f"Error processing file {json_file}: {e}")
 
-            loguru.logger.info(f"Successfully scheduled {scheduled_count} out of {len(json_files)} JSON files")
+            loguru.logger.info(
+                f"Successfully scheduled {scheduled_count} out of {len(json_files)} JSON files"
+            )
         except Exception as e:
             loguru.logger.error(f"Error in inject method: {e}")
             loguru.logger.exception("Full inject error traceback:")

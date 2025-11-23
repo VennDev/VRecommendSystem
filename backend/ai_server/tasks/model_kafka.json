@@ -1,0 +1,8 @@
+{
+  "task_name": "model_kafka",
+  "model_id": "model_kafka",
+  "interactions_data_chef_id": "kafka_test",
+  "user_features_data_chef_id": null,
+  "item_features_data_chef_id": null,
+  "interval": 60
+}

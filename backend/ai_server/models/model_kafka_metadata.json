@@ -1,0 +1,35 @@
+{
+  "model_id": "model_kafka",
+  "model_type": "SVDRecommendationModel",
+  "saved_at": "2025-11-23T03:21:03.616185",
+  "file_path": "models/model_kafka.pkl",
+  "hyperparameters": {
+    "n_components": 2,
+    "algorithm": "randomized",
+    "n_iter": 5,
+    "random_state": 42,
+    "tol": 0.0
+  },
+  "training_stats": {
+    "n_users": 5,
+    "n_items": 8,
+    "n_interactions": 8,
+    "sparsity": 0.8,
+    "density": 0.19999999999999996,
+    "avg_interactions_per_user": 1.6,
+    "avg_interactions_per_item": 1.0,
+    "mean_rating": 4.4375,
+    "std_rating": 0.5629958132298016,
+    "min_rating": 3.5,
+    "max_rating": 5.0
+  },
+  "metrics": {
+    "training_time": 0.010533,
+    "explained_variance_ratio": 0.7693661971830991,
+    "n_users": 5,
+    "n_items": 8,
+    "n_interactions": 8,
+    "sparsity": 0.8,
+    "n_components": 2
+  }
+}

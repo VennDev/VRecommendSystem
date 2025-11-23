@@ -1,379 +1,790 @@
 # VRecommendation System
 
-A comprehensive AI-powered recommendation system with microservices architecture, featuring real-time data processing, machine learning models, and a modern web interface.
+A production-ready AI-powered recommendation system built with microservices architecture. The system provides real-time model training, multiple data source integration, and comprehensive REST APIs for building intelligent recommendation features into any application.
+
+## Overview
+
+VRecommendation is a complete recommendation engine that combines machine learning models with a modern web interface. It supports collaborative filtering, content-based filtering, and hybrid recommendation algorithms with real-time data processing from multiple sources including databases, CSV files, REST APIs, and Kafka message queues.
 
 ## Architecture
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   API Server    │    │   AI Server     │
-│   (React+Vite)  │◄──►│   (Go/Fiber)    │◄──►│   (Python)      │
-│   Port: 5173    │    │   Port: 2030    │    │   Port: 9999    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-                    ┌─────────────────┐    ┌─────────────────┐
-                    │     Redis       │    │   Prometheus    │
-                    │   (Cache/DB)    │    │  (Monitoring)   │
-                    │   Port: 6379    │    │   Port: 9090    │
-                    └─────────────────┘    └─────────────────┘
-```
+The system consists of three main services:
 
-## Features
+- **API Server (Go/Fiber)**: High-performance gateway handling authentication, request routing, and caching
+- **AI Server (Python/FastAPI)**: Machine learning engine managing model training, data processing, and predictions
+- **Frontend (React/TypeScript)**: Modern dashboard for system management and monitoring
 
-- Microservices architecture with Docker containerization
-- AI-powered recommendations using collaborative filtering
-- RESTful API with Go Fiber backend
-- Modern React frontend with Vite
-- Real-time data processing with multiple data source support
-- Redis caching and session management
-- Prometheus monitoring and metrics
-- Scheduled model training with configurable intervals
-- Support for CSV, SQL, NoSQL, API, and messaging queue data sources
+Supporting infrastructure:
+- **Redis**: Caching layer and session management
+- **Kafka**: Real-time event streaming and data ingestion
+- **Zookeeper**: Kafka coordination service
+- **Prometheus**: Metrics collection and monitoring
+- **Kafka UI**: Web interface for Kafka cluster management
+
+All services run in Docker containers orchestrated with Docker Compose.
+
+## Key Features
+
+### Machine Learning
+- Support for SVD, matrix factorization, and collaborative filtering algorithms
+- Incremental learning from streaming data
+- Automatic model retraining on configurable schedules
+- Model versioning and metadata tracking
+- Real-time prediction API
+
+### Data Integration
+- CSV file processing with batch reading
+- SQL database connections (MySQL, PostgreSQL)
+- NoSQL database support (MongoDB)
+- REST API data ingestion
+- Kafka message queue consumer
+- Automatic data transformation and validation
+
+### System Management
+- Web-based administration dashboard
+- Real-time metrics and monitoring
+- Scheduled task management
+- Model lifecycle management
+- Data pipeline configuration
+
+### Security & Performance
+- JWT-based authentication
+- Google OAuth integration
+- Redis caching for fast responses
+- Connection pooling and resource management
+- Prometheus metrics collection
+
+## Prerequisites
+
+- Docker Engine 20.10 or higher
+- Docker Compose 2.0 or higher
+- 4GB RAM minimum (8GB recommended)
+- 10GB available disk space
+
+Optional for local development:
+- Go 1.21 or higher
+- Python 3.11 or higher
+- Node.js 18 or higher
 
 ## Quick Start
-
-### Prerequisites
-
-- Docker Desktop (Windows/Mac) or Docker Engine (Linux)
-- Docker Compose v2.0+
-- Git
 
 ### 1. Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/yourusername/VRecommendation.git
 cd VRecommendation
 ```
 
-### 2. Environment Setup
+### 2. Configure Environment
+
+Copy the example environment file and configure your settings:
 
 ```bash
-# Copy development environment (optional)
 cp example-env .env
+```
 
-# Or use the Makefile
-make install
+Edit the `.env` file with your configuration. Key variables:
+
+```env
+# JWT Secret (REQUIRED - change this in production)
+JWT_SECRET_KEY=your-secure-secret-key-here
+
+# API Server Configuration
+API_SERVER_HOST=0.0.0.0
+API_SERVER_PORT=2030
+
+# AI Server Configuration
+AI_SERVER_HOST=0.0.0.0
+AI_SERVER_PORT=9999
+
+# Frontend Configuration
+FRONTEND_PORT=5173
+VITE_API_SERVER_URL=http://localhost:2030
+VITE_AI_SERVER_URL=http://localhost:9999
+
+# Redis Configuration
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+# Kafka Configuration
+KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+KAFKA_PORT=9092
 ```
 
 ### 3. Start All Services
 
 ```bash
-# Using Docker Compose
 docker-compose up -d
-
-# Or using Makefile
-make start
 ```
+
+This will start all services in the background. First-time startup may take several minutes to download images and build containers.
 
 ### 4. Verify Installation
 
-```bash
-# Check all services
-make health
+Check that all services are running:
 
-# Or manually
+```bash
+docker-compose ps
+```
+
+All services should show status as "Up". Test the endpoints:
+
+```bash
+# Test API Server
 curl http://localhost:2030/api/v1/ping
+
+# Test AI Server
 curl http://localhost:9999/api/v1/health
 ```
 
-### 5. Access Services
+Expected responses indicate healthy services.
 
-- Frontend: http://localhost:5173
-- API Server: http://localhost:2030
-- AI Server: http://localhost:9999
-- Prometheus: http://localhost:9090
+### 5. Access the Application
+
+- **Frontend Dashboard**: http://localhost:5173
+- **API Server**: http://localhost:2030
+- **AI Server**: http://localhost:9999
+- **Prometheus Metrics**: http://localhost:9090
+- **Kafka UI**: http://localhost:8080
 
 ## Project Structure
 
 ```
 VRecommendation/
 ├── backend/
-│   ├── api_server/          # Go API server
-│   │   ├── main.go
-│   │   ├── internal/        # Internal packages
-│   │   ├── pkg/             # Public packages
-│   │   └── config/          # Configuration files
-│   └── ai_server/           # Python AI server
-│       ├── src/             # Source code
-│       ├── config/          # Configuration files
-│       ├── models/          # Trained models
-│       └── tasks/           # Scheduled tasks
+│   ├── ai_server/              # Python FastAPI ML service
+│   │   ├── src/
+│   │   │   └── ai_server/
+│   │   │       ├── handlers/   # Business logic handlers
+│   │   │       ├── models/     # ML model implementations
+│   │   │       ├── routers/    # API route definitions
+│   │   │       ├── services/   # Core services
+│   │   │       ├── tasks/      # Background tasks
+│   │   │       └── utils/      # Utility functions
+│   │   ├── config/             # Configuration files
+│   │   ├── models/             # Trained model files
+│   │   ├── tasks/              # Task definitions (JSON)
+│   │   ├── data/               # Data storage
+│   │   ├── Dockerfile
+│   │   └── pyproject.toml
+│   │
+│   └── api_server/             # Go Fiber gateway service
+│       ├── app/
+│       │   ├── controllers/    # HTTP handlers
+│       │   ├── middleware/     # Custom middleware
+│       │   └── models/         # Data models
+│       ├── internal/
+│       │   ├── auth/           # Authentication logic
+│       │   ├── cache/          # Redis operations
+│       │   ├── initialize/     # App initialization
+│       │   └── proxy/          # AI server proxy
+│       ├── pkg/                # Reusable packages
+│       ├── config/             # Configuration files
+│       ├── Dockerfile
+│       ├── go.mod
+│       └── main.go
+│
 ├── frontend/
-│   └── project/             # React + Vite frontend
+│   └── project/                # React TypeScript application
 │       ├── src/
-│       ├── public/
+│       │   ├── components/     # React components
+│       │   ├── pages/          # Page components
+│       │   ├── services/       # API services
+│       │   ├── contexts/       # React contexts
+│       │   └── hooks/          # Custom hooks
+│       ├── public/             # Static assets
+│       ├── Dockerfile
 │       └── package.json
+│
 ├── tests/
-│   ├── demo-website/        # Demo application
-│   └── kafka-server/        # Kafka test server
-├── docs/                    # Documentation
-├── diagrams/                # Architecture diagrams
-├── docker-compose.yml       # Service orchestration
-├── Makefile                 # Build automation
-└── README.md                # This file
+│   ├── demo-website/           # Demo e-commerce site
+│   ├── kafka-server/           # Standalone Kafka for testing
+│   └── test-data/              # Test datasets
+│
+├── scripts/                    # Utility scripts
+├── docs/                       # Additional documentation
+├── diagrams/                   # Architecture diagrams
+├── docker-compose.yml          # Main orchestration file
+├── Makefile                    # Build automation
+└── README.md                   # This file
 ```
 
-## Available Commands
-
-### Using Makefile
-
-```bash
-# Installation & Setup
-make install          # Install dependencies and setup environment
-make build            # Build all Docker images
-
-# Service Management
-make start            # Start all services
-make stop             # Stop all services
-make restart          # Restart all services
-make status           # Show service status
-
-# Development
-make dev              # Start development environment
-make dev-api          # Run API server locally
-make dev-ai           # Run AI server locally
-make dev-frontend     # Run frontend locally
-
-# Monitoring & Logs
-make logs             # Show all service logs
-make logs-api         # Show API server logs
-make logs-ai          # Show AI server logs
-make health           # Check service health
-
-# Testing
-make test             # Run all tests
-make test-api         # Run API server tests
-make test-ai          # Run AI server tests
-
-# Maintenance
-make clean            # Clean containers and volumes
-make clean-all        # Full cleanup
-
-# Utilities
-make help             # Show all available commands
-```
-
-### Using Command Scripts
-
-#### Windows
-
-```cmd
-start.cmd           # Start all services
-stop.cmd            # Stop all services
-test-system.cmd     # Run system tests
-```
-
-#### Linux/Mac
-
-```bash
-./docker-start.sh   # Start services
-./run_backend.sh    # Backend development
-./run_frontend.sh   # Frontend development
-```
-
-## Configuration
+## Configuration Guide
 
 ### Environment Variables
 
-Key environment variables in `.env`:
+The system uses a single `.env` file in the project root. Key configuration sections:
+
+#### Authentication & Security
 
 ```env
-# Authentication
-JWT_SECRET_KEY=your-jwt-secret-key
-SESSION_SECRET=your-session-secret
+JWT_SECRET_KEY=your-secret-key          # JWT signing secret
+SESSION_SECRET=your-session-secret       # Session encryption key
+JWT_EXPIRE_MINUTES=1440                  # Token expiration (24 hours)
+```
 
-# API Server
+#### Service URLs
+
+```env
 API_SERVER_HOST=0.0.0.0
 API_SERVER_PORT=2030
-
-# AI Server
 AI_SERVER_HOST=0.0.0.0
 AI_SERVER_PORT=9999
-
-# Frontend
 FRONTEND_PORT=5173
-VITE_API_SERVER_URL=http://localhost:2030
-VITE_AI_SERVER_URL=http://localhost:9999
+```
 
-# Redis
-REDIS_HOST=redis
-REDIS_PORT=6379
+#### Database Connections
 
-# External Databases (Optional)
+```env
+# MySQL
 MYSQL_HOST=your-mysql-host
 MYSQL_PORT=3306
-MYSQL_USER=your-user
+MYSQL_USER=your-username
 MYSQL_PASSWORD=your-password
 MYSQL_DATABASE=your-database
 
+# MongoDB
 MONGODB_HOST=your-mongodb-host
 MONGODB_PORT=27017
-MONGODB_USERNAME=your-user
+MONGODB_USERNAME=your-username
 MONGODB_PASSWORD=your-password
 ```
 
-### Service Configuration
+#### Kafka Configuration
 
-Each service has its own configuration directory:
+```env
+KAFKA_BOOTSTRAP_SERVERS=kafka:9093      # Internal broker address
+KAFKA_PORT=9092                          # External broker port
+KAFKA_GROUP_ID=vrecom_consumer_group     # Consumer group ID
+```
 
-- API Server: `backend/api_server/config/`
-- AI Server: `backend/ai_server/config/`
-- Frontend: `frontend/project/`
+### Service-Specific Configuration
 
-## Data Sources
+Each service has additional configuration files:
 
-The AI server supports multiple data source types through the Data Chef system:
+- **AI Server**: `backend/ai_server/config/`
+  - `local.yaml`: Main configuration
+  - `restaurant_data.yaml`: Data source definitions
 
-### Supported Data Sources
+- **API Server**: `backend/api_server/config/`
+  - `config.yaml`: Server settings
+  - `cors.yaml`: CORS configuration
 
-1. **CSV Files**: Local or uploaded CSV files
-2. **SQL Databases**: MySQL, PostgreSQL, etc.
-3. **NoSQL Databases**: MongoDB, etc.
-4. **REST APIs**: External API endpoints
-5. **Message Queues**: Kafka.
+- **Frontend**: `frontend/project/.env`
+  - API endpoint URLs
+  - Feature flags
 
-### Creating Data Chefs
+## Usage Guide
+
+### Creating a Recommendation Model
+
+#### 1. Prepare Your Data
+
+Create a data chef to connect to your data source:
 
 ```bash
-# Create CSV data chef
-POST /api/v1/create_data_chef_from_csv
-{
-  "name": "my_data",
-  "path": "/path/to/file.csv",
-  "rename_columns": "userId:user_id,itemId:item_id"
-}
+# Using CSV file
+curl -X POST http://localhost:9999/api/v1/create_data_chef_from_csv \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my_interactions",
+    "path": "/app/data/interactions.csv",
+    "rename_columns": "userId:user_id,itemId:item_id,rating:rating"
+  }'
 
-# Create SQL data chef
-POST /api/v1/create_data_chef_from_sql
+# Using SQL database
+curl -X POST http://localhost:9999/api/v1/create_data_chef_from_sql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my_interactions",
+    "query": "SELECT user_id, item_id, rating FROM interactions",
+    "rename_columns": ""
+  }'
+
+# Using Kafka topic
+# Configure in backend/ai_server/config/restaurant_data.yaml:
+# my_kafka_data:
+#   type: messaging_queue
+#   brokers: kafka:9093
+#   topic: interactions
+#   group_id: my_consumer_group
+```
+
+#### 2. Create Model Configuration
+
+Create a JSON file in `backend/ai_server/models/`:
+
+```json
 {
-  "name": "my_data",
-  "query": "SELECT * FROM interactions",
-  "rename_columns": "userId:user_id,itemId:item_id"
+  "model_name": "My Recommendation Model",
+  "model_id": "my_model",
+  "type": "svd",
+  "algorithm": "svd",
+  "hyperparameters": {
+    "n_components": 50,
+    "algorithm": "randomized",
+    "n_iter": 10,
+    "random_state": 42
+  },
+  "message": "Production recommendation model"
 }
 ```
 
-## Model Training
+#### 3. Schedule Training Task
 
-### Scheduling Model Training
+Create a task file in `backend/ai_server/tasks/`:
 
-Models can be trained on a schedule using the task system:
-
-```bash
-# Add training task
-POST /api/v1/add_model_task
+```json
 {
-  "task_name": "daily_training",
+  "task_name": "my_model",
   "model_id": "my_model",
-  "interactions_data_chef_id": "my_data",
+  "interactions_data_chef_id": "my_interactions",
+  "item_features_data_chef_id": null,
+  "user_features_data_chef_id": null,
   "interval": 3600
 }
-
-# List tasks
-GET /api/v1/list_tasks
-
-# Remove task
-DELETE /api/v1/remove_model_task?task_name=daily_training
 ```
 
-### Interval Configuration
+The `interval` is in seconds. The model will automatically retrain at this interval.
 
-- Intervals less than 60 seconds: Scheduled every minute at specific second
-- Intervals 60 seconds or more: Scheduled using cyclic intervals
-- Minimum interval: 10 seconds
-- Maximum interval: Unlimited
-
-## API Documentation
-
-### API Server (Port 2030)
+#### 4. Restart AI Server
 
 ```bash
-# Health check
-GET /api/v1/ping
-
-# Authentication
-POST /api/v1/auth/login
-POST /api/v1/auth/logout
-GET /api/v1/auth/status
-
-# Activity logs (requires auth)
-GET /api/v1/activity-logs/all
-
-# Recommendations
-GET /api/v1/recommend?user_id=123&model_id=my_model&n=5
+docker-compose restart ai_server
 ```
 
-### AI Server (Port 9999)
+The model will begin training according to the schedule.
+
+#### 5. Get Recommendations
 
 ```bash
-# Health check
-GET /api/v1/health
+curl "http://localhost:2030/api/v1/recommend?user_id=user123&model_id=my_model&n=10"
+```
 
-# Models
-GET /api/v1/list_models
-POST /api/v1/create_model
-DELETE /api/v1/delete_model?model_id=my_model
+Response format:
 
-# Data Chefs
-GET /api/v1/list_data_chefs
-POST /api/v1/create_data_chef_from_csv
-POST /api/v1/create_data_chef_from_sql
-DELETE /api/v1/delete_data_chef?name=my_data
-
-# Tasks
-GET /api/v1/list_tasks
-POST /api/v1/add_model_task
-DELETE /api/v1/remove_model_task
-
-# Scheduler
-GET /api/v1/get_scheduler_status
-POST /api/v1/stop_scheduler
-POST /api/v1/restart_scheduler
-
-# Recommendations
-POST /api/v1/recommend
+```json
 {
-  "user_id": "123",
+  "user_id": "user123",
   "model_id": "my_model",
-  "n": 5
+  "predictions": {
+    "user123": [
+      {"item_id": "item456", "score": 4.8},
+      {"item_id": "item789", "score": 4.6},
+      {"item_id": "item321", "score": 4.3}
+    ]
+  },
+  "n_recommendations": 10,
+  "status": "completed",
+  "datetime": "2024-11-23T10:30:00Z"
 }
 ```
 
-## Testing
+### Working with Kafka Data Streams
 
-### Demo Website
-
-A demo e-commerce website is provided for testing:
+#### Send Data to Kafka
 
 ```bash
-cd tests/demo-website
-npm install
-npm start
+# Send interaction events
+echo '{"user_id": "user1", "item_id": "item1", "rating": 5.0}
+{"user_id": "user2", "item_id": "item2", "rating": 4.5}
+{"user_id": "user3", "item_id": "item3", "rating": 4.0}' | \
+docker exec -i vrecom_kafka kafka-console-producer \
+  --bootstrap-server localhost:9092 \
+  --topic interactions
 ```
 
-Access at: http://localhost:3500
-
-### Kafka Test Server
-
-A standalone Kafka server for testing message queue integration:
+#### Verify Messages
 
 ```bash
-cd tests/kafka-server
+docker exec vrecom_kafka kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic interactions \
+  --from-beginning \
+  --max-messages 10
+```
+
+#### Monitor Consumer Groups
+
+```bash
+docker exec vrecom_kafka kafka-consumer-groups \
+  --bootstrap-server localhost:9092 \
+  --group your_consumer_group \
+  --describe
+```
+
+This shows the current offset, lag, and consumption status.
+
+### Managing the System
+
+#### View Service Logs
+
+```bash
+# All services
+docker-compose logs -f
+
+# Specific service
+docker-compose logs -f ai_server
+docker-compose logs -f api_server
+
+# Last N lines
+docker-compose logs --tail=100 ai_server
+```
+
+#### Restart Services
+
+```bash
+# Restart specific service
+docker-compose restart ai_server
+
+# Restart all services
+docker-compose restart
+
+# Stop and start (full restart)
+docker-compose down
 docker-compose up -d
 ```
 
-Access Kafka UI at: http://localhost:8080
-
-### System Tests
+#### Monitor System Health
 
 ```bash
-# Run all tests
-make test
+# Check service status
+docker-compose ps
 
-# Or use Windows script
-test-system.cmd
+# Check resource usage
+docker stats
+
+# View metrics in Prometheus
+# Open http://localhost:9090
 ```
+
+#### Clear Cache
+
+```bash
+# Flush all Redis cache
+docker exec vrecom_redis redis-cli FLUSHDB
+
+# Clear specific keys
+docker exec vrecom_redis redis-cli DEL "key_pattern"
+```
+
+## API Reference
+
+### API Server Endpoints (Port 2030)
+
+#### Health Check
+
+```
+GET /api/v1/ping
+```
+
+Response: `{"message": "pong", "timestamp": "2024-11-23T10:00:00Z"}`
+
+#### Get Recommendations
+
+```
+GET /api/v1/recommend?user_id={userId}&model_id={modelId}&n={count}
+```
+
+Parameters:
+- `user_id`: User identifier (required)
+- `model_id`: Model to use for recommendations (required)
+- `n`: Number of recommendations (default: 5)
+
+#### Authentication
+
+```
+POST /api/v1/auth/login
+POST /api/v1/auth/logout
+GET /api/v1/auth/status
+```
+
+### AI Server Endpoints (Port 9999)
+
+#### Health Check
+
+```
+GET /api/v1/health
+```
+
+#### Model Management
+
+```
+GET /api/v1/list_models
+POST /api/v1/create_model
+DELETE /api/v1/delete_model?model_id={modelId}
+GET /api/v1/get_model?model_id={modelId}
+```
+
+#### Data Chef Management
+
+```
+GET /api/v1/list_data_chefs
+POST /api/v1/create_data_chef_from_csv
+POST /api/v1/create_data_chef_from_sql
+POST /api/v1/create_data_chef_from_nosql
+POST /api/v1/create_data_chef_from_api
+DELETE /api/v1/delete_data_chef?name={chefName}
+```
+
+#### Task Management
+
+```
+GET /api/v1/list_tasks
+POST /api/v1/add_model_task
+DELETE /api/v1/remove_model_task?task_name={taskName}
+```
+
+#### Scheduler Control
+
+```
+GET /api/v1/get_scheduler_status
+POST /api/v1/stop_scheduler
+POST /api/v1/restart_scheduler
+```
+
+#### Direct Recommendations
+
+```
+POST /api/v1/recommend
+{
+  "user_id": "user123",
+  "model_id": "my_model",
+  "n": 10
+}
+```
+
+## Development
+
+### Local Development Setup
+
+#### Backend Development
+
+For AI Server (Python):
+
+```bash
+cd backend/ai_server
+poetry install
+poetry run server
+```
+
+For API Server (Go):
+
+```bash
+cd backend/api_server
+go mod download
+go run main.go
+```
+
+#### Frontend Development
+
+```bash
+cd frontend/project
+npm install
+npm run dev
+```
+
+### Running Tests
+
+#### AI Server Tests
+
+```bash
+cd backend/ai_server
+poetry run pytest tests/ -v
+```
+
+#### API Server Tests
+
+```bash
+cd backend/api_server
+go test ./... -v
+```
+
+#### Frontend Tests
+
+```bash
+cd frontend/project
+npm test
+```
+
+### Code Quality
+
+#### Python (AI Server)
+
+```bash
+# Format code
+poetry run black src/
+
+# Lint code
+poetry run flake8 src/
+
+# Type checking
+poetry run mypy src/
+```
+
+#### Go (API Server)
+
+```bash
+# Format code
+go fmt ./...
+
+# Lint code
+golangci-lint run
+
+# Vet code
+go vet ./...
+```
+
+#### TypeScript (Frontend)
+
+```bash
+# Lint code
+npm run lint
+
+# Type checking
+npm run type-check
+
+# Format code
+npm run format
+```
+
+### Adding New Features
+
+#### Adding a New ML Algorithm
+
+1. Create model class in `backend/ai_server/src/ai_server/models/`:
+
+```python
+from ai_server.models.base_model import BaseRecommendationModel
+
+class MyNewModel(BaseRecommendationModel):
+    def __init__(self, **hyperparameters):
+        super().__init__(**hyperparameters)
+        
+    def fit(self, interactions_df, **kwargs):
+        # Training implementation
+        pass
+        
+    def predict(self, user_id, n=5):
+        # Prediction implementation
+        pass
+```
+
+2. Register in `backend/ai_server/src/ai_server/services/model_service.py`
+
+3. Add tests in `backend/ai_server/tests/`
+
+4. Update documentation
+
+#### Adding a New Data Source Type
+
+1. Create data chef handler in `backend/ai_server/src/ai_server/services/data_chef_service.py`:
+
+```python
+def _cook_my_source(param1, param2):
+    # Data fetching logic
+    for record in data_source:
+        yield record
+```
+
+2. Add to `_cook_raw_data_source()` switch statement
+
+3. Create API endpoint in routers
+
+4. Add configuration example
+
+## Production Deployment
+
+### Security Checklist
+
+Before deploying to production:
+
+- [ ] Change all default secrets in `.env`
+- [ ] Use strong JWT secret keys
+- [ ] Configure proper CORS origins
+- [ ] Enable HTTPS with valid SSL certificates
+- [ ] Set up firewall rules
+- [ ] Use environment-specific configurations
+- [ ] Enable rate limiting
+- [ ] Configure log rotation
+- [ ] Set up automated backups
+- [ ] Enable monitoring and alerting
+- [ ] Review and remove debug endpoints
+- [ ] Use secrets management (e.g., Vault, AWS Secrets Manager)
+
+### Docker Production Build
+
+Build optimized production images:
+
+```bash
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Resource Allocation
+
+Recommended minimum resources:
+
+- **API Server**: 512MB RAM, 0.5 CPU
+- **AI Server**: 2GB RAM, 1 CPU
+- **Frontend**: 256MB RAM, 0.25 CPU
+- **Redis**: 512MB RAM, 0.25 CPU
+- **Kafka**: 1GB RAM, 0.5 CPU
+
+Adjust in `docker-compose.yml`:
+
+```yaml
+services:
+  ai_server:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+```
+
+### Monitoring Setup
+
+Configure Prometheus targets in `prometheus.yml`:
+
+```yaml
+scrape_configs:
+  - job_name: 'ai_server'
+    static_configs:
+      - targets: ['ai_server:9999']
+  
+  - job_name: 'api_server'
+    static_configs:
+      - targets: ['api_server:2030']
+```
+
+Set up Grafana dashboards for visualization (optional).
+
+### Backup Strategy
+
+#### Database Backups
+
+```bash
+# Backup Redis data
+docker exec vrecom_redis redis-cli SAVE
+docker cp vrecom_redis:/data/dump.rdb ./backups/redis/
+
+# Backup Kafka data
+docker exec vrecom_kafka tar -czf /tmp/kafka-backup.tar.gz /var/lib/kafka/data
+docker cp vrecom_kafka:/tmp/kafka-backup.tar.gz ./backups/kafka/
+```
+
+#### Model Backups
+
+```bash
+# Backup trained models
+docker cp vrecom_ai_server:/app/models ./backups/models/
+```
+
+Automate with cron jobs or use volume backups.
 
 ## Troubleshooting
 
@@ -381,137 +792,271 @@ test-system.cmd
 
 #### Services Not Starting
 
+Check Docker and Docker Compose versions:
+
 ```bash
-# Check Docker
-docker --version
-docker-compose --version
-
-# Check service status
-docker-compose ps
-
-# View logs
-docker-compose logs
+docker --version        # Should be 20.10+
+docker-compose --version # Should be 2.0+
 ```
 
-#### Port Conflicts
-
-Default ports used: 2030, 9999, 5173, 9090, 6379
+Check for port conflicts:
 
 ```bash
-# Check port usage (Linux/Mac)
+# Linux/Mac
 lsof -i :2030
+lsof -i :9999
+lsof -i :5173
 
-# Check port usage (Windows)
+# Windows
 netstat -ano | findstr :2030
 ```
 
-#### Connection Errors
-
-- Verify all services are running: `docker-compose ps`
-- Check network connectivity: `docker network inspect vrecom_network`
-- Ensure environment variables are set correctly
-- Review service logs: `docker-compose logs <service_name>`
-
-#### Database Connection Issues
-
-- Ensure external database credentials are correct in `.env`
-- Verify network access to external databases
-- Check firewall rules
-- Test connection manually using database client
-
-### Log Analysis
+View service logs for errors:
 
 ```bash
-# View all logs
 docker-compose logs
-
-# Follow logs in real-time
-docker-compose logs -f
-
-# View specific service
-docker-compose logs ai_server
-docker-compose logs api_server
-
-# Filter logs
-docker-compose logs ai_server | grep ERROR
 ```
 
-## Development
+#### Kafka Connection Errors
 
-### Development Workflow
-
-1. Start services: `docker-compose up -d`
-2. Make changes to code
-3. Test changes: `make test`
-4. Rebuild if needed: `docker-compose up -d --build`
-
-### Hot Reload
-
-Services are configured with volume mounts for hot reloading:
-
-- Frontend: Changes to `frontend/project/src/` are auto-reloaded
-- AI Server: Changes to `backend/ai_server/src/` are auto-reloaded
-- API Server: Requires rebuild for Go changes
-
-### Adding New Features
-
-1. Create feature branch
-2. Implement changes
-3. Add tests
-4. Update documentation
-5. Submit pull request
-
-## Monitoring
-
-### Prometheus Metrics
-
-Access Prometheus at http://localhost:9090
-
-Available metrics:
-- Request counts and latencies
-- Model training metrics
-- Scheduler status
-- System resource usage
-
-### Service Health
+Verify Kafka is running and accessible:
 
 ```bash
-# Check all services
-make health
-
-# Individual health checks
-curl http://localhost:2030/api/v1/ping
-curl http://localhost:9999/api/v1/health
+docker exec vrecom_kafka kafka-broker-api-versions \
+  --bootstrap-server localhost:9092
 ```
 
-## Production Deployment
+Check consumer group status:
 
-### Production Checklist
+```bash
+docker exec vrecom_kafka kafka-consumer-groups \
+  --bootstrap-server localhost:9092 \
+  --list
+```
 
-- [ ] Change default JWT secrets
-- [ ] Use strong database passwords
-- [ ] Configure proper CORS origins
-- [ ] Enable HTTPS
-- [ ] Set up log aggregation
-- [ ] Configure backup strategy
-- [ ] Set resource limits
-- [ ] Enable monitoring and alerts
+Reset consumer offset if needed:
 
-### Security Considerations
+```bash
+docker exec vrecom_kafka kafka-consumer-groups \
+  --bootstrap-server localhost:9092 \
+  --group your_group_id \
+  --reset-offsets \
+  --to-earliest \
+  --topic your_topic \
+  --execute
+```
 
-- Use environment variables for secrets
-- Never commit sensitive data to version control
-- Keep dependencies updated
-- Use network isolation
-- Implement rate limiting
-- Enable authentication for all endpoints
+#### Model Training Not Working
 
-## Support
+Check if data chef is configured correctly:
 
-- Issues: Create an issue on GitHub
-- Documentation: Check `docs/` directory
-- Logs: Use `make logs` for debugging
+```bash
+curl http://localhost:9999/api/v1/list_data_chefs
+```
+
+Verify data source connectivity from AI server container:
+
+```bash
+docker exec vrecom_ai_server python -c "
+from ai_server.services.data_chef_service import DataChefService
+service = DataChefService()
+print(service.list_data_chefs())
+"
+```
+
+Check task scheduler status:
+
+```bash
+curl http://localhost:9999/api/v1/get_scheduler_status
+```
+
+View AI server logs for training errors:
+
+```bash
+docker-compose logs -f ai_server | grep -i "error\|exception"
+```
+
+#### No Recommendations Returned
+
+Verify the model exists and is trained:
+
+```bash
+curl http://localhost:9999/api/v1/list_models
+```
+
+Check if user exists in training data:
+
+```bash
+# View model metadata
+docker exec vrecom_ai_server cat models/your_model_metadata.json
+```
+
+Clear recommendation cache:
+
+```bash
+docker exec vrecom_redis redis-cli KEYS "recommend:*"
+docker exec vrecom_redis redis-cli DEL "recommend:user123:my_model:10"
+```
+
+#### High Memory Usage
+
+Monitor container resources:
+
+```bash
+docker stats
+```
+
+Reduce batch sizes in training configuration.
+
+Clear unused data:
+
+```bash
+# Clear Redis cache
+docker exec vrecom_redis redis-cli FLUSHDB
+
+# Prune Docker system
+docker system prune -a
+```
+
+### Debug Mode
+
+Enable debug logging by setting in `.env`:
+
+```env
+DEBUG=true
+LOG_LEVEL=debug
+```
+
+Restart services:
+
+```bash
+docker-compose restart
+```
+
+View detailed logs:
+
+```bash
+docker-compose logs -f --tail=100
+```
+
+### Getting Help
+
+1. Check service logs: `docker-compose logs <service_name>`
+2. Review configuration files for typos or missing values
+3. Verify network connectivity between containers
+4. Check disk space: `df -h`
+5. Review Docker resources: `docker system df`
+
+If issues persist:
+- Check the GitHub issues page
+- Review documentation in the `docs/` directory
+- Enable debug mode and collect logs
+
+## Performance Optimization
+
+### Caching Strategy
+
+The system uses Redis for multiple caching layers:
+
+- **API Response Cache**: Frequently requested recommendations
+- **Model Metadata Cache**: Model information and configurations
+- **Session Cache**: User session data
+
+Configure cache TTL in `backend/api_server/internal/cache/`:
+
+```go
+const (
+    RecommendationCacheTTL = 3600  // 1 hour
+    ModelMetadataCacheTTL  = 7200  // 2 hours
+)
+```
+
+### Database Connection Pooling
+
+Configure optimal pool sizes in `.env`:
+
+```env
+# API Server
+REDIS_POOL_SIZE=20
+REDIS_MAX_IDLE=10
+
+# AI Server (adjust in code)
+SQL_POOL_SIZE=10
+SQL_MAX_OVERFLOW=20
+```
+
+### Model Training Optimization
+
+Adjust hyperparameters for faster training:
+
+```json
+{
+  "hyperparameters": {
+    "n_components": 20,
+    "n_iter": 5,
+    "batch_size": 512
+  }
+}
+```
+
+Lower values train faster but may reduce accuracy.
+
+### Resource Limits
+
+Set appropriate limits in `docker-compose.yml`:
+
+```yaml
+services:
+  ai_server:
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+```
+
+## Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Make your changes following the code style guidelines
+4. Add tests for new functionality
+5. Update documentation as needed
+6. Commit your changes: `git commit -m 'Add new feature'`
+7. Push to the branch: `git push origin feature/new-feature`
+8. Submit a pull request
+
+### Code Style Guidelines
+
+- **Python**: Follow PEP 8, use Black formatter
+- **Go**: Follow Go standard style, use gofmt
+- **TypeScript**: Follow Airbnb style guide, use ESLint
+- Write meaningful commit messages
+- Add comments for complex logic
+- Update tests and documentation
 
 ## License
 
-See LICENSE.txt for details.
+This project is licensed under the terms specified in the LICENSE.txt file.
+
+## Support
+
+For questions, issues, or feature requests:
+
+- Open an issue on GitHub
+- Check existing documentation in the `docs/` directory
+- Review API documentation at service `/docs` endpoints
+- Consult troubleshooting section above
+
+## Acknowledgments
+
+Built with open-source technologies:
+- FastAPI for Python backend
+- Fiber for Go backend
+- React and TypeScript for frontend
+- Docker for containerization
+- Kafka for message streaming
+- Redis for caching
+- Prometheus for monitoring

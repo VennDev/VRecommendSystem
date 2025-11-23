@@ -12,6 +12,61 @@ services:
         restart: unless-stopped
         command: redis-server --appendonly yes
 
+    # Zookeeper Service
+    zookeeper:
+        image: confluentinc/cp-zookeeper:7.5.0
+        container_name: vrecom_zookeeper
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+            ZOOKEEPER_TICK_TIME: 2000
+        volumes:
+            - zookeeper_data:/var/lib/zookeeper/data
+            - zookeeper_logs:/var/lib/zookeeper/log
+        networks:
+            - vrecom_network
+        restart: unless-stopped
+
+    # Kafka Service
+    kafka:
+        image: confluentinc/cp-kafka:7.5.0
+        container_name: vrecom_kafka
+        depends_on:
+            - zookeeper
+        ports:
+            - "${KAFKA_PORT:-9092}:9092"
+            - "9093:9093"
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+            KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+            KAFKA_LOG_RETENTION_HOURS: 168
+            KAFKA_LOG_SEGMENT_BYTES: 1073741824
+        volumes:
+            - kafka_data:/var/lib/kafka/data
+        networks:
+            - vrecom_network
+        restart: unless-stopped
+
+    # Kafka UI (Optional - for monitoring)
+    kafka-ui:
+        image: provectuslabs/kafka-ui:latest
+        container_name: vrecom_kafka_ui
+        depends_on:
+            - kafka
+        ports:
+            - "${KAFKA_UI_PORT:-8080}:8080"
+        environment:
+            KAFKA_CLUSTERS_0_NAME: vrecom-cluster
+            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
+            KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+        networks:
+            - vrecom_network
+        restart: unless-stopped
+
     # API Server (Go)
     api_server:
         build:
@@ -64,6 +119,8 @@ services:
             - MONGODB_PORT=${MONGODB_PORT:-27017}
             - MONGODB_USERNAME=${MONGODB_USERNAME:-root}
             - MONGODB_PASSWORD=${MONGODB_PASSWORD:-password}
+            - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS:-kafka:9093}
+            - KAFKA_GROUP_ID=${KAFKA_GROUP_ID:-vrecom_ai_server_group}
         volumes:
             - ./backend/ai_server/src:/app/src
             - ./backend/ai_server/config:/app/config
@@ -119,3 +176,6 @@ networks:
 volumes:
     redis_data:
     prometheus_data:
+    zookeeper_data:
+    zookeeper_logs:
+    kafka_data:

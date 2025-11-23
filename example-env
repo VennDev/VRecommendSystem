@@ -40,6 +40,12 @@ MONGODB_AUTH_SOURCE=admin
 # Prometheus Configuration
 PROMETHEUS_PORT=9090
 
+# Kafka Configuration
+KAFKA_PORT=9092
+KAFKA_UI_PORT=8080
+KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+KAFKA_GROUP_ID=vrecom_ai_server_group
+
 # JWT Configuration
 JWT_SECRET_KEY=your_secret
 JWT_EXPIRE_MINS=15

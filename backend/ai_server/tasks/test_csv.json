@@ -1,0 +1,8 @@
+{
+  "task_name": "test_csv",
+  "model_id": "test_csv",
+  "interactions_data_chef_id": "test_csv",
+  "user_features_data_chef_id": null,
+  "item_features_data_chef_id": null,
+  "interval": 60
+}

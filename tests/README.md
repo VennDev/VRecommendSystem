@@ -34,17 +34,33 @@ A standalone Kafka server setup for testing message queue data sources.
 - Apache Kafka broker
 - Zookeeper coordination service
 - Kafka UI for management
+- **Producer test script** (`kafka_producer.py`) - Gửi messages vào Kafka
+- **Consumer test script** (`kafka_consumer_test.py`) - Nhận messages từ Kafka với group.id
+- **Automated test suite** (`test_kafka_connection.py`) - Verify toàn bộ kết nối
+- **Test runner scripts** (`run_tests.cmd`, `run_tests.sh`) - Interactive testing menu
 - Isolated from main project
 
-**Usage:**
+**Quick Start:**
 ```bash
 cd kafka-server
+
+# Option 1: Automated test (Recommended)
 docker-compose up -d
+python test_kafka_connection.py
+
+# Option 2: Interactive menu
+run_tests.cmd  # Windows
+./run_tests.sh # Linux/Mac
 ```
+
+**Key Concepts:**
+- **Producer** (`kafka_producer.py`) - Gửi messages, KHÔNG CẦN `group.id`
+- **Consumer** (`kafka_consumer_test.py`) - Nhận messages, BẮT BUỘC phải có `group.id`
 
 Access Kafka UI at: http://localhost:8080
 
 See `kafka-server/README.md` for detailed documentation.
+See `kafka-server/KAFKA_PRODUCER_VS_CONSUMER.md` for Producer vs Consumer guide.
 
 ## Testing Workflow
 
@@ -74,16 +90,28 @@ Test Kafka data source integration:
 cd tests/kafka-server
 docker-compose up -d
 
-# Create test topic
-docker exec -it test_kafka kafka-topics --create \
-  --bootstrap-server localhost:9092 \
-  --topic interactions \
-  --partitions 3 \
-  --replication-factor 1
+# Option A: Run automated test suite (Recommended)
+python test_kafka_connection.py
+# This will verify: connection, producer, consumer, and group.id requirement
 
-# Send test messages
-# (Use Kafka UI or kafka-console-producer)
+# Option B: Manual Producer-Consumer test
+# Terminal 1: Start Consumer
+python kafka_consumer_test.py
+# Select mode 3 (continuous)
+
+# Terminal 2: Start Producer
+python kafka_producer.py
+# Select mode 1 (batch)
+
+# Option C: Use interactive test runner
+run_tests.cmd  # Windows
+./run_tests.sh # Linux/Mac
 ```
+
+**Important Notes:**
+- **Producer** does NOT require `group.id` (only sends messages)
+- **Consumer** REQUIRES `group.id` (needs to track offset)
+- VRecommendation AI Server acts as a Consumer → needs `group.id`
 
 ### 3. API Testing
 
@@ -202,9 +230,24 @@ docker ps | grep test_kafka
 # View Kafka logs
 docker logs test_kafka
 
+# Run automated diagnostics
+cd tests/kafka-server
+python test_kafka_connection.py
+
+# Test Producer (no group.id needed)
+python kafka_producer.py
+
+# Test Consumer (group.id required)
+python kafka_consumer_test.py
+
 # Access Kafka UI
 open http://localhost:8080
 ```
+
+**Common Kafka Errors:**
+- `group.id not configured` → Consumer missing group.id, add it to config
+- `Connection refused` → Kafka not running, run `docker-compose up -d`
+- Port 9092 in use → Stop other Kafka instances
 
 ### Data Issues
 
@@ -246,9 +289,29 @@ tests/new-service/
     └── .gitkeep
 ```
 
+## Recent Updates
+
+### Kafka Test Suite (2024)
+
+**New features:**
+- ✅ Consumer test script with proper `group.id` configuration
+- ✅ Automated test suite for complete verification
+- ✅ Interactive test runner menus (Windows & Linux/Mac)
+- ✅ Comprehensive documentation on Producer vs Consumer
+
+**Quick test:**
+```bash
+cd tests/kafka-server
+python test_kafka_connection.py
+```
+
+See `kafka-server/SUMMARY.md` for quick overview or `kafka-server/CHANGELOG.md` for details.
+
 ## Resources
 
 - Main documentation: `../README.md`
 - Demo website docs: `demo-website/README.md`
 - Kafka server docs: `kafka-server/README.md`
+- Kafka quick reference: `kafka-server/QUICK_REFERENCE.md`
+- Producer vs Consumer guide: `kafka-server/KAFKA_PRODUCER_VS_CONSUMER.md`
 - API documentation: http://localhost:9999/docs
