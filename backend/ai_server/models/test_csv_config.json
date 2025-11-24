@@ -8,12 +8,12 @@
     "n_components": 2,
     "algorithm": "randomized"
   },
-  "created_at": "2025-11-23T03:38:30.072929",
+  "created_at": "2025-11-23T10:11:14.191738",
   "status": "completed",
   "model_path": "models/test_csv.pkl",
-  "training_completed_at": "2025-11-23T03:38:30.838770",
+  "training_completed_at": "2025-11-23T10:11:14.969244",
   "model_metrics": {
-    "training_time": 0.013245,
+    "training_time": 0.012951,
     "explained_variance_ratio": 0.44027114967884706,
     "n_users": 20,
     "n_items": 10,
@@ -28,5 +28,5 @@
     "has_user_features": false,
     "has_item_features": false
   },
-  "last_saved_at": "2025-11-23T03:38:30.848964"
+  "last_saved_at": "2025-11-23T10:11:14.982200"
 }

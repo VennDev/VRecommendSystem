@@ -294,7 +294,7 @@
             const container = document.getElementById('recommendations-container');
 
             try {
-                const response = await fetch('/api/recommendations?model_id=model_test&n=5');
+                const response = await fetch('/api/recommendations?task_name=url_test&model_id=url_test&n=10');
                 const data = await response.json();
 
                 console.log('Recommendations response:', data);
@@ -357,9 +357,6 @@
                                     </div>
                                 `;
                             }).join('')}
-                        </div>
-                        <div style="margin-top: 15px; padding: 12px; background: #e8f5e9; border-radius: 6px; font-size: 13px; color: #2e7d32;">
-                            ✨ Showing ${recommendations.length} AI-powered recommendations based on your activity
                         </div>
                     `;
                 } else {

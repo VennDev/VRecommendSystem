@@ -1,33 +1,38 @@
 data_1:
-    path: C:\\data\\query_1.csv
-    rename_columns: userId->user_id,productId->item_id,clicks->rating
-    type: csv
+  path: C:\\data\\query_1.csv
+  rename_columns: userId->user_id,productId->item_id,clicks->rating
+  type: csv
 data_3:
-    rename_columns: userId->user_id,productId->item_id,clicks->rating
-    type: api
-    url: https://api.example.com/data?param=value
+  rename_columns: userId->user_id,productId->item_id,clicks->rating
+  type: api
+  url: https://api.example.com/data?param=value
 data_4:
-    collection: collection_name
-    database: database_name
-    rename_columns: userId->user_id,productId->item_id,clicks->rating
-    type: nosql
+  collection: collection_name
+  database: database_name
+  rename_columns: userId->user_id,productId->item_id,clicks->rating
+  type: nosql
 data_5:
-    brokers: broker1:9092,broker2:9092
-    group_id: data_group
-    rename_columns: userId->user_id,productId->item_id,clicks->rating
-    topic: data_topic
-    type: messaging_queue
+  brokers: broker1:9092,broker2:9092
+  group_id: data_group
+  rename_columns: userId->user_id,productId->item_id,clicks->rating
+  topic: data_topic
+  type: messaging_queue
 data_a:
-    query: SELECT * FROM interactions
-    rename_columns: userId->user_id,productId->item_id,clicks->rating
-    type: sql
+  query: SELECT * FROM interactions
+  rename_columns: userId->user_id,productId->item_id,clicks->rating
+  type: sql
 kafka_test:
-    brokers: kafka:9093
-    group_id: model_kafka_consumer_group
-    rename_columns: ""
-    topic: interactions
-    type: messaging_queue
+  brokers: kafka:9093
+  group_id: model_kafka_consumer_group
+  rename_columns: ''
+  topic: interactions
+  type: messaging_queue
 test_csv:
-    path: /app/data/uploads/test_csv.csv
-    rename_columns: ""
-    type: csv
+  path: /app/data/uploads/test_csv.csv
+  rename_columns: ''
+  type: csv
+url_test:
+  paginated: false
+  rename_columns: ''
+  type: api
+  url: http://192.168.2.12:3500/api/training/interactions
