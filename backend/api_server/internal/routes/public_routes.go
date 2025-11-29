@@ -34,4 +34,5 @@ func PublicRouters(a *fiber.App) {
 
 	// Debug routes
 	route.Get("/debug/ip", handlers.DebugIPHandler)
+	route.Get("/debug/oauth-config", handlers.GetOAuthConfigHandler)
 }

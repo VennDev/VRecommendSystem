@@ -1,0 +1,100 @@
+# Docker Environment Configuration Example
+# Copy file này thành .env và điều chỉnh các giá trị theo nhu cầu
+
+# ============================================
+# Frontend Configuration
+# ============================================
+# Sử dụng tên service Docker để giao tiếp giữa các container
+VITE_API_SERVER_URL=http://api_server:2030
+VITE_AI_SERVER_URL=http://ai_server:9999
+FRONTEND_PORT=5173
+
+# ============================================
+# API Server Configuration
+# ============================================
+API_SERVER_HOST=0.0.0.0
+API_SERVER_PORT=2030
+API_SERVER_READ_TIMEOUT=60
+STATUS_DEV=dev
+
+# ============================================
+# AI Server Configuration
+# ============================================
+AI_SERVER_HOST=0.0.0.0
+AI_SERVER_PORT=9999
+
+# ============================================
+# Redis Configuration
+# ============================================
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+
+# ============================================
+# Kafka Configuration
+# ============================================
+KAFKA_PORT=9092
+KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+KAFKA_GROUP_ID=vrecom_ai_server_group
+
+# ============================================
+# Kafka UI Configuration
+# ============================================
+KAFKA_UI_PORT=8080
+
+# ============================================
+# Prometheus Configuration
+# ============================================
+PROMETHEUS_PORT=9090
+
+# ============================================
+# Database Configuration (MySQL)
+# ============================================
+MYSQL_HOST=mysql
+MYSQL_PORT=3306
+MYSQL_USER=admin
+MYSQL_PASSWORD=pokiwar0981
+MYSQL_DATABASE=shop
+
+# ============================================
+# MongoDB Configuration
+# ============================================
+MONGODB_HOST=mongodb
+MONGODB_PORT=27017
+MONGODB_USERNAME=root
+MONGODB_PASSWORD=password
+
+# ============================================
+# JWT & Session Configuration
+# ============================================
+JWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production
+SESSION_SECRET=your-super-secret-session-key-change-in-production
+
+# ============================================
+# Google OAuth Configuration
+# ============================================
+# Get credentials from: https://console.cloud.google.com/apis/credentials
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Local callback URL (for localhost access)
+GOOGLE_CALLBACK_URL=http://localhost:2030/api/v1/auth/google/callback
+
+# Public callback URL (for LAN/ngrok access - OPTIONAL)
+# If set, the system will automatically detect and use the appropriate URL
+# Example with ngrok: https://abc123.ngrok-free.app/api/v1/auth/google/callback
+GOOGLE_CALLBACK_URL_PUBLIC=
+
+# ============================================
+# Server URLs (Internal Docker Communication)
+# ============================================
+AI_SERVER_URL=http://ai_server:9999
+
+# ============================================
+# Notes
+# ============================================
+# - Sử dụng tên service (api_server, ai_server, redis, etc.) cho Docker networking
+# - Không sử dụng localhost hoặc 127.0.0.1 cho container-to-container communication
+# - Ports được expose ra host machine để truy cập từ bên ngoài
+# - Thay đổi JWT_SECRET_KEY và SESSION_SECRET cho production

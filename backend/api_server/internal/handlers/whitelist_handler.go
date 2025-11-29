@@ -171,9 +171,11 @@ func checkLocalhost(c fiber.Ctx) error {
 	isLocalhostIP := isDockerLocalhostIP(clientIP)
 
 	if !isLocalhostHost && !isLocalhostIP {
-		// Log the access attempt but allow it for Docker environment
-		global.Logger.Info(fmt.Sprintf("Docker environment detected, allowing access. Host: %s, IP: %s", host, clientIP))
-		// Temporarily bypass localhost check for Docker deployment
+		// Log the access attempt and deny it
+		global.Logger.Warn(fmt.Sprintf("Unauthorized access attempt to SuperAdmin endpoint. Host: %s, IP: %s", host, clientIP))
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "Access denied. This endpoint is only accessible from localhost.",
+		})
 	}
 	return nil
 }

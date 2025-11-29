@@ -1,0 +1,22 @@
+{
+  "name": "vrecommendation-admin-portal",
+  "version": "1.0.0",
+  "description": "VRecommendation Admin Portal - Localhost only management interface for SuperAdmin features",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "admin",
+    "portal",
+    "vrecommendation",
+    "localhost"
+  ],
+  "author": "VennDev",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
+  }
+}

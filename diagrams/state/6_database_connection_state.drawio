@@ -1,0 +1,146 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
+  <diagram id="database-connection-state" name="Sơ Đồ Trạng Thái Kết Nối Cơ Sở Dữ Liệu">
+    <mxGraphModel dx="1498" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="SƠ ĐỒ TRẠNG THÁI KẾT NỐI CƠ SỞ DỮ LIỆU" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="150" y="10" width="500" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="initial" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="235" y="50" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="state-disconnected" value="CHƯA KẾT NỐI&#xa;&#xa;Chưa thiết lập kết nối&#xa;đến cơ sở dữ liệu" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="155" y="110" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-connecting" value="ĐANG KẾT NỐI&#xa;&#xa;Đang thiết lập kết nối&#xa;TCP đến database server" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="155" y="240" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-authenticating" value="ĐANG XÁC THỰC&#xa;&#xa;Xác thực thông tin đăng nhập&#xa;username/password" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="155" y="370" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-connected" value="ĐÃ KẾT NỐI&#xa;&#xa;Kết nối thành công&#xa;sẵn sàng thực thi truy vấn" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="155" y="500" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-executing" value="ĐANG THỰC THI&#xa;&#xa;Đang chạy truy vấn SQL&#xa;hoặc thao tác dữ liệu" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="155" y="630" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-idle" value="KHÔNG HOẠT ĐỘNG&#xa;&#xa;Kết nối vẫn mở&#xa;nhưng đang chờ yêu cầu" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="500" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-error" value="LỖI KẾT NỐI&#xa;&#xa;Kết nối bị lỗi hoặc&#xa;mất kết nối đột ngột" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="240" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-reconnecting" value="ĐANG KẾT NỐI LẠI&#xa;&#xa;Tự động thử kết nối lại&#xa;sau khi mất kết nối" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="370" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-closed" value="ĐÃ ĐÓNG&#xa;&#xa;Kết nối đã được đóng&#xa;và giải phóng tài nguyên" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="155" y="780" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="final" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="235" y="910" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="final-outer" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="230" y="905" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="trans1" value="Khởi tạo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="initial" target="state-disconnected" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans2" value="Gọi kết nối" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-disconnected" target="state-connecting" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans3" value="Kết nối TCP thành công" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-connecting" target="state-authenticating" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans4" value="Không thể kết nối&#xa;[Timeout/Lỗi mạng]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-connecting" target="state-error" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans5" value="Xác thực thành công" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-authenticating" target="state-connected" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans6" value="Xác thực thất bại&#xa;[Sai mật khẩu]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-authenticating" target="state-error" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="410" />
+              <mxPoint x="380" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans7" value="Gửi truy vấn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-connected" target="state-executing" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans8" value="Không có yêu cầu&#xa;[Sau 30 giây]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-connected" target="state-idle" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans9" value="Truy vấn hoàn thành" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-executing" target="state-connected" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="100" y="670" />
+              <mxPoint x="100" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans10" value="Có yêu cầu mới" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-idle" target="state-connected" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="490" />
+              <mxPoint x="250" y="490" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans11" value="Hết thời gian chờ&#xa;[Pool timeout]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-idle" target="state-closed" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="820" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans12" value="Mất kết nối" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-executing" target="state-error" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="670" />
+              <mxPoint x="400" y="320" />
+              <mxPoint x="430" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans13" value="Thử kết nối lại&#xa;[Auto retry]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-error" target="state-reconnecting" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans14" value="Kết nối lại&#xa;thành công" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-reconnecting" target="state-connected" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="470" />
+              <mxPoint x="250" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans15" value="Hết số lần thử&#xa;[Max retries]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-reconnecting" target="state-closed" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="410" />
+              <mxPoint x="600" y="820" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans16" value="Đóng kết nối" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-connected" target="state-closed" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="80" y="540" />
+              <mxPoint x="80" y="820" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans17" value="Giải phóng" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-closed" target="final" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="note2" value="Connection Pool:&#xa;&#xa;• Quản lý số lượng kết nối&#xa;• Tái sử dụng kết nối&#xa;• Tự động đóng kết nối&#xa;  không hoạt động&#xa;• Giới hạn tối đa kết nối" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="20" y="110" width="120" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="note3" value="Cơ chế Retry:&#xa;&#xa;• Số lần thử: 3 lần&#xa;• Thời gian chờ giữa&#xa;  các lần: tăng dần&#xa;• Exponential backoff&#xa;• Ghi log mỗi lần thử" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="20" y="260" width="120" height="130" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

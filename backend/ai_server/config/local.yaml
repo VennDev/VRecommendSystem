@@ -8,59 +8,65 @@ port: 9999
 
 # Middleware configuration
 middleware:
-  cors:
-    credentials: true
-    origins: [ "http://localhost:5173", "http://127.0.0.1:5173" ]
-    methods: [ "*" ]
-    headers: [ "*" ]
+    cors:
+        credentials: true
+        origins:
+            - "http://localhost:5173"
+            - "http://127.0.0.1:5173"
+            - "http://192.168.2.12:5173"
+            - "http://localhost:3456"
+            - "http://127.0.0.1:3456"
+            - "http://192.168.2.12:3456"
+        methods: ["*"]
+        headers: ["*"]
 
 # Logger configuration
 logger:
-  max_size: 10 # Maximum size of the log file in MB
-  max_backups: 5 # Maximum number of backup log files to keep
-  max_age: 30 # Maximum age of a log file in days
-  compression: true # Whether to compress old log files
-  local_time: true # Use local time for timestamps in logs
-  enqueue: true # Whether to use an asynchronous logging queue
-  serialize: true # Whether to serialize log entries
+    max_size: 10 # Maximum size of the log file in MB
+    max_backups: 5 # Maximum number of backup log files to keep
+    max_age: 30 # Maximum age of a log file in days
+    compression: true # Whether to compress old log files
+    local_time: true # Use local time for timestamps in logs
+    enqueue: true # Whether to use an asynchronous logging queue
+    serialize: true # Whether to serialize log entries
 
 # Scheduler configuration
 scheduler:
-  threads: 0 # Number of threads to use for scheduling tasks
+    threads: 0 # Number of threads to use for scheduling tasks
 
 # DataChef configuration
 datachef:
-  batch_size: 1000 # Number of records to process in each batch
+    batch_size: 1000 # Number of records to process in each batch
 
 # Database configuration
 database:
-  sql:
-    # Database type can be 'mysql', 'postgres', 'sqlite', etc.
-    type: "mysql"
-    host: "192.168.2.12"
-    port: 3306
-    user: "admin"
-    password: "pokiwar0981"
-    db: "shop"
-    ssl: false
-    max_idle_conns: 10
-    max_open_conns: 100
-    conn_max_lifetime: 30
-    conn_max_idle_time: 30
+    sql:
+        # Database type can be 'mysql', 'postgres', 'sqlite', etc.
+        type: "mysql"
+        host: "192.168.2.12"
+        port: 3306
+        user: "admin"
+        password: "pokiwar0981"
+        db: "shop"
+        ssl: false
+        max_idle_conns: 10
+        max_open_conns: 100
+        conn_max_lifetime: 30
+        conn_max_idle_time: 30
 
-  nosql:
-    # Database type can be 'mongodb'
-    type: "mongodb"
-    host: "0.0.0.0"
-    port: 27017
-    username: "root"
-    password: "password"
-    ssl: false
-    max_idle_conns: 10
-    max_open_conns: 100
-    conn_max_lifetime: "30s"
-    conn_max_idle_time: "30s"
-    connection_timeout: "5s"
-    auth_source: "admin"
-    replica_set: "rs0"
-    server_selection_timeout: "5s"
+    nosql:
+        # Database type can be 'mongodb'
+        type: "mongodb"
+        host: "0.0.0.0"
+        port: 27017
+        username: "root"
+        password: "password"
+        ssl: false
+        max_idle_conns: 10
+        max_open_conns: 100
+        conn_max_lifetime: "30s"
+        conn_max_idle_time: "30s"
+        connection_timeout: "5s"
+        auth_source: "admin"
+        replica_set: "rs0"
+        server_selection_timeout: "5s"

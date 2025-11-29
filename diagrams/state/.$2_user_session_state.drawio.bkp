@@ -1,0 +1,328 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="user-session-state" name="User Session State Diagram">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Tiêu đề -->
+        <mxCell id="title" value="Sơ Đồ Trạng Thái: Phiên Người Dùng&#xa;(User Session State Diagram)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="264" y="20" width="300" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Initial State -->
+        <mxCell id="initial" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="399" y="80" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- State: ANONYMOUS -->
+        <mxCell id="state-anonymous" value="ANONYMOUS&#xa;(Ẩn Danh)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="339" y="150" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- State: AUTHENTICATING -->
+        <mxCell id="state-auth" value="AUTHENTICATING&#xa;(Đang Xác Thực)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="339" y="260" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- State: AUTHENTICATED -->
+        <mxCell id="state-authenticated" value="AUTHENTICATED&#xa;(Đã Xác Thực)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="339" y="370" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Composite State: ACTIVE (contains sub-states) -->
+        <mxCell id="state-active-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;dashPattern=5 5;" vertex="1" parent="1">
+          <mxGeometry x="290" y="480" width="248" height="240" as="geometry" />
+        </mxCell>
+
+        <mxCell id="state-active-label" value="ACTIVE (Đang Hoạt Động)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="314" y="490" width="200" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Sub-state: BROWSING -->
+        <mxCell id="substate-browsing" value="BROWSING&#xa;(Đang Duyệt)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="314" y="530" width="90" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Sub-state: INTERACTING -->
+        <mxCell id="substate-interacting" value="INTERACTING&#xa;(Đang Tương Tác)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="424" y="530" width="100" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Sub-state: VIEWING_RECOMMENDATIONS -->
+        <mxCell id="substate-viewing" value="VIEWING_&#xa;RECOMMENDATIONS&#xa;(Xem Gợi Ý)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="314" y="600" width="90" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- Sub-state: SEARCHING -->
+        <mxCell id="substate-searching" value="SEARCHING&#xa;(Đang Tìm Kiếm)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="424" y="600" width="100" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Initial sub-state -->
+        <mxCell id="substate-initial" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="304" y="545" width="15" height="15" as="geometry" />
+        </mxCell>
+
+        <!-- State: IDLE -->
+        <mxCell id="state-idle" value="IDLE&#xa;(Không Hoạt Động)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="589" y="570" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- State: EXPIRED -->
+        <mxCell id="state-expired" value="EXPIRED&#xa;(Hết Hạn)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="589" y="370" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- State: LOGGED_OUT -->
+        <mxCell id="state-logout" value="LOGGED_OUT&#xa;(Đã Đăng Xuất)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="339" y="780" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Final State -->
+        <mxCell id="final" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="399" y="880" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="final-outer" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=none;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="394" y="875" width="40" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Transitions -->
+        <!-- Initial -> ANONYMOUS -->
+        <mxCell id="trans1" value="page_load()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="initial" target="state-anonymous">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ANONYMOUS -> AUTHENTICATING -->
+        <mxCell id="trans2" value="click_login()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-anonymous" target="state-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AUTHENTICATING -> AUTHENTICATED -->
+        <mxCell id="trans3" value="auth_success()&#xa;[email in whitelist]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-auth" target="state-authenticated">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- AUTHENTICATING -> ANONYMOUS -->
+        <mxCell id="trans4" value="auth_failed()&#xa;[not in whitelist]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-auth" target="state-anonymous">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="269" y="290" />
+              <mxPoint x="269" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AUTHENTICATED -> ACTIVE -->
+        <mxCell id="trans5" value="start_activity()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-authenticated" target="state-active-container">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Sub-state initial -> BROWSING -->
+        <mxCell id="trans6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;dashed=1;" edge="1" parent="1" source="substate-initial" target="substate-browsing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- BROWSING <-> INTERACTING -->
+        <mxCell id="trans7" value="click_item()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=9;" edge="1" parent="1" source="substate-browsing" target="substate-interacting">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="trans8" value="back_to_list()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=9;" edge="1" parent="1" source="substate-interacting" target="substate-browsing">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="424" y="545" />
+              <mxPoint x="404" y="545" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- BROWSING <-> VIEWING -->
+        <mxCell id="trans9" value="view_recommendations()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=9;" edge="1" parent="1" source="substate-browsing" target="substate-viewing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="trans10" value="close()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=9;" edge="1" parent="1" source="substate-viewing" target="substate-browsing">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="324" y="580" />
+              <mxPoint x="344" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- INTERACTING <-> SEARCHING -->
+        <mxCell id="trans11" value="search()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=9;" edge="1" parent="1" source="substate-interacting" target="substate-searching">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="trans12" value="search_complete()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=9;" edge="1" parent="1" source="substate-searching" target="substate-interacting">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="444" y="590" />
+              <mxPoint x="464" y="590" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ACTIVE -> IDLE -->
+        <mxCell id="trans13" value="no_activity()&#xa;[timeout 5 min]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-active-container" target="state-idle">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- IDLE -> ACTIVE -->
+        <mxCell id="trans14" value="user_activity()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-idle" target="state-active-container">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="664" y="660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- IDLE -> EXPIRED -->
+        <mxCell id="trans15" value="session_timeout()&#xa;[no activity 30 min]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-idle" target="state-expired">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ACTIVE -> EXPIRED -->
+        <mxCell id="trans16" value="token_expired()&#xa;[24 hours]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-active-container" target="state-expired">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="600" />
+              <mxPoint x="550" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- EXPIRED -> ANONYMOUS -->
+        <mxCell id="trans17" value="redirect_login()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-expired" target="state-anonymous">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="664" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ACTIVE -> LOGGED_OUT -->
+        <mxCell id="trans18" value="click_logout()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-active-container" target="state-logout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- IDLE -> LOGGED_OUT -->
+        <mxCell id="trans19" value="click_logout()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-idle" target="state-logout">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="664" y="750" />
+              <mxPoint x="520" y="750" />
+              <mxPoint x="520" y="810" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AUTHENTICATED -> LOGGED_OUT -->
+        <mxCell id="trans20" value="click_logout()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-authenticated" target="state-logout">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="269" y="400" />
+              <mxPoint x="269" y="810" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- LOGGED_OUT -> Final -->
+        <mxCell id="trans21" value="cleanup()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-logout" target="final">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Internal Activities -->
+        <mxCell id="act-anonymous" value="entry/ load_page()&#xa;do/ show_public_content()&#xa;do/ track_anonymous_visit()" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="150" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act-auth" value="entry/ redirect_to_google()&#xa;do/ wait_for_callback()&#xa;do/ verify_email()&#xa;exit/ create_session()" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="230" width="220" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act-authenticated" value="entry/ load_user_data()&#xa;do/ set_jwt_token()&#xa;do/ set_session_cookie()&#xa;exit/ log_login_event()" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="325" width="220" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act-active" value="entry/ start_activity_tracking()&#xa;do/ log_user_actions()&#xa;do/ update_last_activity_time()&#xa;do/ refresh_token_if_needed()&#xa;exit/ save_activity_logs()" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="550" width="230" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act-idle" value="entry/ pause_tracking()&#xa;do/ show_idle_indicator()&#xa;do/ reduce_polling_rate()&#xa;exit/ resume_tracking()" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="660" width="230" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act-expired" value="entry/ clear_session()&#xa;do/ show_expired_message()&#xa;do/ disable_ui()&#xa;exit/ log_expiration()" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="560" y="240" width="220" height="75" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act-logout" value="entry/ clear_cookies()&#xa;do/ clear_local_storage()&#xa;do/ revoke_tokens()&#xa;do/ log_logout_event()&#xa;exit/ redirect_to_home()" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="780" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Notes -->
+        <mxCell id="note1" value="⏱️ Timeout Settings:&#xa;&#xa;• Idle timeout: 5 phút không hoạt động&#xa;• Session timeout: 30 phút (từ IDLE)&#xa;• Token expiration: 24 giờ&#xa;• Cookie max-age: 24 giờ&#xa;&#xa;Config trong:&#xa;- JWT_EXPIRATION=24h&#xa;- SESSION_MAX_AGE=86400s&#xa;- IDLE_TIMEOUT=300s" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="900" width="280" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note2" value="🔐 Security:&#xa;&#xa;• JWT token trong Authorization header&#xa;• Session cookie (HttpOnly, Secure)&#xa;• CSRF protection enabled&#xa;• Auto-refresh token trước khi expire&#xa;• Force logout nếu token invalid&#xa;• Whitelist check mỗi request quan trọng&#xa;&#xa;⚠️ Token stolen?&#xa;→ Admin remove khỏi whitelist&#xa;→ Tất cả sessions bị invalid" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="340" y="900" width="280" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note3" value="📊 Activity Tracking:&#xa;&#xa;Trong state ACTIVE, hệ thống track:&#xa;• Page views&#xa;• Product clicks&#xa;• Search queries&#xa;• Recommendation views&#xa;• Add to cart&#xa;• Purchase events&#xa;&#xa;Mọi action được log vào:&#xa;user_logs/{user_id}/{date}.json&#xa;&#xa;Use case:&#xa;- Analytics&#xa;- ML training data&#xa;- User behavior analysis" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="640" y="900" width="280" height="220" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note4" value="🔄 State Transitions:&#xa;&#xa;Normal Flow:&#xa;ANONYMOUS → AUTHENTICATING → &#xa;AUTHENTICATED → ACTIVE → IDLE → &#xa;LOGGED_OUT&#xa;&#xa;Error Flow:&#xa;AUTHENTICATING → ANONYMOUS (auth failed)&#xa;ACTIVE/IDLE → EXPIRED (timeout)&#xa;EXPIRED → ANONYMOUS (re-login)&#xa;&#xa;User Flow:&#xa;Any state → LOGGED_OUT (user clicks)&#xa;&#xa;Sub-states trong ACTIVE:&#xa;BROWSING ↔ INTERACTING ↔ SEARCHING&#xa;BROWSING ↔ VIEWING_RECOMMENDATIONS" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1100" width="350" height="220" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note5" value="💡 Best Practices:&#xa;&#xa;Frontend Implementation:&#xa;✓ Check token expiration trước mỗi API call&#xa;✓ Auto-refresh token khi còn &lt; 1 giờ&#xa;✓ Hiển thị countdown khi sắp expire&#xa;✓ Graceful handling khi session expired&#xa;✓ Save draft data trước khi logout&#xa;&#xa;Backend Implementation:&#xa;✓ Validate JWT token mỗi protected route&#xa;✓ Check whitelist cho sensitive operations&#xa;✓ Rate limiting theo session&#xa;✓ Log suspicious activities&#xa;✓ Implement session hijacking detection&#xa;&#xa;Monitoring:&#xa;• Track active sessions count&#xa;• Monitor expired/failed auth rate&#xa;• Alert on unusual patterns" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="410" y="1100" width="350" height="300" as="geometry" />
+        </mxCell>
+
+        <!-- Composite state note -->
+        <mxCell id="note-composite" value="Composite State:&#xa;ACTIVE chứa nhiều sub-states&#xa;để theo dõi hành vi chi tiết" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="314" y="670" width="210" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend-title" value="Chú Giải Màu" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="780" y="150" width="100" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-1" value="Xám: Chưa xác thực" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="780" y="180" width="140" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-2" value="Vàng: Đang xác thực" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="780" y="210" width="140" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-3" value="Xanh lá: Đã xác thực" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="780" y="240" width="140" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-4" value="Xanh dương: Đang hoạt động" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="780" y="270" width="140" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-5" value="Cam: Không hoạt động" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="780" y="300" width="140" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-6" value="Đỏ: Hết hạn/Lỗi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="780" y="330" width="140" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-7" value="Tím: Sub-states" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="780" y="360" width="140" height="25" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

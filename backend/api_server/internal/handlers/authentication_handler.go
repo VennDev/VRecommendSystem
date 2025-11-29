@@ -19,18 +19,48 @@ import (
 	"github.com/venndev/vrecommendation/global"
 )
 
+var (
+	googleClientID     string
+	googleClientSecret string
+	callbackURLLocal   string
+	callbackURLPublic  string
+)
+
 func NewAuth() {
+	// Load .env file
 	err := godotenv.Load()
 	if err != nil {
-		panic("Error loading .env file")
+		fmt.Println("Warning: .env file not found, using environment variables from system/docker")
 	}
 
-	googleClientId := os.Getenv("GOOGLE_CLIENT_ID")
-	googleClientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
-	if googleClientId == "" || googleClientSecret == "" {
-		panic("Google OAuth credentials are not set in environment variables")
+	googleClientID = os.Getenv("GOOGLE_CLIENT_ID")
+	googleClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
+
+	fmt.Printf("OAuth Debug - GOOGLE_CLIENT_ID set: %v, GOOGLE_CLIENT_SECRET set: %v\n",
+		googleClientID != "", googleClientSecret != "")
+
+	if googleClientID == "" || googleClientSecret == "" {
+		fmt.Println("Warning: Google OAuth credentials are not set. OAuth login will be disabled.")
+		return
 	}
 
+	// Get callback URLs from environment
+	callbackURLLocal = os.Getenv("GOOGLE_CALLBACK_URL")
+	if callbackURLLocal == "" {
+		callbackURLLocal = "http://localhost:2030/api/v1/auth/google/callback"
+	}
+
+	callbackURLPublic = os.Getenv("GOOGLE_CALLBACK_URL_PUBLIC")
+
+	fmt.Println("OAuth Callback URLs:")
+	fmt.Printf("  - Local:  %s\n", callbackURLLocal)
+	if callbackURLPublic != "" {
+		fmt.Printf("  - Public: %s\n", callbackURLPublic)
+	} else {
+		fmt.Println("  - Public: (not set)")
+	}
+
+	// Setup session store
 	secretKey := os.Getenv("SESSION_SECRET")
 	if secretKey == "" {
 		secretKey = os.Getenv("JWT_SECRET_KEY")
@@ -40,25 +70,61 @@ func NewAuth() {
 	}
 
 	store := sessions.NewCookieStore([]byte(secretKey))
-	store.MaxAge(24 * 60 * 60) // 24 hours in seconds
+	store.MaxAge(24 * 60 * 60)
 	store.Options.Path = "/"
 	store.Options.HttpOnly = true
-	store.Options.Secure = false        // Set false for HTTP in development
-	store.Options.MaxAge = 24 * 60 * 60 // 24 hours
+	store.Options.Secure = false
+	store.Options.MaxAge = 24 * 60 * 60
 	store.Options.SameSite = http.SameSiteLaxMode
-	store.Options.Domain = "" // Empty means current domain only
+	store.Options.Domain = ""
 
 	gothic.Store = store
 
+	// Initialize default provider
 	goth.UseProviders(
 		google.New(
-			googleClientId,
+			googleClientID,
 			googleClientSecret,
-			os.Getenv("GOOGLE_CALLBACK_URL"),
+			callbackURLLocal,
 			"email",
 			"profile",
 		),
 	)
+}
+
+// getCallbackURL returns the appropriate callback URL based on request
+func getCallbackURL(c fiber.Ctx) string {
+	// If no public URL configured, always use local
+	if callbackURLPublic == "" {
+		return callbackURLLocal
+	}
+
+	// Check if request is from localhost
+	host := c.Get("Host")
+	origin := c.Get("Origin")
+	referer := c.Get("Referer")
+
+	// Check Host header
+	if strings.HasPrefix(host, "localhost") || strings.HasPrefix(host, "127.0.0.1") {
+		return callbackURLLocal
+	}
+
+	// Check Origin header
+	if origin != "" {
+		if strings.Contains(origin, "localhost") || strings.Contains(origin, "127.0.0.1") {
+			return callbackURLLocal
+		}
+	}
+
+	// Check Referer header
+	if referer != "" {
+		if strings.Contains(referer, "localhost") || strings.Contains(referer, "127.0.0.1") {
+			return callbackURLLocal
+		}
+	}
+
+	// Default to public URL for non-localhost requests
+	return callbackURLPublic
 }
 
 func BeginAuthHandler(c fiber.Ctx) error {
@@ -69,59 +135,43 @@ func BeginAuthHandler(c fiber.Ctx) error {
 		})
 	}
 
-	var authURL string
-	var authErr error
+	if googleClientID == "" || googleClientSecret == "" {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "OAuth not configured",
+		})
+	}
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		q := r.URL.Query()
-		q.Add("provider", provider)
-		r.URL.RawQuery = q.Encode()
+	// Get appropriate callback URL
+	callbackURL := getCallbackURL(c)
+	fmt.Printf("[OAuth] BeginAuth - Using callback: %s\n", callbackURL)
 
-		authURL, authErr = gothic.GetAuthURL(w, r)
-	})
+	// Create provider with selected callback URL
+	googleProvider := google.New(
+		googleClientID,
+		googleClientSecret,
+		callbackURL,
+		"email",
+		"profile",
+	)
 
-	// Convert Fiber request to HTTP request
-	httpReq, err := adaptor.ConvertRequest(c, false)
+	// Get auth URL directly from provider
+	sess, err := googleProvider.BeginAuth("")
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to convert request",
+			"error":   "Failed to begin auth",
+			"details": err.Error(),
 		})
 	}
 
-	w := &fiberResponseWriter{
-		ctx:     c,
-		headers: make(http.Header),
-	}
-
-	// Execute handler
-	handler.ServeHTTP(w, httpReq)
-
-	// Copy ALL headers including Set-Cookie
-	for key, values := range w.headers {
-		for _, value := range values {
-			if key == "Set-Cookie" {
-				c.Append(key, value)
-			} else {
-				c.Set(key, value)
-			}
-		}
-	}
-
-	if authErr != nil {
-		fmt.Println("GetAuthURL error:", authErr)
+	authURL, err := sess.GetAuthURL()
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   "Failed to get auth URL",
-			"details": authErr.Error(),
+			"details": err.Error(),
 		})
 	}
 
-	if authURL == "" {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Auth URL is empty",
-		})
-	}
-
-	// Redirect user to OAuth provider
+	fmt.Printf("[OAuth] Redirecting to: %s\n", authURL)
 	return c.Redirect().To(authURL)
 }
 
@@ -133,18 +183,7 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
-	// Debug: Print incoming cookies
-	fmt.Printf("Incoming cookies: %s\n", c.Get("Cookie"))
-	fmt.Printf("Query params: %s\n", c.Request().URI().QueryString())
-
-	// Get the provider from goth
-	gothProvider, err := goth.GetProvider(provider)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   "Invalid provider",
-			"details": err.Error(),
-		})
-	}
+	fmt.Printf("[OAuth] Callback received\n")
 
 	// Get code and state from query params
 	code := c.Query("code")
@@ -156,8 +195,21 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
-	// Create a new session for this callback (not relying on cookies from BeginAuth)
-	sess, err := gothProvider.BeginAuth(state)
+	// Get appropriate callback URL
+	callbackURL := getCallbackURL(c)
+	fmt.Printf("[OAuth] Callback - Using callback: %s\n", callbackURL)
+
+	// Create provider with matching callback URL
+	googleProvider := google.New(
+		googleClientID,
+		googleClientSecret,
+		callbackURL,
+		"email",
+		"profile",
+	)
+
+	// Begin auth session
+	sess, err := googleProvider.BeginAuth(state)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   "Failed to begin auth",
@@ -165,12 +217,12 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
-	// Exchange code for access token using url.Values which implements goth.Params
+	// Exchange code for token
 	queryParams := url.Values{}
 	queryParams.Set("code", code)
 	queryParams.Set("state", state)
 
-	_, err = sess.Authorize(gothProvider, queryParams)
+	_, err = sess.Authorize(googleProvider, queryParams)
 	if err != nil {
 		fmt.Printf("Authorization error: %v\n", err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -179,8 +231,8 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
-	// Get user info from provider
-	user, err := gothProvider.FetchUser(sess)
+	// Get user info
+	user, err := googleProvider.FetchUser(sess)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   "Failed to fetch user",
@@ -188,7 +240,7 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
-	fmt.Printf("User authenticated successfully: %s (%s)\n", user.Email, user.Provider)
+	fmt.Printf("User authenticated: %s (%s)\n", user.Email, user.Provider)
 
 	// Check if email is whitelisted
 	whitelisted, err := CheckEmailWhitelistedInternal(user.Email)
@@ -209,26 +261,19 @@ func CallbackHandler(c fiber.Ctx) error {
 
 	fmt.Printf("User email %s is whitelisted\n", user.Email)
 
-	// Convert Fiber request to HTTP request for session handling
-	httpReq2, err := adaptor.ConvertRequest(c, false)
+	// Save session
+	httpReq, err := adaptor.ConvertRequest(c, false)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to convert request for session",
+			"error": "Failed to convert request",
 		})
 	}
 
-	// Create response writer for session
 	w := &fiberResponseWriter{ctx: c, headers: make(http.Header)}
-
-	// Save user to session manually using gorilla sessions
 	sessionName := fmt.Sprintf("%s_%s", gothic.SessionName, provider)
-	fmt.Printf("Creating session with name: %s\n", sessionName)
 
-	// Try to get existing session first, create new if it fails
-	session, err := gothic.Store.Get(httpReq2, sessionName)
+	session, err := gothic.Store.Get(httpReq, sessionName)
 	if err != nil {
-		fmt.Printf("Failed to get existing session, creating new one: %v\n", err)
-		// Clear any corrupted cookies first
 		c.Cookie(&fiber.Cookie{
 			Name:     sessionName,
 			Value:    "",
@@ -237,25 +282,19 @@ func CallbackHandler(c fiber.Ctx) error {
 			HTTPOnly: true,
 			Secure:   false,
 		})
-
-		// Create a completely new session
 		session = sessions.NewSession(gothic.Store, sessionName)
 		session.IsNew = true
 	}
 
-	// Ensure proper session options
 	session.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   24 * 60 * 60, // 24 hours
+		MaxAge:   24 * 60 * 60,
 		HttpOnly: true,
-		Secure:   false, // HTTP in development
+		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
 	}
 
-	// Clear any existing values first to avoid corruption
 	session.Values = make(map[interface{}]interface{})
-
-	// Store user data as separate fields (gob-compatible)
 	session.Values["user_id"] = user.UserID
 	session.Values["email"] = user.Email
 	session.Values["name"] = user.Name
@@ -264,9 +303,7 @@ func CallbackHandler(c fiber.Ctx) error {
 	session.Values["access_token"] = user.AccessToken
 	session.Values["authenticated"] = true
 
-	// Save session
-	fmt.Printf("Attempting to save session with values: %+v\n", session.Values)
-	if err := session.Save(httpReq2, w); err != nil {
+	if err := session.Save(httpReq, w); err != nil {
 		fmt.Printf("Failed to save session: %v\n", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   "Failed to save session",
@@ -274,25 +311,18 @@ func CallbackHandler(c fiber.Ctx) error {
 		})
 	}
 
-	fmt.Printf("Session saved successfully!\n")
-	fmt.Printf("Response headers: %v\n", w.headers)
-
-	// Copy session cookies to Fiber response (for API server authentication)
+	// Copy session cookies
 	if cookies := w.headers["Set-Cookie"]; len(cookies) > 0 {
 		for _, cookie := range cookies {
-			fmt.Printf("Setting cookie: %s\n", cookie)
 			c.Append("Set-Cookie", cookie)
 		}
-	} else {
-		fmt.Printf("WARNING: No Set-Cookie headers found!\n")
 	}
 
-	// Generate JWT token for cross-service authentication (for AI server)
+	// Generate JWT token
 	jwtToken, err := generateJWTToken(user.UserID, user.Email, user.Name)
 	if err != nil {
 		fmt.Printf("Failed to generate JWT token: %v\n", err)
 	} else {
-		// Set JWT token as an additional cookie for AI server
 		c.Cookie(&fiber.Cookie{
 			Name:     "auth_token",
 			Value:    jwtToken,
@@ -302,32 +332,30 @@ func CallbackHandler(c fiber.Ctx) error {
 			Secure:   false,
 			SameSite: "Lax",
 		})
-		fmt.Printf("JWT token cookie set successfully\n")
 	}
 
-	// Encode user data as URL parameters to pass to frontend
+	// Prepare user data for frontend
 	userData := url.Values{}
 	userData.Set("id", user.UserID)
 	userData.Set("email", user.Email)
 	userData.Set("name", user.Name)
 	userData.Set("picture", user.AvatarURL)
 	userData.Set("provider", user.Provider)
-
-	// Add JWT token to URL params for frontend to store
 	if jwtToken != "" {
 		userData.Set("token", jwtToken)
 	}
 
-	// Get frontend URL from config or environment variable
+	// Get frontend URL
 	frontendUrl := global.Config.Server.FrontendUrl
 	if envUrl := os.Getenv("FRONTEND_URL"); envUrl != "" {
 		frontendUrl = envUrl
 	}
+	if frontendUrl == "" {
+		frontendUrl = "http://localhost:5173"
+	}
 
-	// Redirect to frontend with user data and token
 	redirectURL := fmt.Sprintf("%s/auth/callback?%s", frontendUrl, userData.Encode())
-
-	fmt.Printf("Redirecting to: %s\n", redirectURL)
+	fmt.Printf("Redirecting to frontend: %s\n", redirectURL)
 
 	return c.Redirect().To(redirectURL)
 }
@@ -335,7 +363,6 @@ func CallbackHandler(c fiber.Ctx) error {
 func LogoutHandler(c fiber.Ctx) error {
 	provider := c.Query("provider", "google")
 
-	// Convert request
 	httpReq, err := adaptor.ConvertRequest(c, false)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -343,34 +370,30 @@ func LogoutHandler(c fiber.Ctx) error {
 		})
 	}
 
-	// Create response writer
-	w := &fiberResponseWriter{
-		ctx:     c,
-		headers: make(http.Header),
-	}
+	w := &fiberResponseWriter{ctx: c, headers: make(http.Header)}
 
-	// Get and clear session
 	session, err := gothic.Store.Get(httpReq, fmt.Sprintf("%s_%s", gothic.SessionName, provider))
-	if err != nil {
-		fmt.Printf("Failed to get session for logout: %v\n", err)
-		// Continue anyway to clear client-side
-	} else {
-		// Clear all session values
+	if err == nil {
 		session.Values = make(map[interface{}]interface{})
-		session.Options.MaxAge = -1 // Delete cookie
+		session.Options.MaxAge = -1
+		session.Save(httpReq, w)
 
-		// Save cleared session
-		if err := session.Save(httpReq, w); err != nil {
-			fmt.Printf("Failed to clear session: %v\n", err)
-		}
-
-		// Copy cleared cookie to response
 		if cookies := w.headers["Set-Cookie"]; len(cookies) > 0 {
 			for _, cookie := range cookies {
 				c.Append("Set-Cookie", cookie)
 			}
 		}
 	}
+
+	// Clear auth_token cookie
+	c.Cookie(&fiber.Cookie{
+		Name:     "auth_token",
+		Value:    "",
+		MaxAge:   -1,
+		Path:     "/",
+		HTTPOnly: true,
+		Secure:   false,
+	})
 
 	return c.JSON(fiber.Map{
 		"success": true,
@@ -381,13 +404,11 @@ func LogoutHandler(c fiber.Ctx) error {
 func GetUserHandler(c fiber.Ctx) error {
 	provider := c.Query("provider", "google")
 
-	// Check for JWT token first
+	// Check JWT token first
 	authHeader := c.Get("Authorization")
 	if authHeader != "" && strings.HasPrefix(authHeader, "Bearer ") {
-		token := authHeader[7:] // Remove "Bearer " prefix
-		fmt.Printf("GetUserHandler - Found JWT token\n")
+		token := authHeader[7:]
 
-		// Verify JWT token
 		secretKey := os.Getenv("JWT_SECRET_KEY")
 		if secretKey == "" {
 			secretKey = os.Getenv("SESSION_SECRET")
@@ -409,50 +430,31 @@ func GetUserHandler(c fiber.Ctx) error {
 				email, _ := claims["email"].(string)
 				name, _ := claims["name"].(string)
 
-				fmt.Printf("GetUserHandler - JWT token valid for user: %s\n", email)
-
 				return c.JSON(fiber.Map{
 					"user": fiber.Map{
 						"id":       userId,
 						"name":     name,
 						"email":    email,
-						"provider": "google", // Default since JWT doesn't store provider
-						"picture":  "",       // JWT doesn't store picture URL
+						"provider": "google",
+						"picture":  "",
 					},
 				})
 			}
 		}
-
-		fmt.Printf("GetUserHandler - Invalid JWT token: %v\n", err)
-		// JWT token is invalid, continue to session check
 	}
 
-	// Fallback to session-based authentication
-	fmt.Printf("GetUserHandler - Checking session authentication\n")
-
-	// Debug: Print cookie header
-	cookieHeader := c.Get("Cookie")
-	fmt.Printf("GetUserHandler - Cookie header: %s\n", cookieHeader)
-
+	// Fallback to session
 	sessionName := fmt.Sprintf("%s_%s", gothic.SessionName, provider)
-	fmt.Printf("GetUserHandler - Looking for session cookie: %s\n", sessionName)
 
-	// Convert Fiber request to HTTP request
 	httpReq, err := adaptor.ConvertRequest(c, false)
 	if err != nil {
-		fmt.Printf("Failed to convert request: %v\n", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to convert request",
 		})
 	}
 
-	// Get session
-	fmt.Printf("Attempting to get session: %s\n", sessionName)
-
 	session, err := gothic.Store.Get(httpReq, sessionName)
 	if err != nil {
-		fmt.Printf("Failed to get session: %v\n", err)
-		// Clear corrupted cookie and return error
 		c.Cookie(&fiber.Cookie{
 			Name:     sessionName,
 			Value:    "",
@@ -462,14 +464,10 @@ func GetUserHandler(c fiber.Ctx) error {
 			Secure:   false,
 		})
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error":   "Not authenticated - session error. Please login again.",
-			"details": err.Error(),
+			"error": "Not authenticated - session error",
 		})
 	}
 
-	fmt.Printf("Session values: %+v\n", session.Values)
-
-	// Check if authenticated
 	authenticated, ok := session.Values["authenticated"].(bool)
 	if !ok || !authenticated {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -477,7 +475,6 @@ func GetUserHandler(c fiber.Ctx) error {
 		})
 	}
 
-	// Get user data from session
 	userId, _ := session.Values["user_id"].(string)
 	email, _ := session.Values["email"].(string)
 	name, _ := session.Values["name"].(string)
@@ -501,6 +498,7 @@ func GetUserHandler(c fiber.Ctx) error {
 	})
 }
 
+// Response writer adapter
 type fiberResponseWriter struct {
 	ctx        fiber.Ctx
 	statusCode int
@@ -521,11 +519,13 @@ func (w *fiberResponseWriter) WriteHeader(statusCode int) {
 	w.statusCode = statusCode
 }
 
-// generateJWTToken creates a JWT token for cross-service authentication
 func generateJWTToken(userID, email, name string) (string, error) {
 	secretKey := os.Getenv("JWT_SECRET_KEY")
 	if secretKey == "" {
 		secretKey = os.Getenv("SESSION_SECRET")
+	}
+	if secretKey == "" {
+		secretKey = "default-development-secret-key-change-in-production"
 	}
 
 	claims := jwt.MapClaims{
@@ -537,27 +537,19 @@ func generateJWTToken(userID, email, name string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(secretKey))
-	if err != nil {
-		return "", fmt.Errorf("failed to sign JWT token: %w", err)
-	}
-
-	return tokenString, nil
+	return token.SignedString([]byte(secretKey))
 }
 
-// ClearSessionsHandler clears all session cookies for debugging
 func ClearSessionsHandler(c fiber.Ctx) error {
-	// Clear common session cookie names
 	sessionNames := []string{
 		"_gothic_session",
 		"_gothic_session_google",
-		"_gothic_session_github",
 		"auth_token",
 	}
 
-	for _, sessionName := range sessionNames {
+	for _, name := range sessionNames {
 		c.Cookie(&fiber.Cookie{
-			Name:     sessionName,
+			Name:     name,
 			Value:    "",
 			MaxAge:   -1,
 			Path:     "/",
@@ -567,7 +559,16 @@ func ClearSessionsHandler(c fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"message": "All sessions cleared successfully",
+		"message": "Sessions cleared",
 		"cleared": sessionNames,
+	})
+}
+
+func GetOAuthConfigHandler(c fiber.Ctx) error {
+	return c.JSON(fiber.Map{
+		"callback_url_local":  callbackURLLocal,
+		"callback_url_public": callbackURLPublic,
+		"selected_callback":   getCallbackURL(c),
+		"client_id_set":       googleClientID != "",
 	})
 }

@@ -4,6 +4,8 @@ server:
     host: "0.0.0.0"
     port: 2030
     ai_server_url: "http://localhost:9999"
+    # Frontend URL - Can be overridden by FRONTEND_URL environment variable
+    # For LAN access, set FRONTEND_URL=http://YOUR_IP:5173
     frontend_url: "http://localhost:5173"
 
 # Logger configuration
@@ -17,7 +19,7 @@ logger:
 # JWT configuration
 jwt:
     secret_key: "your_secret"
-    expire_mins_count: 15
+    expire_mins_count: 1440
     refresh_key: "refresh_secret"
     refresh_expire_hours_count: 720
 
@@ -39,14 +41,14 @@ database:
 redis:
     host: "redis-11030.c1.ap-southeast-1-1.ec2.redns.redis-cloud.com"
     port: 11030
-    password: "UqIklPGg9na7naIGGTTlvrIXqWPsTJSH" # Leave empty if no password
-    db: 0 # Default database
-    ssl: false # Enable SSL/TLS connection
-    max_retries: 3 # Maximum number of retries
-    pool_size: 10 # Maximum number of connections in the pool
-    min_idle_conns: 5 # Minimum number of idle connections
-    max_conn_age: 0 # Maximum connection age in seconds (0 means no limit)
-    pool_timeout: 4 # Pool timeout in seconds
-    idle_timeout: 300 # Idle connection timeout in seconds
-    read_timeout: 3 # Read timeout in seconds
-    write_timeout: 3 # Write timeout in seconds
+    password: "UqIklPGg9na7naIGGTTlvrIXqWPsTJSH"
+    db: 0
+    ssl: false
+    max_retries: 3
+    pool_size: 10
+    min_idle_conns: 5
+    max_conn_age: 0
+    pool_timeout: 4
+    idle_timeout: 300
+    read_timeout: 3
+    write_timeout: 3

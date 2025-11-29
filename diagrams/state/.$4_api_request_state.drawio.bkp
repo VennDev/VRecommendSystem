@@ -1,0 +1,121 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
+  <diagram id="api-request-state" name="Sơ Đồ Trạng Thái Yêu Cầu API">
+    <mxGraphModel dx="1498" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="SƠ ĐỒ TRẠNG THÁI YÊU CẦU API" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="200" y="10" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="initial" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" parent="1" vertex="1">
+          <mxGeometry x="235" y="50" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="state-pending" value="ĐANG CHỜ&#xa;&#xa;Yêu cầu đã được gửi&#xa;đang chờ xử lý" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="155" y="110" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-validating" value="ĐANG XÁC THỰC&#xa;&#xa;Kiểm tra token JWT&#xa;và quyền truy cập" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="155" y="240" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-processing" value="ĐANG XỬ LÝ&#xa;&#xa;Thực thi logic nghiệp vụ&#xa;và truy vấn dữ liệu" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="155" y="380" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-success" value="THÀNH CÔNG&#xa;&#xa;Trả về kết quả&#xa;với mã 200/201" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="155" y="520" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-unauthorized" value="KHÔNG XÁC THỰC&#xa;&#xa;Token không hợp lệ&#xa;hoặc hết hạn (401)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="430" y="240" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-forbidden" value="KHÔNG CÓ QUYỀN&#xa;&#xa;Người dùng không được&#xa;phép truy cập (403)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="430" y="350" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-error" value="LỖI HỆ THỐNG&#xa;&#xa;Lỗi server hoặc&#xa;ngoại lệ (500)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="430" y="460" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-not-found" value="KHÔNG TÌM THẤY&#xa;&#xa;Tài nguyên không tồn tại&#xa;trong hệ thống (404)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="430" y="570" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="final" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" parent="1" vertex="1">
+          <mxGeometry x="235" y="660" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="final-outer" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=none;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="230" y="655" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="trans1" value="Nhận yêu cầu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="initial" target="state-pending" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans2" value="Bắt đầu xác thực" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-pending" target="state-validating" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans3" value="Xác thực thành công&#xa;[Token hợp lệ]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-validating" target="state-processing" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans4" value="Token không hợp lệ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-validating" target="state-unauthorized" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans5" value="Không có quyền&#xa;truy cập" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-processing" target="state-forbidden" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans6" value="Xử lý thành công" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-processing" target="state-success" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans7" value="Lỗi xử lý" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-processing" target="state-error" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="420" />
+              <mxPoint x="380" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans8" value="Không tìm thấy&#xa;tài nguyên" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-processing" target="state-not-found" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="390" y="440" />
+              <mxPoint x="390" y="610" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans9" value="Trả về phản hồi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-success" target="final" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans10" value="Trả về lỗi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-unauthorized" target="final" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="200" />
+              <mxPoint x="80" y="200" />
+              <mxPoint x="80" y="675" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans11" value="Trả về lỗi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-forbidden" target="final" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="660" y="390" />
+              <mxPoint x="660" y="675" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans12" value="Trả về lỗi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-error" target="final" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="500" />
+              <mxPoint x="640" y="675" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans13" value="Trả về lỗi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-not-found" target="final" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="675" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="note1" value="Chú thích:&#xa;- Màu xanh dương: Trạng thái xử lý&#xa;- Màu vàng: Trạng thái chờ&#xa;- Màu xanh lá: Trạng thái thành công&#xa;- Màu cam: Trạng thái cảnh báo&#xa;- Màu đỏ: Trạng thái lỗi" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontColor=#333333;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="20" y="380" width="120" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="note2" value="Quy trình xử lý API:&#xa;&#xa;1. Nhận yêu cầu từ client&#xa;2. Xác thực token JWT&#xa;3. Kiểm tra quyền truy cập&#xa;4. Thực thi logic nghiệp vụ&#xa;5. Trả về kết quả/lỗi" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="20" y="110" width="120" height="140" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

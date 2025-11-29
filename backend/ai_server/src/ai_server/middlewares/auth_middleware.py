@@ -9,13 +9,39 @@ from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 jwt_decode = jwt.decode
 
+
+# Allowed origins for CORS with credentials
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://192.168.2.12:5173",
+    "http://localhost:3456",
+    "http://127.0.0.1:3456",
+    "http://192.168.2.12:3456",
+    "http://localhost:9999",
+    "http://127.0.0.1:9999",
+    "http://192.168.2.12:9999",
+]
+
+
 def get_cors_headers(origin: str = None) -> dict:
     """Get CORS headers with proper origin handling for credentials."""
+    # If origin is in allowed list, use it; otherwise use first allowed origin
+    if origin and origin in ALLOWED_ORIGINS:
+        allowed_origin = origin
+    elif origin and any(
+        origin.startswith(o.rsplit(":", 1)[0]) for o in ALLOWED_ORIGINS
+    ):
+        # Allow any port from allowed hosts
+        allowed_origin = origin
+    else:
+        allowed_origin = origin if origin else "http://localhost:5173"
+
     return {
-        "Access-Control-Allow-Origin": origin or "http://localhost:5173",
+        "Access-Control-Allow-Origin": allowed_origin,
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Methods": "*",
-        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie",
     }
 
 
@@ -30,10 +56,16 @@ async def verify_authentication(request: Request, call_next: Callable):
     path = request.url.path
     method = request.method
 
-    # Allow all OPTIONS requests (CORS preflight)
+    # Allow all OPTIONS requests (CORS preflight) - return immediately with CORS headers
     if method == "OPTIONS":
-        response = await call_next(request)
-        return response
+        origin = request.headers.get("origin")
+        cors_headers = get_cors_headers(origin)
+        cors_headers["Access-Control-Max-Age"] = "86400"
+        return JSONResponse(
+            status_code=200,
+            content={"status": "ok"},
+            headers=cors_headers,
+        )
 
     public_paths = [
         "/api/v1/health",

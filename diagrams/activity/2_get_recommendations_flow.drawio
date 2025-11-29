@@ -1,0 +1,259 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="get-recommendations-flow" name="Get Recommendations Flow">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Tiêu đề -->
+        <mxCell id="title" value="Sơ Đồ Luồng Lấy Gợi Ý Sản Phẩm&#xa;(Get Recommendations Flow)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="264" y="20" width="300" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Start -->
+        <mxCell id="start" value="Bắt đầu" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="364" y="80" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Người dùng yêu cầu gợi ý -->
+        <mxCell id="user-request" value="Người dùng yêu cầu&#xa;gợi ý sản phẩm&#xa;(user_id, model_id, n)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="334" y="170" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Frontend gọi API -->
+        <mxCell id="frontend-call" value="Frontend gọi API&#xa;GET /api/v1/recommend&#xa;với params: user_id,&#xa;model_id, n" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="334" y="270" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- API Server nhận request -->
+        <mxCell id="api-receive" value="API Server (Go)&#xa;nhận request" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="334" y="380" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Validate params -->
+        <mxCell id="validate" value="Kiểm tra tham số&#xa;user_id và model_id&#xa;có hợp lệ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="339" y="470" width="150" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Invalid params -->
+        <mxCell id="invalid-params" value="Trả về lỗi 400&#xa;Bad Request" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="564" y="490" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Tạo cache key -->
+        <mxCell id="create-cache-key" value="Tạo cache key:&#xa;recommend:{user_id}:&#xa;{model_id}:{n}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="334" y="600" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Check Redis cache -->
+        <mxCell id="check-cache" value="Kiểm tra Redis&#xa;có dữ liệu cache?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="339" y="700" width="150" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Cache hit -->
+        <mxCell id="cache-hit" value="Lấy dữ liệu từ cache&#xa;(cache hit)&#xa;⚡ Nhanh!" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="564" y="720" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Gọi AI Server -->
+        <mxCell id="call-ai-server" value="Gọi AI Server&#xa;GET /api/v1/recommend/&#xa;{user_id}/{model_id}/{n}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="334" y="830" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- AI Server xử lý -->
+        <mxCell id="ai-process" value="AI Server (Python)&#xa;RecommendHandler&#xa;nhận request" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="334" y="930" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ModelService load model -->
+        <mxCell id="load-model" value="ModelService&#xa;load model từ file&#xa;models/{model_id}.pkl" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="334" y="1030" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Check model exists -->
+        <mxCell id="check-model" value="Model có&#xa;tồn tại?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="339" y="1130" width="150" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Model not found -->
+        <mxCell id="model-not-found" value="Trả về lỗi 404&#xa;Model not found" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="564" y="1150" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Predict recommendations -->
+        <mxCell id="predict" value="Model thực hiện dự đoán:&#xa;- SVD: matrix factorization&#xa;- NMF: non-negative MF&#xa;Trả về top-N items" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="334" y="1260" width="160" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Format result -->
+        <mxCell id="format-result" value="Format kết quả JSON:&#xa;- recommended_items: [...]&#xa;- model_id, user_id&#xa;- timestamp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="334" y="1380" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Trả về API Server -->
+        <mxCell id="return-to-api" value="Trả kết quả về&#xa;API Server (Go)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="334" y="1490" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Save to cache -->
+        <mxCell id="save-cache" value="Lưu kết quả vào&#xa;Redis cache&#xa;(TTL: 5 phút)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="334" y="1580" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Merge cache and API results -->
+        <mxCell id="merge-results" value="Kết quả từ cache&#xa;hoặc AI Server" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="564" y="810" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Parse JSON -->
+        <mxCell id="parse-json" value="Parse JSON response" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="564" y="900" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Return to frontend -->
+        <mxCell id="return-frontend" value="Trả kết quả JSON&#xa;về Frontend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="564" y="990" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Frontend hiển thị -->
+        <mxCell id="frontend-display" value="Frontend hiển thị&#xa;danh sách sản phẩm&#xa;được gợi ý" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="564" y="1080" width="140" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- End success -->
+        <mxCell id="end-success" value="Kết thúc&#xa;thành công" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="584" y="1180" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- End fail -->
+        <mxCell id="end-fail" value="Kết thúc&#xa;có lỗi" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="744" y="490" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows -->
+        <mxCell id="arrow1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="start" target="user-request">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="user-request" target="frontend-call">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="frontend-call" target="api-receive">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="api-receive" target="validate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow5" value="Không hợp lệ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="validate" target="invalid-params">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow6" value="Hợp lệ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="validate" target="create-cache-key">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="invalid-params" target="end-fail">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="create-cache-key" target="check-cache">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow9" value="Có (Hit)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="check-cache" target="cache-hit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow10" value="Không (Miss)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="check-cache" target="call-ai-server">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="cache-hit" target="merge-results">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="call-ai-server" target="ai-process">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ai-process" target="load-model">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="load-model" target="check-model">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow15" value="Không" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="check-model" target="model-not-found">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow16" value="Có" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="check-model" target="predict">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="model-not-found" target="end-fail">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="794" y="1180" />
+              <mxPoint x="794" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="predict" target="format-result">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="format-result" target="return-to-api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="return-to-api" target="save-cache">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="save-cache" target="merge-results">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="304" y="1615" />
+              <mxPoint x="304" y="840" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="merge-results" target="parse-json">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="parse-json" target="return-frontend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="return-frontend" target="frontend-display">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="frontend-display" target="end-success">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Chú thích -->
+        <mxCell id="note1" value="Chú thích:&#xa;- Hộp xanh dương: Frontend&#xa;- Hộp vàng nhạt: API Server (Go)&#xa;- Hộp cam nhạt: AI Server (Python)&#xa;- Hộp tím: Redis Cache&#xa;- Cache TTL: 5 phút&#xa;- Timeout AI Server: 30s" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="240" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note2" value="Performance:&#xa;✓ Cache hit: ~10-50ms&#xa;✓ Cache miss: ~200-500ms&#xa;(phụ thuộc vào kích thước model)" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="240" width="240" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note3" value="Các thuật toán ML:&#xa;• SVD (Singular Value Decomposition)&#xa;• NMF (Non-negative Matrix Factorization)&#xa;&#xa;Model được train offline và lưu dưới&#xa;dạng pickle file (.pkl)" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1130" width="240" height="120" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

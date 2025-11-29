@@ -1,0 +1,104 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
+  <diagram id="model-training-state" name="Sơ Đồ Trạng Thái Huấn Luyện Model">
+    <mxGraphModel dx="1498" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="initial" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="120" y="50" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="state-init" value="ĐANG KHỞI TẠO&#xa;&#xa;Kiểm tra tham số đầu vào&#xa;và chuẩn bị môi trường" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="110" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-loading" value="ĐANG TẢI DỮ LIỆU&#xa;&#xa;Đọc dữ liệu huấn luyện&#xa;từ cơ sở dữ liệu" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="250" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-training" value="ĐANG HUẤN LUYỆN&#xa;&#xa;Thực hiện thuật toán SVD&#xa;để học các đặc trưng" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="390" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-eval" value="ĐANG ĐÁNH GIÁ&#xa;&#xa;Tính toán độ chính xác&#xa;và các chỉ số RMSE" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="530" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-saving" value="ĐANG LƯU MODEL&#xa;&#xa;Lưu model đã huấn luyện&#xa;vào bộ nhớ" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="670" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-completed" value="HOÀN THÀNH&#xa;&#xa;Model sẵn sàng sử dụng&#xa;để đưa ra gợi ý" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="810" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-failed" value="THẤT BẠI&#xa;&#xa;Ghi nhận lỗi và&#xa;giải phóng tài nguyên" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="340" y="390" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="final" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="120" y="950" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="final-outer" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="115" y="945" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="trans1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" parent="1" source="initial" target="state-init" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans2" value="Xác thực thành công&#xa;[Tham số hợp lệ]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-init" target="state-loading" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans3" value="Lỗi xác thực&#xa;[Tham số không hợp lệ]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-init" target="state-failed" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="275" y="150" />
+              <mxPoint x="275" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans4" value="Tải xong&#xa;[Dữ liệu hợp lệ]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-loading" target="state-training" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans5" value="Lỗi tải dữ liệu&#xa;[Dữ liệu bị hỏng]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-loading" target="state-failed" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="275" y="290" />
+              <mxPoint x="275" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans6" value="Huấn luyện xong&#xa;[Đã hội tụ]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-training" target="state-eval" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans7" value="Lỗi huấn luyện&#xa;[Hết bộ nhớ/Quá thời gian]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-training" target="state-failed" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans8" value="Đạt chất lượng&#xa;[RMSE dưới ngưỡng]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-eval" target="state-saving" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans9" value="Không đạt chất lượng&#xa;[Chỉ số kém]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-eval" target="state-failed" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="275" y="570" />
+              <mxPoint x="275" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans10" value="Lưu thành công&#xa;[Model đã được lưu]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-saving" target="state-completed" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans11" value="Lỗi lưu file&#xa;[Đầy ổ đĩa/Không có quyền]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-saving" target="state-failed" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="275" y="710" />
+              <mxPoint x="275" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans12" value="Dọn dẹp tài nguyên&#xa;[Giải phóng bộ nhớ]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-completed" target="final" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans13" value="Ghi nhận lỗi&#xa;[Lưu log lỗi]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-failed" target="final" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="900" />
+              <mxPoint x="135" y="900" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

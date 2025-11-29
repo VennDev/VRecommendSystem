@@ -1,0 +1,220 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="model-training-state" name="Model Training State Diagram">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Tiêu đề -->
+        <mxCell id="title" value="Sơ Đồ Trạng Thái: Phiên Huấn Luyện Mô Hình&#xa;(Model Training Session State Diagram)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="214" y="20" width="400" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Initial State -->
+        <mxCell id="initial" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="399" y="80" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- State: INITIALIZING -->
+        <mxCell id="state-init" value="INITIALIZING&#xa;(Đang Khởi Tạo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="329" y="150" width="170" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- State: LOADING_DATA -->
+        <mxCell id="state-loading" value="LOADING_DATA&#xa;(Đang Tải Dữ Liệu)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="329" y="250" width="170" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- State: TRAINING -->
+        <mxCell id="state-training" value="TRAINING&#xa;(Đang Huấn Luyện)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="329" y="350" width="170" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- State: EVALUATING -->
+        <mxCell id="state-eval" value="EVALUATING&#xa;(Đang Đánh Giá)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="329" y="450" width="170" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- State: SAVING -->
+        <mxCell id="state-saving" value="SAVING&#xa;(Đang Lưu Model)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="329" y="550" width="170" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- State: COMPLETED -->
+        <mxCell id="state-completed" value="COMPLETED&#xa;(Hoàn Thành)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="329" y="650" width="170" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- State: FAILED -->
+        <mxCell id="state-failed" value="FAILED&#xa;(Thất Bại)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="589" y="350" width="170" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Final State -->
+        <mxCell id="final" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="399" y="750" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="final-outer" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=none;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="394" y="745" width="40" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Transitions -->
+        <!-- Initial -> INITIALIZING -->
+        <mxCell id="trans1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="initial" target="state-init">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- INITIALIZING -> LOADING_DATA -->
+        <mxCell id="trans2" value="validate_success()&#xa;[parameters OK]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-init" target="state-loading">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- INITIALIZING -> FAILED -->
+        <mxCell id="trans3" value="validation_error()&#xa;[invalid params]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-init" target="state-failed">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="554" y="180" />
+              <mxPoint x="554" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- LOADING_DATA -> TRAINING -->
+        <mxCell id="trans4" value="data_loaded()&#xa;[data valid]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-loading" target="state-training">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- LOADING_DATA -> FAILED -->
+        <mxCell id="trans5" value="load_error()&#xa;[data corrupted]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-loading" target="state-failed">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="554" y="280" />
+              <mxPoint x="554" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- TRAINING -> EVALUATING -->
+        <mxCell id="trans6" value="training_complete()&#xa;[converged]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-training" target="state-eval">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- TRAINING -> FAILED -->
+        <mxCell id="trans7" value="training_error()&#xa;[OOM, timeout]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-training" target="state-failed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- EVALUATING -> SAVING -->
+        <mxCell id="trans8" value="quality_passed()&#xa;[RMSE &lt; threshold]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-eval" target="state-saving">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- EVALUATING -> FAILED -->
+        <mxCell id="trans9" value="quality_failed()&#xa;[poor metrics]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-eval" target="state-failed">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="554" y="480" />
+              <mxPoint x="554" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- SAVING -> COMPLETED -->
+        <mxCell id="trans10" value="save_success()&#xa;[model persisted]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-saving" target="state-completed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- SAVING -> FAILED -->
+        <mxCell id="trans11" value="save_error()&#xa;[disk full, permission]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-saving" target="state-failed">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="554" y="580" />
+              <mxPoint x="554" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- COMPLETED -> Final -->
+        <mxCell id="trans12" value="cleanup()&#xa;[resources freed]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-completed" target="final">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- FAILED -> Final -->
+        <mxCell id="trans13" value="cleanup_failed()&#xa;[log error]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-failed" target="final">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="674" y="765" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Internal Activities -->
+        <!-- INITIALIZING activities -->
+        <mxCell id="act-init" value="entry/ create_session()&#xa;do/ validate_parameters()&#xa;do/ check_resources()&#xa;exit/ log_start_time()" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="240" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- LOADING_DATA activities -->
+        <mxCell id="act-loading" value="entry/ connect_database()&#xa;do/ fetch_training_data()&#xa;do/ clean_data()&#xa;do/ split_train_test()&#xa;exit/ log_data_stats()" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="240" width="240" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- TRAINING activities -->
+        <mxCell id="act-training" value="entry/ initialize_model()&#xa;do/ fit_on_training_set()&#xa;do/ monitor_progress()&#xa;do/ log_metrics()&#xa;exit/ finalize_training()" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="345" width="240" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- EVALUATING activities -->
+        <mxCell id="act-eval" value="entry/ load_test_set()&#xa;do/ predict_on_test()&#xa;do/ calculate_rmse()&#xa;do/ calculate_mae()&#xa;do/ calculate_precision_recall()&#xa;exit/ log_evaluation_results()" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="445" width="240" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- SAVING activities -->
+        <mxCell id="act-saving" value="entry/ serialize_model()&#xa;do/ write_to_disk()&#xa;do/ save_metadata()&#xa;do/ backup_old_model()&#xa;exit/ log_save_location()" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;whateSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="575" width="240" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- COMPLETED activities -->
+        <mxCell id="act-completed" value="entry/ mark_complete()&#xa;do/ send_notification()&#xa;do/ update_status_db()&#xa;exit/ release_locks()" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="685" width="240" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- FAILED activities -->
+        <mxCell id="act-failed" value="entry/ log_error()&#xa;do/ rollback_changes()&#xa;do/ send_alert()&#xa;do/ cleanup_partial_files()&#xa;exit/ update_status_failed()" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="540" y="240" width="240" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend-title" value="Chú Giải" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="580" y="520" width="80" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend1" value="entry/ - Hành động khi vào state&#xa;do/ - Hành động trong state&#xa;exit/ - Hành động khi rời state" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="540" y="555" width="240" height="65" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend2" value="event() - Sự kiện trigger transition&#xa;[condition] - Điều kiện guard" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="540" y="635" width="240" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Notes -->
+        <mxCell id="note1" value="📌 Lưu Ý Quan Trọng:&#xa;&#xa;• Training session là ASYNC (chạy background)&#xa;• Client poll trạng thái bằng training_id&#xa;• Timeout: 60 phút (configurable)&#xa;• Memory limit: check trước khi train&#xa;• Có thể cancel từ INITIALIZING → TRAINING&#xa;• Từ EVALUATING trở đi không cancel được" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="820" width="350" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note2" value="🔄 Retry Policy:&#xa;&#xa;• LOADING_DATA failed → có thể retry&#xa;• TRAINING failed → phụ thuộc lý do&#xa;  - OOM: cần giảm batch size&#xa;  - Timeout: tăng thời gian&#xa;• EVALUATING failed → retry không giúp&#xa;• SAVING failed → có thể retry" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="820" width="360" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note3" value="⏱️ Thời Gian Ước Tính:&#xa;&#xa;INITIALIZING: ~1-5 giây&#xa;LOADING_DATA: ~30 giây - 5 phút&#xa;TRAINING: ~5-60 phút (phụ thuộc dataset)&#xa;EVALUATING: ~30 giây - 2 phút&#xa;SAVING: ~5-30 giây&#xa;COMPLETED: ~1 giây&#xa;&#xa;Tổng: ~10-70 phút cho full pipeline" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="980" width="350" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note4" value="💾 Persistence:&#xa;&#xa;Tất cả trạng thái được lưu vào database:&#xa;• training_sessions table&#xa;• Các fields: id, status, progress,&#xa;  error_message, created_at, updated_at&#xa;• Query API: GET /training/status/{id}&#xa;&#xa;Có thể resume sau server restart:&#xa;• INITIALIZING, LOADING_DATA: restart&#xa;• TRAINING: phụ thuộc checkpoint&#xa;• EVALUATING, SAVING: restart" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="980" width="360" height="160" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

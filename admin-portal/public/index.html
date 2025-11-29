@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>VRecom Admin Portal</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <script>
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: {
+                                50: "#eff6ff",
+                                100: "#dbeafe",
+                                200: "#bfdbfe",
+                                300: "#93c5fd",
+                                400: "#60a5fa",
+                                500: "#3b82f6",
+                                600: "#2563eb",
+                                700: "#1d4ed8",
+                                800: "#1e40af",
+                                900: "#1e3a8a",
+                            },
+                        },
+                    },
+                },
+                daisyui: {
+                    themes: ["light", "dark"],
+                },
+            };
+        </script>
+        <style>
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            @keyframes slideUp {
+                from {
+                    transform: translateY(10px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            .animate-fade-in {
+                animation: fadeIn 0.5s ease-in-out;
+            }
+            .animate-slide-up {
+                animation: slideUp 0.3s ease-out;
+            }
+        </style>
+    </head>
+    <body class="h-screen bg-base-200">
+        <div class="h-screen flex">
+            <!-- Sidebar -->
+            <div
+                id="sidebar"
+                class="fixed inset-y-0 left-0 z-50 w-64 bg-base-100 shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0"
+            >
+                <div
+                    class="flex items-center justify-between h-16 px-4 border-b border-base-300"
+                >
+                    <div class="flex items-center space-x-2">
+                        <svg
+                            class="h-8 w-8 text-primary"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M12 8V4H8" />
+                            <rect width="16" height="12" x="4" y="8" rx="2" />
+                            <path d="M2 14h2" />
+                            <path d="M20 14h2" />
+                            <path d="M15 13v2" />
+                            <path d="M9 13v2" />
+                        </svg>
+                        <span class="text-xl font-bold text-base-content"
+                            >VRecom</span
+                        >
+                    </div>
+                    <button
+                        onclick="closeSidebar()"
+                        class="lg:hidden btn btn-ghost btn-sm"
+                    >
+                        <svg
+                            class="h-6 w-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                    </button>
+                </div>
+
+                <nav class="mt-5 px-2">
+                    <div class="divider text-xs text-base-content/50 px-2">
+                        Admin Portal
+                    </div>
+
+                    <button
+                        class="bg-error/10 border-r-2 border-error text-error group flex items-center px-2 py-2 text-base font-medium rounded-l-md w-full mb-1 transition-all duration-200 btn btn-ghost justify-start h-auto"
+                    >
+                        <svg
+                            class="mr-4 h-6 w-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <rect width="20" height="16" x="2" y="4" rx="2" />
+                            <path
+                                d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+                            />
+                        </svg>
+                        <span>Email Whitelist</span>
+                    </button>
+                </nav>
+
+                <div
+                    class="absolute bottom-0 left-0 right-0 p-4 border-t border-base-300"
+                >
+                    <div
+                        class="flex items-center gap-3 bg-base-200 px-3 py-2 rounded-lg"
+                    >
+                        <svg
+                            class="h-5 w-5 text-warning"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <rect
+                                width="18"
+                                height="11"
+                                x="3"
+                                y="11"
+                                rx="2"
+                                ry="2"
+                            />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <span class="text-sm text-base-content/70"
+                            >Localhost Only</span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Backdrop -->
+            <div
+                id="sidebarBackdrop"
+                class="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden hidden"
+                onclick="closeSidebar()"
+            ></div>
+
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- Header -->
+                <header class="bg-base-100 shadow-sm border-b border-base-300">
+                    <div class="flex items-center justify-between h-16 px-4">
+                        <div class="flex items-center gap-4">
+                            <button
+                                onclick="toggleSidebar()"
+                                class="lg:hidden btn btn-ghost btn-sm"
+                            >
+                                <svg
+                                    class="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16"
+                                    />
+                                </svg>
+                            </button>
+                            <h1 class="text-xl font-semibold text-base-content">
+                                Email Whitelist Management
+                            </h1>
+                        </div>
+
+                        <div class="flex items-center space-x-4">
+                            <!-- Connection Status -->
+                            <div
+                                id="connectionStatus"
+                                class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-base-200"
+                            >
+                                <span
+                                    id="statusDot"
+                                    class="w-2 h-2 rounded-full bg-error"
+                                ></span>
+                                <span
+                                    id="connectionText"
+                                    class="text-sm text-base-content/70"
+                                    >Checking...</span
+                                >
+                            </div>
+
+                            <!-- Theme Toggle -->
+                            <button
+                                onclick="toggleTheme()"
+                                class="btn btn-ghost btn-circle"
+                            >
+                                <svg
+                                    id="sunIcon"
+                                    class="h-5 w-5 hidden"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <circle cx="12" cy="12" r="4" />
+                                    <path d="M12 2v2" />
+                                    <path d="M12 20v2" />
+                                    <path d="m4.93 4.93 1.41 1.41" />
+                                    <path d="m17.66 17.66 1.41 1.41" />
+                                    <path d="M2 12h2" />
+                                    <path d="M20 12h2" />
+                                    <path d="m6.34 17.66-1.41 1.41" />
+                                    <path d="m19.07 4.93-1.41 1.41" />
+                                </svg>
+                                <svg
+                                    id="moonIcon"
+                                    class="h-5 w-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path
+                                        d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Main Content Area -->
+                <main class="flex-1 overflow-auto bg-base-200 p-6">
+                    <!-- Alert Container -->
+                    <div
+                        id="alertContainer"
+                        class="fixed top-20 right-4 z-50 space-y-2"
+                    ></div>
+
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Total Emails -->
+                        <div
+                            class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-200"
+                        >
+                            <div class="card-body">
+                                <div
+                                    class="flex items-center justify-between mb-4"
+                                >
+                                    <div class="p-2 rounded-lg bg-blue-500/10">
+                                        <svg
+                                            class="h-6 w-6 text-blue-500"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <rect
+                                                width="20"
+                                                height="16"
+                                                x="2"
+                                                y="4"
+                                                rx="2"
+                                            />
+                                            <path
+                                                d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+                                            />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p
+                                        id="totalEmails"
+                                        class="text-2xl font-bold text-base-content mb-1"
+                                    >
+                                        0
+                                    </p>
+                                    <p class="text-sm text-base-content/70">
+                                        Total Emails
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Emails -->
+                        <div
+                            class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-200"
+                        >
+                            <div class="card-body">
+                                <div
+                                    class="flex items-center justify-between mb-4"
+                                >
+                                    <div class="p-2 rounded-lg bg-green-500/10">
+                                        <svg
+                                            class="h-6 w-6 text-green-500"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <path
+                                                d="M22 11.08V12a10 10 0 1 1-5.93-9.14"
+                                            />
+                                            <polyline
+                                                points="22 4 12 14.01 9 11.01"
+                                            />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p
+                                        id="activeEmails"
+                                        class="text-2xl font-bold text-base-content mb-1"
+                                    >
+                                        0
+                                    </p>
+                                    <p class="text-sm text-base-content/70">
+                                        Active Emails
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Inactive Emails -->
+                        <div
+                            class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-200"
+                        >
+                            <div class="card-body">
+                                <div
+                                    class="flex items-center justify-between mb-4"
+                                >
+                                    <div
+                                        class="p-2 rounded-lg bg-orange-500/10"
+                                    >
+                                        <svg
+                                            class="h-6 w-6 text-orange-500"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <circle cx="12" cy="12" r="10" />
+                                            <line
+                                                x1="12"
+                                                x2="12"
+                                                y1="8"
+                                                y2="12"
+                                            />
+                                            <line
+                                                x1="12"
+                                                x2="12.01"
+                                                y1="16"
+                                                y2="16"
+                                            />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p
+                                        id="inactiveEmails"
+                                        class="text-2xl font-bold text-base-content mb-1"
+                                    >
+                                        0
+                                    </p>
+                                    <p class="text-sm text-base-content/70">
+                                        Inactive Emails
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Whitelist Table Card -->
+                    <div class="card bg-base-100 shadow-sm">
+                        <div class="card-body">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2
+                                    class="card-title text-base-content flex items-center gap-2"
+                                >
+                                    <svg
+                                        class="h-5 w-5 text-primary"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path
+                                            d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+                                        />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <line x1="19" x2="19" y1="8" y2="14" />
+                                        <line x1="22" x2="16" y1="11" y2="11" />
+                                    </svg>
+                                    Whitelist Entries
+                                </h2>
+                                <div class="flex gap-2">
+                                    <button
+                                        onclick="fetchWhitelist()"
+                                        class="btn btn-ghost btn-sm gap-2"
+                                    >
+                                        <svg
+                                            class="h-4 w-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <path
+                                                d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                                            />
+                                            <path d="M3 3v5h5" />
+                                            <path
+                                                d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"
+                                            />
+                                            <path d="M16 16h5v5" />
+                                        </svg>
+                                        Refresh
+                                    </button>
+                                    <button
+                                        onclick="openAddModal()"
+                                        class="btn btn-primary btn-sm gap-2"
+                                    >
+                                        <svg
+                                            class="h-4 w-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        >
+                                            <path
+                                                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+                                            />
+                                            <circle cx="9" cy="7" r="4" />
+                                            <line
+                                                x1="19"
+                                                x2="19"
+                                                y1="8"
+                                                y2="14"
+                                            />
+                                            <line
+                                                x1="22"
+                                                x2="16"
+                                                y1="11"
+                                                y2="11"
+                                            />
+                                        </svg>
+                                        Add Email
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Table Container -->
+                            <div id="tableContainer" class="overflow-x-auto">
+                                <div
+                                    class="flex flex-col items-center justify-center py-12 text-base-content/60"
+                                >
+                                    <span
+                                        class="loading loading-spinner loading-lg"
+                                    ></span>
+                                    <p class="mt-4 text-sm">
+                                        Loading whitelist...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Add Modal -->
+        <dialog id="addModal" class="modal">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg mb-4">Add Email to Whitelist</h3>
+                <form id="addForm" onsubmit="handleAddEmail(event)">
+                    <div class="form-control w-full mb-4">
+                        <label class="label">
+                            <span class="label-text">Email Address</span>
+                        </label>
+                        <input
+                            type="email"
+                            id="addEmail"
+                            placeholder="user@example.com"
+                            class="input input-bordered w-full"
+                            required
+                        />
+                    </div>
+                    <div class="form-control w-full mb-4">
+                        <label class="label">
+                            <span class="label-text">Added By</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="addAddedBy"
+                            placeholder="Admin"
+                            class="input input-bordered w-full"
+                        />
+                    </div>
+                    <div class="form-control w-full mb-4">
+                        <label class="label">
+                            <span class="label-text">Notes (Optional)</span>
+                        </label>
+                        <textarea
+                            id="addNotes"
+                            placeholder="Optional notes..."
+                            class="textarea textarea-bordered w-full"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    <div class="modal-action">
+                        <button
+                            type="button"
+                            onclick="closeAddModal()"
+                            class="btn btn-ghost"
+                        >
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Add Email
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <form method="dialog" class="modal-backdrop">
+                <button onclick="closeAddModal()">close</button>
+            </form>
+        </dialog>
+
+        <!-- Edit Modal -->
+        <dialog id="editModal" class="modal">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg mb-4">Edit Whitelist Entry</h3>
+                <form id="editForm" onsubmit="handleUpdateEmail(event)">
+                    <input type="hidden" id="editId" />
+                    <div class="form-control w-full mb-4">
+                        <label class="label">
+                            <span class="label-text">Email Address</span>
+                        </label>
+                        <input
+                            type="email"
+                            id="editEmail"
+                            class="input input-bordered w-full"
+                            disabled
+                        />
+                    </div>
+                    <div class="form-control w-full mb-4">
+                        <label class="cursor-pointer label justify-start gap-4">
+                            <input
+                                type="checkbox"
+                                id="editIsActive"
+                                class="checkbox checkbox-primary"
+                            />
+                            <span class="label-text">Active</span>
+                        </label>
+                    </div>
+                    <div class="form-control w-full mb-4">
+                        <label class="label">
+                            <span class="label-text">Notes (Optional)</span>
+                        </label>
+                        <textarea
+                            id="editNotes"
+                            placeholder="Optional notes..."
+                            class="textarea textarea-bordered w-full"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    <div class="modal-action">
+                        <button
+                            type="button"
+                            onclick="closeEditModal()"
+                            class="btn btn-ghost"
+                        >
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <form method="dialog" class="modal-backdrop">
+                <button onclick="closeEditModal()">close</button>
+            </form>
+        </dialog>
+
+        <!-- Delete Modal -->
+        <dialog id="deleteModal" class="modal">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg mb-4">Confirm Delete</h3>
+                <input type="hidden" id="deleteId" />
+                <div class="py-4">
+                    <p class="text-base-content/70 mb-4">
+                        Are you sure you want to remove this email from the
+                        whitelist?
+                    </p>
+                    <div class="bg-base-200 p-4 rounded-lg mb-4">
+                        <p
+                            id="deleteEmailDisplay"
+                            class="font-mono text-center text-base-content"
+                        ></p>
+                    </div>
+                    <div class="alert alert-warning">
+                        <svg
+                            class="h-5 w-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path
+                                d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"
+                            />
+                            <line x1="12" x2="12" y1="9" y2="13" />
+                            <line x1="12" x2="12.01" y1="17" y2="17" />
+                        </svg>
+                        <span
+                            >This action cannot be undone. The user will lose
+                            access.</span
+                        >
+                    </div>
+                </div>
+                <div class="modal-action">
+                    <button
+                        type="button"
+                        onclick="closeDeleteModal()"
+                        class="btn btn-ghost"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="button"
+                        onclick="handleDeleteEmail()"
+                        class="btn btn-error"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </div>
+            <form method="dialog" class="modal-backdrop">
+                <button onclick="closeDeleteModal()">close</button>
+            </form>
+        </dialog>
+
+        <script src="app.js"></script>
+    </body>
+</html>

@@ -87,6 +87,11 @@ services:
             - REDIS_PASSWORD=${REDIS_PASSWORD:-}
             - REDIS_DB=${REDIS_DB:-0}
             - AI_SERVER_URL=${AI_SERVER_URL:-http://ai_server:9999}
+            - HOST_IP=${HOST_IP:-localhost}
+            - FRONTEND_URL=${FRONTEND_URL:-http://${HOST_IP:-localhost}:5173}
+            - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+            - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+            - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL:-http://${HOST_IP:-localhost}:2030/api/v1/auth/google/callback}
         volumes:
             - ./backend/api_server/logs:/app/logs
             - ./backend/api_server/config:/app/config
@@ -153,6 +158,9 @@ services:
         build:
             context: ./frontend/project
             dockerfile: Dockerfile
+            args:
+                - VITE_API_SERVER_URL=${VITE_API_SERVER_URL:-http://localhost:2030}
+                - VITE_AI_SERVER_URL=${VITE_AI_SERVER_URL:-http://localhost:9999}
         container_name: vrecom_frontend
         ports:
             - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"

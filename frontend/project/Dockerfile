@@ -3,6 +3,14 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+# Build arguments for Vite environment variables
+ARG VITE_API_SERVER_URL=http://localhost:2030
+ARG VITE_AI_SERVER_URL=http://localhost:9999
+
+# Set environment variables for build
+ENV VITE_API_SERVER_URL=$VITE_API_SERVER_URL
+ENV VITE_AI_SERVER_URL=$VITE_AI_SERVER_URL
+
 # Copy package files
 COPY package*.json ./
 
@@ -12,8 +20,10 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application with environment variables
+RUN echo "Building with VITE_API_SERVER_URL=$VITE_API_SERVER_URL" && \
+    echo "Building with VITE_AI_SERVER_URL=$VITE_AI_SERVER_URL" && \
+    npm run build
 
 # Production stage
 FROM node:18-alpine
@@ -31,4 +41,4 @@ COPY --from=builder /app/package*.json ./
 EXPOSE 5173
 
 # Start the application
-CMD ["sh", "-c", "serve -s dist -l ${FRONTEND_PORT:-5173}"]
+CMD ["sh", "-c", "serve -s dist -l tcp://0.0.0.0:${FRONTEND_PORT:-5173}"]

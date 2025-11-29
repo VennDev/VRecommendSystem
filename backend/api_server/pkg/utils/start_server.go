@@ -20,7 +20,7 @@ func buildStringConnection() string {
 	if host == "" {
 		host = global.Config.Server.Host
 		if host == "" {
-			host = "localhost"
+			host = "0.0.0.0"
 		}
 	}
 

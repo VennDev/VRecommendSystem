@@ -1,0 +1,119 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
+  <diagram id="scheduler-state" name="Sơ Đồ Trạng Thái Lịch Huấn Luyện Tự Động">
+    <mxGraphModel dx="1498" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="SƠ ĐỒ TRẠNG THÁI LỊCH HUẤN LUYỆN TỰ ĐỘNG" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="150" y="10" width="500" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="initial" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" parent="1" vertex="1">
+          <mxGeometry x="235" y="50" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="state-stopped" value="ĐÃ DỪNG&#xa;&#xa;Scheduler chưa được&#xa;khởi động hoặc đã tắt" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="155" y="110" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-idle" value="CHỜ LỊCH&#xa;&#xa;Đang chờ đến thời điểm&#xa;huấn luyện tiếp theo" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="155" y="240" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-checking" value="KIỂM TRA ĐIỀU KIỆN&#xa;&#xa;Xác minh có đủ dữ liệu&#xa;mới để huấn luyện" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="155" y="370" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-training" value="ĐANG HUẤN LUYỆN&#xa;&#xa;Thực hiện quy trình&#xa;huấn luyện model AI" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="155" y="500" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-skipped" value="BỎ QUA&#xa;&#xa;Không đủ dữ liệu mới&#xa;bỏ qua lần huấn luyện này" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="430" y="370" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-completed" value="HOÀN THÀNH&#xa;&#xa;Huấn luyện xong&#xa;model mới sẵn sàng" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="155" y="630" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-failed" value="THẤT BẠI&#xa;&#xa;Huấn luyện gặp lỗi&#xa;ghi log và báo cáo" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="430" y="500" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="state-cooldown" value="CHỜ HỒI PHỤC&#xa;&#xa;Chờ một khoảng thời gian&#xa;trước khi tiếp tục" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="430" y="630" width="190" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="final" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" parent="1" vertex="1">
+          <mxGeometry x="235" y="780" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="final-outer" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=none;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="230" y="775" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="trans1" value="Khởi tạo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="initial" target="state-stopped" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans2" value="Bật scheduler" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-stopped" target="state-idle" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans3" value="Đến giờ huấn luyện&#xa;[Theo lịch cấu hình]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-idle" target="state-checking" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans4" value="Đủ dữ liệu mới&#xa;[Interactions &gt; ngưỡng]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-checking" target="state-training" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans5" value="Không đủ dữ liệu&#xa;[Ít thay đổi]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-checking" target="state-skipped" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans6" value="Huấn luyện thành công" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-training" target="state-completed" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans7" value="Huấn luyện thất bại" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-training" target="state-failed" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans8" value="Quay về chờ&#xa;[Lịch tiếp theo]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-completed" target="state-idle" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="80" y="670" />
+              <mxPoint x="80" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans9" value="Quay về chờ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-skipped" target="state-idle" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans10" value="Chờ trước khi&#xa;thử lại" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-failed" target="state-cooldown" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="trans11" value="Hết thời gian chờ&#xa;[Cooldown xong]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-cooldown" target="state-idle" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="670" />
+              <mxPoint x="600" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans12" value="Tắt scheduler" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-idle" target="state-stopped" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="280" />
+              <mxPoint x="60" y="150" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="trans13" value="Kết thúc chương trình" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-stopped" target="final" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="250" y="200" />
+              <mxPoint x="40" y="200" />
+              <mxPoint x="40" y="795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="note1" value="Chú thích:&#xa;- Màu tím: Trạng thái dừng&#xa;- Màu vàng: Trạng thái chờ&#xa;- Màu xanh dương: Đang kiểm tra&#xa;- Màu xanh lá: Thành công&#xa;- Màu cam: Bỏ qua/Cảnh báo&#xa;- Màu đỏ: Thất bại" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontColor=#333333;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="480" y="110" width="150" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="note2" value="Cấu hình Scheduler:&#xa;&#xa;• Chu kỳ: Hàng ngày/tuần&#xa;• Giờ chạy: 2:00 AM&#xa;• Ngưỡng dữ liệu: 100&#xa;  tương tác mới&#xa;• Cooldown: 1 giờ sau lỗi&#xa;• Max retries: 3 lần/ngày" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="480" y="260" width="150" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="note3" value="Điều kiện huấn luyện:&#xa;&#xa;• Số tương tác mới &gt; 100&#xa;• Số người dùng mới &gt; 10&#xa;• Hoặc quá 7 ngày kể từ&#xa;  lần huấn luyện trước&#xa;• Không có job đang chạy" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="480" y="430" width="150" height="130" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

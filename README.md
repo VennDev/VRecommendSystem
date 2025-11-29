@@ -111,15 +111,41 @@ KAFKA_BOOTSTRAP_SERVERS=kafka:9093
 KAFKA_PORT=9092
 ```
 
-### 3. Start All Services
+### 3. Configure Google OAuth (Optional)
 
+To enable Google login, set up OAuth credentials:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create OAuth 2.0 credentials
+3. Add authorized redirect URI: `http://localhost:2030/api/v1/auth/google/callback`
+4. Update `.env`:
+
+```env
+GOOGLE_CLIENT_ID=your-client-id
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_CALLBACK_URL=http://localhost:2030/api/v1/auth/google/callback
+
+# For LAN/ngrok access (optional)
+GOOGLE_CALLBACK_URL_PUBLIC=https://your-ngrok-url.ngrok-free.app/api/v1/auth/google/callback
+```
+
+### 4. Start All Services
+
+**Windows:**
+```cmd
+start.cmd
+# Or start everything including Admin Portal:
+start.cmd all
+```
+
+**Linux/macOS:**
 ```bash
 docker-compose up -d
 ```
 
 This will start all services in the background. First-time startup may take several minutes to download images and build containers.
 
-### 4. Verify Installation
+### 5. Verify Installation
 
 Check that all services are running:
 
@@ -139,13 +165,81 @@ curl http://localhost:9999/api/v1/health
 
 Expected responses indicate healthy services.
 
-### 5. Access the Application
+### 6. Access the Application
 
 - **Frontend Dashboard**: http://localhost:5173
 - **API Server**: http://localhost:2030
 - **AI Server**: http://localhost:9999
+- **Admin Portal**: http://127.0.0.1:3456 (localhost only)
 - **Prometheus Metrics**: http://localhost:9090
 - **Kafka UI**: http://localhost:8080
+
+### 7. Admin Portal (Email Whitelist Management)
+
+The Admin Portal allows you to manage which email addresses can register/login to the system.
+
+**Start Admin Portal:**
+```cmd
+start.cmd admin
+```
+
+Then access: http://127.0.0.1:3456
+
+> **Note:** Admin Portal is only accessible from localhost for security reasons.
+
+**Or start everything together:**
+```cmd
+start.cmd all
+```
+
+## LAN Access
+
+To access the application from other devices on your local network:
+
+### Quick Setup (Windows)
+```cmd
+start.cmd setup
+```
+
+This will:
+1. Detect your LAN IP address
+2. Update configuration files
+3. Rebuild and restart containers
+
+### Manual Setup
+
+1. Find your LAN IP (e.g., `192.168.1.100`)
+2. Update `.env`:
+```env
+HOST_IP=192.168.1.100
+VITE_API_SERVER_URL=http://192.168.1.100:2030
+VITE_AI_SERVER_URL=http://192.168.1.100:9999
+FRONTEND_URL=http://192.168.1.100:5173
+```
+
+3. Rebuild frontend:
+```bash
+docker-compose build frontend
+docker-compose up -d
+```
+
+4. Open firewall ports (Windows Admin):
+```cmd
+netsh advfirewall firewall add rule name="VRecom" dir=in action=allow protocol=tcp localport=5173,2030,9999
+```
+
+### Google OAuth on LAN
+
+Google OAuth does **not** allow private IP addresses as redirect URIs. Solutions:
+
+1. **Login on server machine** - Login via `http://localhost:5173`, then use from LAN
+2. **Use ngrok** - Create public URL for OAuth:
+   ```cmd
+   ngrok http 2030
+   ```
+   Then add the ngrok URL to Google Console and set `GOOGLE_CALLBACK_URL_PUBLIC` in `.env`
+
+See [HUONG_DAN_OAUTH_LAN.md](HUONG_DAN_OAUTH_LAN.md) for detailed instructions.
 
 ## Project Structure
 

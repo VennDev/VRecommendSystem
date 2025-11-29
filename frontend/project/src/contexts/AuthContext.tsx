@@ -44,12 +44,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Skip auth check for super-admin page (localhost only)
-        if (window.location.pathname === "/super-admin") {
-            setIsLoading(false);
-            return;
-        }
-
         // Try to load user from localStorage first
         const storedUser = localStorage.getItem("user");
         const token = localStorage.getItem("auth_token");

@@ -1,0 +1,182 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="whitelist-entry-state" name="Whitelist Entry State Diagram">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Tiêu đề -->
+        <mxCell id="title" value="Sơ Đồ Trạng Thái: Email Whitelist Entry&#xa;(Email Whitelist Entry State Diagram)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="214" y="20" width="400" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Initial State -->
+        <mxCell id="initial" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="399" y="80" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- State: ACTIVE -->
+        <mxCell id="state-active" value="ACTIVE&#xa;(Đang Hoạt Động)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="339" y="160" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- State: INACTIVE -->
+        <mxCell id="state-inactive" value="INACTIVE&#xa;(Tạm Ngưng)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="339" y="290" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- State: DELETED -->
+        <mxCell id="state-deleted" value="DELETED&#xa;(Đã Xóa)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="339" y="420" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Final State -->
+        <mxCell id="final" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="399" y="540" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="final-outer" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=none;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="394" y="535" width="40" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Transitions -->
+        <!-- Initial -> ACTIVE -->
+        <mxCell id="trans1" value="create_entry()&#xa;[POST /whitelist/add]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="initial" target="state-active">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ACTIVE -> INACTIVE -->
+        <mxCell id="trans2" value="disable()&#xa;[is_active = false]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-active" target="state-inactive">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- INACTIVE -> ACTIVE -->
+        <mxCell id="trans3" value="enable()&#xa;[is_active = true]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-inactive" target="state-active">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="269" y="325" />
+              <mxPoint x="269" y="195" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ACTIVE -> DELETED -->
+        <mxCell id="trans4" value="delete_entry()&#xa;[DELETE /whitelist/{id}]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-active" target="state-deleted">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="554" y="195" />
+              <mxPoint x="554" y="455" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- INACTIVE -> DELETED -->
+        <mxCell id="trans5" value="delete_entry()&#xa;[DELETE /whitelist/{id}]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;strokeColor=#b85450;" edge="1" parent="1" source="state-inactive" target="state-deleted">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- DELETED -> Final -->
+        <mxCell id="trans6" value="cleanup()&#xa;[physical delete]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" edge="1" parent="1" source="state-deleted" target="final">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Self-transitions -->
+        <!-- ACTIVE self-loop -->
+        <mxCell id="trans7" value="update_notes()&#xa;[PUT /whitelist/{id}]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=9;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="state-active" target="state-active">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="529" y="178" />
+              <mxPoint x="529" y="213" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- INACTIVE self-loop -->
+        <mxCell id="trans8" value="update_notes()&#xa;[PUT /whitelist/{id}]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=9;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="state-inactive" target="state-inactive">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="529" y="308" />
+              <mxPoint x="529" y="343" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Internal Activities -->
+        <!-- ACTIVE activities -->
+        <mxCell id="act-active" value="entry/ hash_email_sha256()&#xa;entry/ insert_to_database()&#xa;entry/ log_creation()&#xa;&#xa;do/ allow_authentication()&#xa;do/ track_usage_count()&#xa;do/ update_last_used_at()&#xa;&#xa;exit/ log_state_change()" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="150" width="250" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- INACTIVE activities -->
+        <mxCell id="act-inactive" value="entry/ update_is_active_false()&#xa;entry/ log_disable_reason()&#xa;&#xa;do/ block_authentication()&#xa;do/ show_in_admin_panel()&#xa;do/ allow_re_enable()&#xa;&#xa;exit/ log_state_change()" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="310" width="250" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- DELETED activities -->
+        <mxCell id="act-deleted" value="entry/ mark_as_deleted()&#xa;entry/ log_deletion()&#xa;entry/ store_delete_reason()&#xa;&#xa;do/ block_authentication()&#xa;do/ hide_from_admin_panel()&#xa;do/ prevent_recovery()&#xa;&#xa;exit/ physical_delete_record()&#xa;exit/ cleanup_references()" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="450" width="250" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- Notes -->
+        <mxCell id="note1" value="📊 Database Fields:&#xa;&#xa;• id (UUID/VARCHAR)&#xa;• email_hash (SHA-256, UNIQUE)&#xa;• email_encrypted (plaintext)&#xa;• is_active (BOOLEAN) ← Quyết định state&#xa;• added_by (VARCHAR)&#xa;• added_at (TIMESTAMP)&#xa;• notes (TEXT)&#xa;• created_at (TIMESTAMP)&#xa;• updated_at (TIMESTAMP)&#xa;• last_used_at (TIMESTAMP, nullable)&#xa;• usage_count (INT, default 0)&#xa;&#xa;Index:&#xa;• PRIMARY KEY (id)&#xa;• UNIQUE (email_hash)&#xa;• INDEX (is_active) WHERE true" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="560" y="80" width="300" height="260" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note2" value="🔐 Security Checks:&#xa;&#xa;ACTIVE state (is_active = true):&#xa;✓ Email được phép login&#xa;✓ Authentication callback check&#xa;✓ Query: SELECT COUNT(*) ... WHERE is_active=true&#xa;&#xa;INACTIVE state (is_active = false):&#xa;✗ Authentication bị từ chối&#xa;✓ Vẫn hiển thị trong admin panel&#xa;✓ Có thể enable lại&#xa;✓ Notes giải thích lý do disable&#xa;&#xa;DELETED state:&#xa;✗ Không thể recover&#xa;✗ Không hiển thị trong admin&#xa;⚠️ Physical delete sau một khoảng thời gian&#xa;&#xa;Best Practice:&#xa;→ Dùng INACTIVE thay vì DELETE nếu không chắc&#xa;→ DELETE chỉ dùng khi chắc chắn không cần nữa" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="360" width="360" height="280" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note3" value="🔄 State Transitions:&#xa;&#xa;1️⃣ CREATE → ACTIVE&#xa;   Trigger: Admin thêm email mới&#xa;   API: POST /api/v1/whitelist/add&#xa;   Validation: Email format, duplicate check&#xa;   Default: is_active = true&#xa;&#xa;2️⃣ ACTIVE ↔ INACTIVE&#xa;   Trigger: Admin enable/disable&#xa;   API: PUT /api/v1/whitelist/update/{id}&#xa;   Body: {is_active: true/false, notes: &quot;...&quot;}&#xa;   Use case: Tạm ngưng quyền truy cập&#xa;&#xa;3️⃣ ACTIVE/INACTIVE → DELETED&#xa;   Trigger: Admin xóa email&#xa;   API: DELETE /api/v1/whitelist/remove/{id}&#xa;   Warning: Không thể undo!&#xa;   Alternative: Dùng INACTIVE thay thế&#xa;&#xa;4️⃣ DELETED → Final&#xa;   Trigger: Cleanup job (scheduled)&#xa;   Frequency: Hàng ngày/tuần&#xa;   Action: Physical delete từ database" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="650" width="420" height="280" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note4" value="💡 Use Cases:&#xa;&#xa;Scenario 1: Thêm User Mới&#xa;→ Admin thêm email → ACTIVE&#xa;→ User có thể login ngay&#xa;&#xa;Scenario 2: Nhân Viên Nghỉ Việc Tạm Thời&#xa;→ Admin disable → INACTIVE&#xa;→ Không login được&#xa;→ Khi quay lại: Admin enable → ACTIVE&#xa;&#xa;Scenario 3: Nhân Viên Nghỉ Việc Vĩnh Viễn&#xa;→ Admin delete → DELETED&#xa;→ Không thể recover&#xa;→ Cleanup job xóa khỏi DB&#xa;&#xa;Scenario 4: Tạm Chặn Vì Security&#xa;→ Admin disable + notes &quot;Suspected breach&quot;&#xa;→ INACTIVE&#xa;→ Điều tra xong: enable lại&#xa;&#xa;Scenario 5: Email Typo&#xa;→ Admin delete email sai → DELETED&#xa;→ Admin add email đúng → ACTIVE (new entry)&#xa;&#xa;Scenario 6: Cập Nhật Ghi Chú&#xa;→ Trong ACTIVE/INACTIVE&#xa;→ update_notes() không đổi state&#xa;→ Chỉ update notes field" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="480" y="650" width="380" height="380" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note5" value="⚙️ Implementation Details:&#xa;&#xa;Database Query Examples:&#xa;&#xa;// Check email trong authentication&#xa;SELECT COUNT(*) FROM email_whitelist&#xa;WHERE email_hash = SHA256(?)&#xa;  AND is_active = true;&#xa;&#xa;// List tất cả (admin panel)&#xa;SELECT * FROM email_whitelist&#xa;WHERE is_active IN (true, false)  -- exclude deleted&#xa;ORDER BY created_at DESC;&#xa;&#xa;// Disable email&#xa;UPDATE email_whitelist&#xa;SET is_active = false,&#xa;    notes = ?,&#xa;    updated_at = NOW()&#xa;WHERE id = ?;&#xa;&#xa;// Enable email&#xa;UPDATE email_whitelist&#xa;SET is_active = true,&#xa;    updated_at = NOW()&#xa;WHERE id = ?;&#xa;&#xa;// Soft delete (mark as deleted)&#xa;UPDATE email_whitelist&#xa;SET is_active = false,&#xa;    deleted_at = NOW()&#xa;WHERE id = ?;&#xa;&#xa;// Physical delete (cleanup job)&#xa;DELETE FROM email_whitelist&#xa;WHERE deleted_at &lt; NOW() - INTERVAL 30 DAY;&#xa;&#xa;⚠️ Note: Current implementation dùng hard delete&#xa;(physical delete ngay lập tức).&#xa;Có thể improve bằng soft delete pattern." style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="950" width="420" height="420" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note6" value="📈 Metrics &amp; Monitoring:&#xa;&#xa;Track These Metrics:&#xa;• Total active emails: COUNT WHERE is_active=true&#xa;• Total inactive emails: COUNT WHERE is_active=false&#xa;• Active ratio: active / total&#xa;• New additions per day/week/month&#xa;• Disable rate: disables per period&#xa;• Delete rate: deletes per period&#xa;• Average lifetime: created_at to deleted_at&#xa;• Usage frequency: usage_count, last_used_at&#xa;&#xa;Alerts:&#xa;🔔 Spike in disable/delete operations&#xa;🔔 Active count drops below threshold&#xa;🔔 No new additions for X days (if expected)&#xa;🔔 High inactive ratio (&gt;20%)&#xa;&#xa;Reports:&#xa;📊 Weekly summary: adds, disables, deletes&#xa;📊 Monthly active users trend&#xa;📊 Audit log: who added/disabled/deleted&#xa;&#xa;Dashboard Views:&#xa;• Total counts by state&#xa;• Timeline: state changes over time&#xa;• Top users by usage_count&#xa;• Recent additions/changes&#xa;• Inactive emails (candidates for cleanup)" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="480" y="1050" width="380" height="380" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note7" value="🔧 API Endpoints:&#xa;&#xa;POST /api/v1/whitelist/add&#xa;→ Create new entry in ACTIVE state&#xa;Body: {email, added_by, notes}&#xa;Response: 201 Created with entry data&#xa;&#xa;GET /api/v1/whitelist/list&#xa;→ List all entries (ACTIVE + INACTIVE)&#xa;Query: ?status=active|inactive|all&#xa;Response: 200 OK with array of entries&#xa;&#xa;GET /api/v1/whitelist/check&#xa;→ Check if email is whitelisted (ACTIVE only)&#xa;Body: {email}&#xa;Response: {whitelisted: true/false}&#xa;&#xa;PUT /api/v1/whitelist/update/{id}&#xa;→ Update is_active or notes&#xa;Body: {is_active: true/false, notes: &quot;...&quot;}&#xa;Response: 200 OK with updated entry&#xa;&#xa;DELETE /api/v1/whitelist/remove/{id}&#xa;→ Delete entry (mark as DELETED or hard delete)&#xa;Response: 200 OK {success: true}&#xa;&#xa;GET /api/v1/whitelist/stats&#xa;→ Get statistics&#xa;Response: {total, active, inactive, deleted}&#xa;&#xa;🔒 Security:&#xa;All endpoints require localhost check&#xa;or admin authentication" style="text;html=1;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1390" width="420" height="340" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend-title" value="Chú Giải Màu" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="610" y="670" width="100" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-1" value="Xanh lá: ACTIVE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="610" y="700" width="120" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-2" value="Cam: INACTIVE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="610" y="730" width="120" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-3" value="Đỏ: DELETED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="610" y="760" width="120" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-note" value="✓ = Cho phép&#xa;✗ = Không cho phép&#xa;⚠️ = Cảnh báo" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="610" y="800" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Timing info -->
+        <mxCell id="timing" value="⏱️ Transition Times:&#xa;&#xa;CREATE → ACTIVE: ~10-50ms&#xa;ACTIVE ↔ INACTIVE: ~10-50ms&#xa;ANY → DELETED: ~10-50ms&#xa;DELETED → Final: Scheduled job&#xa;&#xa;Query Performance:&#xa;• Check whitelist: 1-5ms (indexed)&#xa;• List all: 20-100ms&#xa;• Update: 10-50ms" style="text;html=1;strokeColor=#d79b00;fillColor=#ffe6cc;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="750" y="670" width="250" height="190" as="geometry" />
+        </mxCell>
+
+        <!-- State diagram notation -->
+        <mxCell id="notation" value="📚 State Diagram Notation:&#xa;&#xa;event() - Sự kiện trigger transition&#xa;[condition] - Guard condition&#xa;&#xa;entry/ - Action khi vào state&#xa;do/ - Action trong state (continuous)&#xa;exit/ - Action khi rời khỏi state&#xa;&#xa;→ - Transition (chuyển trạng thái)&#xa;⟲ - Self-transition (cập nhật trong state)" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=9;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="750" y="880" width="250" height="180" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
