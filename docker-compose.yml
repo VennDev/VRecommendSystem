@@ -10,7 +10,21 @@ services:
         networks:
             - vrecom_network
         restart: unless-stopped
-        command: redis-server --appendonly yes
+        command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.5"
+                    memory: 512M
+                reservations:
+                    cpus: "0.1"
+                    memory: 128M
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 5s
 
     # Zookeeper Service
     zookeeper:
@@ -19,19 +33,39 @@ services:
         environment:
             ZOOKEEPER_CLIENT_PORT: 2181
             ZOOKEEPER_TICK_TIME: 2000
+            KAFKA_HEAP_OPTS: "-Xms128m -Xmx256m"
         volumes:
             - zookeeper_data:/var/lib/zookeeper/data
             - zookeeper_logs:/var/lib/zookeeper/log
         networks:
             - vrecom_network
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.5"
+                    memory: 512M
+                reservations:
+                    cpus: "0.1"
+                    memory: 128M
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "curl -s http://localhost:8080/commands/ruok || exit 1",
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+            start_period: 15s
 
     # Kafka Service
     kafka:
         image: confluentinc/cp-kafka:7.5.0
         container_name: vrecom_kafka
         depends_on:
-            - zookeeper
+            zookeeper:
+                condition: service_healthy
         ports:
             - "${KAFKA_PORT:-9092}:9092"
             - "9093:9093"
@@ -45,33 +79,73 @@ services:
             KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
             KAFKA_LOG_RETENTION_HOURS: 168
             KAFKA_LOG_SEGMENT_BYTES: 1073741824
+            KAFKA_HEAP_OPTS: "-Xms256m -Xmx512m"
         volumes:
             - kafka_data:/var/lib/kafka/data
         networks:
             - vrecom_network
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    cpus: "1.0"
+                    memory: 1G
+                reservations:
+                    cpus: "0.25"
+                    memory: 256M
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "kafka-broker-api-versions --bootstrap-server localhost:9092 || exit 1",
+                ]
+            interval: 30s
+            timeout: 15s
+            retries: 5
+            start_period: 30s
 
     # Kafka UI (Optional - for monitoring)
     kafka-ui:
         image: provectuslabs/kafka-ui:latest
         container_name: vrecom_kafka_ui
         depends_on:
-            - kafka
+            kafka:
+                condition: service_healthy
         ports:
             - "${KAFKA_UI_PORT:-8080}:8080"
         environment:
             KAFKA_CLUSTERS_0_NAME: vrecom-cluster
             KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
             KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+            JAVA_OPTS: "-Xms128m -Xmx256m"
         networks:
             - vrecom_network
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.5"
+                    memory: 512M
+                reservations:
+                    cpus: "0.1"
+                    memory: 128M
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "wget --no-verbose --tries=1 --spider http://localhost:8080 || exit 1",
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 15s
 
     # API Server (Go)
     api_server:
         build:
             context: ./backend/api_server
             dockerfile: Dockerfile
+            # Enable BuildKit for better caching
         container_name: vrecom_api_server
         ports:
             - "${API_SERVER_PORT:-2030}:${API_SERVER_PORT:-2030}"
@@ -92,6 +166,9 @@ services:
             - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
             - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
             - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL:-http://${HOST_IP:-localhost}:2030/api/v1/auth/google/callback}
+            # Go runtime optimizations
+            - GOGC=100
+            - GOMEMLIMIT=450MiB
         volumes:
             - ./backend/api_server/logs:/app/logs
             - ./backend/api_server/config:/app/config
@@ -99,8 +176,29 @@ services:
         networks:
             - vrecom_network
         depends_on:
-            - redis
+            redis:
+                condition: service_healthy
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    cpus: "1.0"
+                    memory: 512M
+                reservations:
+                    cpus: "0.25"
+                    memory: 128M
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "curl",
+                    "-f",
+                    "http://localhost:${API_SERVER_PORT:-2030}/api/v1/ping",
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 10s
 
     # AI Server (Python)
     ai_server:
@@ -126,6 +224,10 @@ services:
             - MONGODB_PASSWORD=${MONGODB_PASSWORD:-password}
             - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS:-kafka:9093}
             - KAFKA_GROUP_ID=${KAFKA_GROUP_ID:-vrecom_ai_server_group}
+            # Python optimizations
+            - PYTHONUNBUFFERED=1
+            - PYTHONDONTWRITEBYTECODE=1
+            - MALLOC_TRIM_THRESHOLD_=100000
         volumes:
             - ./backend/ai_server/src:/app/src
             - ./backend/ai_server/config:/app/config
@@ -136,6 +238,26 @@ services:
         networks:
             - vrecom_network
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    cpus: "2.0"
+                    memory: 2G
+                reservations:
+                    cpus: "0.5"
+                    memory: 512M
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "curl",
+                    "-f",
+                    "http://localhost:${AI_SERVER_PORT:-9999}/api/v1/health",
+                ]
+            interval: 30s
+            timeout: 15s
+            retries: 5
+            start_period: 30s
 
     # Prometheus (Monitoring for AI Server)
     prometheus:
@@ -149,9 +271,33 @@ services:
         command:
             - "--config.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.path=/prometheus"
+            - "--storage.tsdb.retention.time=7d"
+            - "--storage.tsdb.retention.size=1GB"
         networks:
             - vrecom_network
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.5"
+                    memory: 512M
+                reservations:
+                    cpus: "0.1"
+                    memory: 128M
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "wget",
+                    "--no-verbose",
+                    "--tries=1",
+                    "--spider",
+                    "http://localhost:9090/-/healthy",
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 10s
 
     # Frontend (React + Vite)
     frontend:
@@ -167,19 +313,42 @@ services:
         environment:
             - VITE_API_SERVER_URL=${VITE_API_SERVER_URL:-http://localhost:2030}
             - VITE_AI_SERVER_URL=${VITE_AI_SERVER_URL:-http://localhost:9999}
+            - FRONTEND_PORT=${FRONTEND_PORT:-5173}
         volumes:
             - ./frontend/project/src:/app/src
             - ./frontend/project/public:/app/public
         networks:
             - vrecom_network
         depends_on:
-            - api_server
-            - ai_server
+            api_server:
+                condition: service_healthy
+            ai_server:
+                condition: service_healthy
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.5"
+                    memory: 256M
+                reservations:
+                    cpus: "0.1"
+                    memory: 64M
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "wget --no-verbose --tries=1 --spider http://localhost:${FRONTEND_PORT:-5173} || exit 1",
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 10s
 
 networks:
     vrecom_network:
         driver: bridge
+        driver_opts:
+            com.docker.network.driver.mtu: 1500
 
 volumes:
     redis_data:

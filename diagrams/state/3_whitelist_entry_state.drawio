@@ -1,12 +1,9 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
   <diagram id="whitelist-entry-state" name="Sơ Đồ Trạng Thái Mục Whitelist">
-    <mxGraphModel dx="1498" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1498" dy="765" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="SƠ ĐỒ TRẠNG THÁI MỤC WHITELIST" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="200" y="10" width="400" height="30" as="geometry" />
-        </mxCell>
         <mxCell id="initial" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
           <mxGeometry x="189.94" y="50" width="30" height="30" as="geometry" />
         </mxCell>
@@ -42,8 +39,8 @@
         <mxCell id="trans4" value="Xóa mục&#xa;[Xóa khỏi whitelist]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;fontSize=10;" parent="1" source="state-active" target="state-deleted" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="450" y="160" />
-              <mxPoint x="450" y="480" />
+              <mxPoint x="490" y="160" />
+              <mxPoint x="490" y="480" />
             </Array>
           </mxGeometry>
         </mxCell>

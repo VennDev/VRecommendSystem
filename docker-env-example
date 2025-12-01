@@ -1,10 +1,10 @@
 # Docker Environment Configuration Example
-# Copy file này thành .env và điều chỉnh các giá trị theo nhu cầu
+# Copy this file to .env and adjust the values as needed
 
 # ============================================
 # Frontend Configuration
 # ============================================
-# Sử dụng tên service Docker để giao tiếp giữa các container
+# Use Docker service names for container-to-container communication
 VITE_API_SERVER_URL=http://api_server:2030
 VITE_AI_SERVER_URL=http://ai_server:9999
 FRONTEND_PORT=5173
@@ -92,9 +92,44 @@ GOOGLE_CALLBACK_URL_PUBLIC=
 AI_SERVER_URL=http://ai_server:9999
 
 # ============================================
+# Resource Limits (configured in docker-compose.yml)
+# ============================================
+# Default total RAM usage: ~5.5GB (can be adjusted in docker-compose.yml)
+#
+# Service          | CPU Limit | RAM Limit | RAM Reserved
+# -----------------|-----------|-----------|-------------
+# redis            | 0.5       | 512MB     | 128MB
+# zookeeper        | 0.5       | 512MB     | 128MB
+# kafka            | 1.0       | 1GB       | 256MB
+# kafka-ui         | 0.5       | 512MB     | 128MB
+# api_server (Go)  | 1.0       | 512MB     | 128MB
+# ai_server (Py)   | 2.0       | 2GB       | 512MB
+# prometheus       | 0.5       | 512MB     | 128MB
+# frontend         | 0.5       | 256MB     | 64MB
+#
+# If your machine has limited RAM, you can reduce limits in docker-compose.yml
+
+# ============================================
+# Build Optimization
+# ============================================
+# To optimize build speed, enable Docker BuildKit:
+# export DOCKER_BUILDKIT=1
+#
+# Or add to your .bashrc / .zshrc:
+# echo 'export DOCKER_BUILDKIT=1' >> ~/.bashrc
+#
+# Windows PowerShell:
+# $env:DOCKER_BUILDKIT=1
+#
+# Build with efficient caching:
+# docker-compose build --parallel
+
+# ============================================
 # Notes
 # ============================================
-# - Sử dụng tên service (api_server, ai_server, redis, etc.) cho Docker networking
-# - Không sử dụng localhost hoặc 127.0.0.1 cho container-to-container communication
-# - Ports được expose ra host machine để truy cập từ bên ngoài
-# - Thay đổi JWT_SECRET_KEY và SESSION_SECRET cho production
+# - Use service names (api_server, ai_server, redis, etc.) for Docker networking
+# - Do not use localhost or 127.0.0.1 for container-to-container communication
+# - Ports are exposed to the host machine for external access
+# - Change JWT_SECRET_KEY and SESSION_SECRET for production
+# - Dockerfiles have been optimized with multi-stage builds to reduce image size
+# - Dependencies are cached separately to speed up rebuilds when only source code changes

@@ -1,12 +1,9 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
   <diagram id="recommendation-request-state" name="Sơ Đồ Trạng Thái Yêu Cầu Gợi Ý">
-    <mxGraphModel dx="1498" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1762" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="SƠ ĐỒ TRẠNG THÁI YÊU CẦU GỢI Ý SẢN PHẨM" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="150" y="10" width="500" height="30" as="geometry" />
-        </mxCell>
         <mxCell id="initial" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
           <mxGeometry x="235" y="50" width="30" height="30" as="geometry" />
         </mxCell>
@@ -32,10 +29,10 @@
           <mxGeometry x="430" y="240" width="190" height="80" as="geometry" />
         </mxCell>
         <mxCell id="state-new-user" value="NGƯỜI DÙNG MỚI&#xa;&#xa;Chưa có dữ liệu tương tác&#xa;dùng gợi ý phổ biến" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
-          <mxGeometry x="430" y="370" width="190" height="80" as="geometry" />
+          <mxGeometry x="590" y="360" width="190" height="80" as="geometry" />
         </mxCell>
         <mxCell id="state-error" value="LỖI HỆ THỐNG&#xa;&#xa;Xảy ra lỗi trong quá trình&#xa;xử lý yêu cầu" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;" parent="1" vertex="1">
-          <mxGeometry x="430" y="500" width="190" height="80" as="geometry" />
+          <mxGeometry x="680" y="490" width="190" height="80" as="geometry" />
         </mxCell>
         <mxCell id="final" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
           <mxGeometry x="235" y="890" width="30" height="30" as="geometry" />
@@ -96,7 +93,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="note2" value="Thuật toán gợi ý SVD:&#xa;&#xa;• Phân tích ma trận tương tác&#xa;  user-item thành các nhân tố&#xa;• Dự đoán điểm đánh giá&#xa;  cho các sản phẩm chưa xem&#xa;• Sắp xếp theo điểm giảm dần&#xa;• Trả về top N sản phẩm" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" parent="1" vertex="1">
-          <mxGeometry x="20" y="110" width="120" height="160" as="geometry" />
+          <mxGeometry x="20" y="110" width="130" height="160" as="geometry" />
         </mxCell>
         <mxCell id="note3" value="Xử lý trường hợp đặc biệt:&#xa;&#xa;• Người dùng mới: Gợi ý&#xa;  các món ăn phổ biến nhất&#xa;• Chưa có model: Trả về&#xa;  danh sách mặc định&#xa;• Lỗi: Ghi log và thông báo" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;" parent="1" vertex="1">
           <mxGeometry x="20" y="300" width="120" height="150" as="geometry" />

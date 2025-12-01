@@ -1,7 +1,7 @@
 {
   "model_id": "test_csv",
   "model_type": "SVDRecommendationModel",
-  "saved_at": "2025-11-29T23:34:23.534487",
+  "saved_at": "2025-11-30T00:59:23.179628",
   "file_path": "models/test_csv.pkl",
   "hyperparameters": {
     "n_components": 2,
@@ -24,7 +24,7 @@
     "max_rating": 5.0
   },
   "metrics": {
-    "training_time": 0.010287,
+    "training_time": 0.009788,
     "explained_variance_ratio": 0.44027114967884706,
     "n_users": 20,
     "n_items": 10,
