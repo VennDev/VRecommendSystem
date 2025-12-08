@@ -13,6 +13,9 @@ SESSION_SECRET=your_strong_session_secret
 # AI Server Configuration
 AI_SERVER_URL=http://localhost:9999
 
+# Token Expiration Settings (in seconds)
+AUTH_TOKEN_MAX_AGE_SECONDS = 3600 # 1 hour
+
 # Redis Configuration (Optional - these values are also configurable in config/local.yml)
 # Uncomment and set these if you want to override the values in local.yml
 # REDIS_HOST=localhost

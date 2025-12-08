@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -319,6 +320,12 @@ func CallbackHandler(c fiber.Ctx) error {
 	}
 
 	// Generate JWT token
+	timeExpire, err := strconv.Atoi(os.Getenv("AUTH_TOKEN_MAX_AGE_SECONDS"))
+	if err != nil || timeExpire <= 0 {
+		timeExpire = 24 * 60 * 60 // Default to 1 day
+		fmt.Printf("AUTH_TOKEN_MAX_AGE_SECONDS not set or invalid, defaulting to %d seconds\n", timeExpire)
+	}
+
 	jwtToken, err := generateJWTToken(user.UserID, user.Email, user.Name)
 	if err != nil {
 		fmt.Printf("Failed to generate JWT token: %v\n", err)
@@ -327,7 +334,7 @@ func CallbackHandler(c fiber.Ctx) error {
 			Name:     "auth_token",
 			Value:    jwtToken,
 			Path:     "/",
-			MaxAge:   24 * 60 * 60,
+			MaxAge:   timeExpire,
 			HTTPOnly: true,
 			Secure:   false,
 			SameSite: "Lax",
