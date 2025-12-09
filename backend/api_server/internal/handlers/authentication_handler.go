@@ -46,8 +46,10 @@ func NewAuth() {
 	googleClientID = os.Getenv("GOOGLE_CLIENT_ID")
 	googleClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
 
-	fmt.Printf("OAuth Debug - GOOGLE_CLIENT_ID set: %v, GOOGLE_CLIENT_SECRET set: %v\n",
-		googleClientID != "", googleClientSecret != "")
+	fmt.Printf("\n=== OAuth Configuration Debug ===\n")
+	fmt.Printf("GOOGLE_CLIENT_ID: %q (length: %d)\n", googleClientID, len(googleClientID))
+	fmt.Printf("GOOGLE_CLIENT_SECRET: %q (length: %d)\n", googleClientSecret, len(googleClientSecret))
+	fmt.Printf("================================\n\n")
 
 	if googleClientID == "" || googleClientSecret == "" {
 		fmt.Println("Warning: Google OAuth credentials are not set. OAuth login will be disabled.")
