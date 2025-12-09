@@ -14,6 +14,18 @@ import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { activityLogger } from "../services/activityLogger";
 
+interface DatabaseConfig {
+  type: string;
+  host: string;
+  port: number;
+  user?: string;
+  username?: string;
+  password: string;
+  database: string;
+  ssl: boolean;
+  auth_source?: string;
+}
+
 interface DataChef {
   id: string;
   name: string;
@@ -29,6 +41,7 @@ interface DataChef {
   rename_columns: string;
   status: "active" | "inactive" | "error";
   last_updated?: string;
+  db_config?: DatabaseConfig;
 }
 
 const DataChefsPage: React.FC = () => {
@@ -53,6 +66,17 @@ const DataChefsPage: React.FC = () => {
     groupId: "",
     renameColumns: "",
   });
+  const [dbConfig, setDbConfig] = useState<DatabaseConfig>({
+    type: "mysql",
+    host: "",
+    port: 3306,
+    user: "",
+    password: "",
+    database: "",
+    ssl: false,
+    auth_source: "admin",
+  });
+  const [useCustomDb, setUseCustomDb] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -234,6 +258,7 @@ const DataChefsPage: React.FC = () => {
 
     try {
       let response;
+      const dbConfigToSend = useCustomDb ? dbConfig : undefined;
 
       switch (selectedType) {
         case "csv":
@@ -259,7 +284,8 @@ const DataChefsPage: React.FC = () => {
           response = await apiService.createDataChefFromSql(
             formData.dataChefId,
             formData.query,
-            formData.renameColumns
+            formData.renameColumns,
+            dbConfigToSend
           );
           break;
         case "nosql":
@@ -267,7 +293,8 @@ const DataChefsPage: React.FC = () => {
             formData.dataChefId,
             formData.database,
             formData.collection,
-            formData.renameColumns
+            formData.renameColumns,
+            dbConfigToSend
           );
           break;
         case "api":
@@ -330,6 +357,17 @@ const DataChefsPage: React.FC = () => {
       groupId: "",
       renameColumns: "",
     });
+    setDbConfig({
+      type: "mysql",
+      host: "",
+      port: 3306,
+      user: "",
+      password: "",
+      database: "",
+      ssl: false,
+      auth_source: "admin",
+    });
+    setUseCustomDb(false);
     setSelectedType("csv");
     setSelectedFile(null);
     setUploadProgress(0);
@@ -368,6 +406,147 @@ const DataChefsPage: React.FC = () => {
         return type.toUpperCase();
     }
   };
+
+  const renderDatabaseConfigForm = () => (
+    <div className="space-y-3 border border-base-300 rounded-lg p-4 bg-base-200/30">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-semibold text-base-content">Database Configuration</h3>
+        <label className="label cursor-pointer gap-2">
+          <span className="label-text text-xs">Use Custom Database</span>
+          <input
+            type="checkbox"
+            checked={useCustomDb}
+            onChange={(e) => setUseCustomDb(e.target.checked)}
+            className="checkbox checkbox-sm"
+          />
+        </label>
+      </div>
+
+      {useCustomDb && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label">
+                <span className="label-text text-xs">Database Type</span>
+              </label>
+              <select
+                value={dbConfig.type}
+                onChange={(e) =>
+                  setDbConfig({ ...dbConfig, type: e.target.value, port: e.target.value === "mysql" ? 3306 : e.target.value === "postgresql" ? 5432 : 27017 })
+                }
+                className="select select-bordered select-sm w-full"
+              >
+                <option value="mysql">MySQL</option>
+                <option value="postgresql">PostgreSQL</option>
+                <option value="mongodb">MongoDB</option>
+              </select>
+            </div>
+            <div>
+              <label className="label">
+                <span className="label-text text-xs">Port</span>
+              </label>
+              <input
+                type="number"
+                required={useCustomDb}
+                value={dbConfig.port}
+                onChange={(e) =>
+                  setDbConfig({ ...dbConfig, port: parseInt(e.target.value) })
+                }
+                className="input input-bordered input-sm w-full"
+                placeholder="3306"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="label">
+              <span className="label-text text-xs">Host</span>
+            </label>
+            <input
+              type="text"
+              required={useCustomDb}
+              value={dbConfig.host}
+              onChange={(e) =>
+                setDbConfig({ ...dbConfig, host: e.target.value })
+              }
+              className="input input-bordered input-sm w-full"
+              placeholder="localhost or 192.168.1.100"
+            />
+          </div>
+
+          <div>
+            <label className="label">
+              <span className="label-text text-xs">Database Name</span>
+            </label>
+            <input
+              type="text"
+              required={useCustomDb}
+              value={dbConfig.database}
+              onChange={(e) =>
+                setDbConfig({ ...dbConfig, database: e.target.value })
+              }
+              className="input input-bordered input-sm w-full"
+              placeholder="my_database"
+            />
+          </div>
+
+          <div>
+            <label className="label">
+              <span className="label-text text-xs">Username</span>
+            </label>
+            <input
+              type="text"
+              required={useCustomDb}
+              value={dbConfig.user || dbConfig.username || ""}
+              onChange={(e) =>
+                setDbConfig({ ...dbConfig, user: e.target.value, username: e.target.value })
+              }
+              className="input input-bordered input-sm w-full"
+              placeholder="admin"
+            />
+          </div>
+
+          <div>
+            <label className="label">
+              <span className="label-text text-xs">Password</span>
+            </label>
+            <input
+              type="password"
+              required={useCustomDb}
+              value={dbConfig.password}
+              onChange={(e) =>
+                setDbConfig({ ...dbConfig, password: e.target.value })
+              }
+              className="input input-bordered input-sm w-full"
+              placeholder="********"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={dbConfig.ssl}
+              onChange={(e) =>
+                setDbConfig({ ...dbConfig, ssl: e.target.checked })
+              }
+              className="checkbox checkbox-sm"
+            />
+            <label className="label-text text-xs">Use SSL Connection</label>
+          </div>
+
+          <div className="alert alert-warning text-xs">
+            <span>⚠️ Database configuration will be stored securely and only first 3 characters will be shown when viewing.</span>
+          </div>
+        </div>
+      )}
+
+      {!useCustomDb && (
+        <div className="alert alert-info text-xs">
+          <span>ℹ️ Will use default database configuration from local.yaml</span>
+        </div>
+      )}
+    </div>
+  );
 
   const renderColumnMappingHelp = () => (
     <div>
@@ -470,25 +649,28 @@ const DataChefsPage: React.FC = () => {
         );
       case "sql":
         return (
-          <div>
-            <label className="label">
-              <span className="label-text">SQL Query</span>
-            </label>
-            <textarea
-              required
-              value={formData.query}
-              onChange={(e) =>
-                setFormData({ ...formData, query: e.target.value })
-              }
-              className="textarea textarea-bordered w-full"
-              rows={3}
-              placeholder="SELECT * FROM users WHERE..."
-            />
+          <div className="space-y-3">
+            <div>
+              <label className="label">
+                <span className="label-text">SQL Query</span>
+              </label>
+              <textarea
+                required
+                value={formData.query}
+                onChange={(e) =>
+                  setFormData({ ...formData, query: e.target.value })
+                }
+                className="textarea textarea-bordered w-full"
+                rows={3}
+                placeholder="SELECT * FROM users WHERE..."
+              />
+            </div>
+            {renderDatabaseConfigForm()}
           </div>
         );
       case "nosql":
         return (
-          <>
+          <div className="space-y-3">
             <div>
               <label className="label">
                 <span className="label-text">Database Name</span>
@@ -519,7 +701,8 @@ const DataChefsPage: React.FC = () => {
                 placeholder="collection_name"
               />
             </div>
-          </>
+            {renderDatabaseConfigForm()}
+          </div>
         );
       case "api":
         return (
@@ -871,6 +1054,55 @@ const DataChefsPage: React.FC = () => {
                     <code className="text-sm">
                       {selectedDataChef.rename_columns}
                     </code>
+                  </div>
+                </div>
+              )}
+
+              {selectedDataChef.db_config && (
+                <div>
+                  <label className="label">
+                    <span className="label-text font-semibold">
+                      Database Configuration
+                    </span>
+                  </label>
+                  <div className="bg-base-200 p-3 rounded-lg space-y-2 text-sm">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <strong>Type:</strong> {selectedDataChef.db_config.type}
+                      </div>
+                      <div>
+                        <strong>Port:</strong> {selectedDataChef.db_config.port}
+                      </div>
+                    </div>
+                    <div>
+                      <strong>Host:</strong>{" "}
+                      <span className="text-warning">
+                        {selectedDataChef.db_config.host}
+                      </span>
+                    </div>
+                    <div>
+                      <strong>Database:</strong>{" "}
+                      {selectedDataChef.db_config.database}
+                    </div>
+                    <div>
+                      <strong>Username:</strong>{" "}
+                      <span className="text-warning">
+                        {selectedDataChef.db_config.user || selectedDataChef.db_config.username}
+                      </span>
+                    </div>
+                    <div>
+                      <strong>Password:</strong>{" "}
+                      <span className="text-error">
+                        {selectedDataChef.db_config.password}
+                      </span>
+                    </div>
+                    <div>
+                      <strong>SSL:</strong>{" "}
+                      {selectedDataChef.db_config.ssl ? "✓ Enabled" : "✗ Disabled"}
+                    </div>
+                    <div className="alert alert-warning text-xs mt-2">
+                      <span>🔒 Sensitive values (host, username, password) are masked for security</span>
+                    </div>
                   </div>
                 </div>
               )}

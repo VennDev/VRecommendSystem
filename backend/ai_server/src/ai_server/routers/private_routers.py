@@ -90,11 +90,25 @@ class CreateDataChefFromCsvRequest(BaseModel):
     rename_columns: str
 
 
+class DatabaseConfig(BaseModel):
+    """Database configuration model"""
+    type: str  # mysql, postgresql, sqlite, mongodb
+    host: str
+    port: int
+    user: Optional[str] = None
+    username: Optional[str] = None
+    password: str
+    database: str
+    ssl: bool = False
+    auth_source: Optional[str] = "admin"
+
+
 class CreateDataChefFromSqlRequest(BaseModel):
     """Request model for creating data chef from SQL"""
     data_chef_id: str
     query: str
     rename_columns: str
+    db_config: Optional[DatabaseConfig] = None
 
 
 class CreateDataChefFromNosqlRequest(BaseModel):
@@ -103,6 +117,7 @@ class CreateDataChefFromNosqlRequest(BaseModel):
     database: str
     collection: str
     rename_columns: str
+    db_config: Optional[DatabaseConfig] = None
 
 
 class CreateDataChefFromApiRequest(BaseModel):
@@ -530,10 +545,16 @@ def create_data_chef_from_sql(request: CreateDataChefFromSqlRequest) -> dict:
     :return: A confirmation message
     """
     try:
+        # Convert db_config to dict if provided
+        db_config_dict = None
+        if request.db_config:
+            db_config_dict = request.db_config.model_dump()
+
         data_chef_service.DataChefService().create_data_chef_sql(
             name=request.data_chef_id,
             query=request.query,
-            rename_columns=request.rename_columns
+            rename_columns=request.rename_columns,
+            db_config=db_config_dict
         )
         return {"message": f"Data chef {request.data_chef_id} created successfully from SQL query."}
     except Exception as e:
@@ -549,11 +570,17 @@ def create_data_chef_from_nosql(request: CreateDataChefFromNosqlRequest) -> dict
     :return: A confirmation message
     """
     try:
+        # Convert db_config to dict if provided
+        db_config_dict = None
+        if request.db_config:
+            db_config_dict = request.db_config.model_dump()
+
         data_chef_service.DataChefService().create_data_chef_nosql(
             name=request.data_chef_id,
             database=request.database,
             collection=request.collection,
-            rename_columns=request.rename_columns
+            rename_columns=request.rename_columns,
+            db_config=db_config_dict
         )
         return {"message": f"Data chef {request.data_chef_id} created successfully from NoSQL collection."}
     except Exception as e:

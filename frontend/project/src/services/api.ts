@@ -71,10 +71,23 @@ interface CreateDataChefFromCsvRequest {
     rename_columns: string;
 }
 
+interface DatabaseConfig {
+    type: string;
+    host: string;
+    port: number;
+    user?: string;
+    username?: string;
+    password: string;
+    database: string;
+    ssl: boolean;
+    auth_source?: string;
+}
+
 interface CreateDataChefFromSqlRequest {
     data_chef_id: string;
     query: string;
     rename_columns: string;
+    db_config?: DatabaseConfig;
 }
 
 interface CreateDataChefFromNosqlRequest {
@@ -82,6 +95,7 @@ interface CreateDataChefFromNosqlRequest {
     database: string;
     collection: string;
     rename_columns: string;
+    db_config?: DatabaseConfig;
 }
 
 interface CreateDataChefFromApiRequest {
@@ -571,12 +585,17 @@ class ApiService {
         dataChefId: string,
         query: string,
         renameColumns: string,
+        dbConfig?: DatabaseConfig,
     ) {
         const requestBody: CreateDataChefFromSqlRequest = {
             data_chef_id: dataChefId,
             query,
             rename_columns: renameColumns,
         };
+
+        if (dbConfig) {
+            requestBody.db_config = dbConfig;
+        }
 
         return this.request(API_ENDPOINTS.AI.CREATE_DATA_CHEF_FROM_SQL, {
             method: "POST",
@@ -589,6 +608,7 @@ class ApiService {
         database: string,
         collection: string,
         renameColumns: string,
+        dbConfig?: DatabaseConfig,
     ) {
         const requestBody: CreateDataChefFromNosqlRequest = {
             data_chef_id: dataChefId,
@@ -596,6 +616,10 @@ class ApiService {
             collection,
             rename_columns: renameColumns,
         };
+
+        if (dbConfig) {
+            requestBody.db_config = dbConfig;
+        }
 
         return this.request(API_ENDPOINTS.AI.CREATE_DATA_CHEF_FROM_NOSQL, {
             method: "POST",

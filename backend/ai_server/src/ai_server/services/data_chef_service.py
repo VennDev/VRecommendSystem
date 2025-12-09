@@ -8,7 +8,9 @@ import pandas as pd
 import requests
 from confluent_kafka import Consumer
 from omegaconf import DictConfig, OmegaConf
-from sqlalchemy import text
+from sqlalchemy import text, create_engine
+from sqlalchemy.pool import QueuePool
+from pymongo import MongoClient
 
 from ai_server.config import config
 from ai_server.config.config import Config
@@ -18,6 +20,90 @@ from ai_server.utils.result_processing import rename_columns
 
 def get_batch_size() -> int:
     return config.Config().get_config().datachef.batch_size
+
+
+def _create_custom_sql_engine(db_config: Dict[str, Any]):
+    """
+    Create a custom SQL engine from database configuration.
+
+    :param db_config: Database configuration dictionary
+    :return: SQLAlchemy engine
+    """
+    db_type = db_config.get("type", "mysql")
+    host = db_config.get("host", "localhost")
+    port = db_config.get("port", 3306)
+    user = db_config.get("user", "root")
+    password = db_config.get("password", "")
+    database = db_config.get("database", "")
+    ssl = db_config.get("ssl", False)
+
+    # Build connection string
+    if db_type.lower() == "postgresql":
+        ssl_param = "?sslmode=require" if ssl else ""
+        connection_string = f"postgresql://{user}:{password}@{host}:{port}/{database}{ssl_param}"
+    elif db_type.lower() == "mysql":
+        ssl_param = "?ssl=true" if ssl else ""
+        connection_string = f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}{ssl_param}"
+    elif db_type.lower() == "sqlite":
+        connection_string = f"sqlite:///{database}"
+    else:
+        raise ValueError(f"Unsupported database type: {db_type}")
+
+    # Create engine
+    engine = create_engine(
+        connection_string,
+        poolclass=QueuePool,
+        pool_size=5,
+        max_overflow=10,
+        pool_timeout=30.0,
+        pool_pre_ping=True,
+    )
+
+    return engine
+
+
+def _create_custom_nosql_client(db_config: Dict[str, Any]):
+    """
+    Create a custom NoSQL client from database configuration.
+
+    :param db_config: Database configuration dictionary
+    :return: MongoDB client
+    """
+    db_type = db_config.get("type", "mongodb")
+    if db_type.lower() != "mongodb":
+        raise ValueError(f"Unsupported NoSQL database type: {db_type}")
+
+    host = db_config.get("host", "localhost")
+    port = db_config.get("port", 27017)
+    username = db_config.get("username", "")
+    password = db_config.get("password", "")
+    ssl = db_config.get("ssl", False)
+    auth_source = db_config.get("auth_source", "admin")
+
+    # Build connection string
+    if username and password:
+        connection_string = f"mongodb://{username}:{password}@{host}:{port}"
+    else:
+        connection_string = f"mongodb://{host}:{port}"
+
+    # Add query parameters
+    params = []
+    if auth_source:
+        params.append(f"authSource={auth_source}")
+    if ssl:
+        params.append("ssl=true")
+
+    if params:
+        connection_string += "?" + "&".join(params)
+
+    # Create client
+    client = MongoClient(
+        connection_string,
+        serverSelectionTimeoutMS=5000,
+        connectTimeoutMS=5000,
+    )
+
+    return client
 
 
 class DataType(str, Enum):
@@ -33,20 +119,26 @@ class DataType(str, Enum):
     CUSTOM = "custom"
 
 
-def _cook_sql(query: str) -> Generator[Dict[str, Any], None, None]:
+def _cook_sql(query: str, db_config: Optional[Dict[str, Any]] = None) -> Generator[Dict[str, Any], None, None]:
     """
     Execute SQL query and yield results as dictionaries.
 
     :param query: SQL query string to execute.
+    :param db_config: Optional database configuration. If not provided, uses default from local.yaml
     :return: Generator yielding rows from the SQL query result as dictionaries.
     :raises ValueError: If the query execution fails.
     """
     if not query or query.strip() == "":
         raise ValueError("SQL query is empty or not provided")
 
-    service = DatabaseService().get_sql()
+    # Use custom database config if provided, otherwise use default
+    if db_config:
+        engine = _create_custom_sql_engine(db_config)
+    else:
+        engine = DatabaseService().get_sql()
+
     try:
-        with service.connect() as conn:
+        with engine.connect() as conn:
             result = conn.execution_options(stream_results=True).execute(text(query))
 
             # Get column names for creating dictionaries
@@ -65,16 +157,20 @@ def _cook_sql(query: str) -> Generator[Dict[str, Any], None, None]:
         raise ValueError(
             f"An error occurred while querying the SQL database: {e}"
         ) from e
+    finally:
+        if db_config:
+            engine.dispose()
 
 
 def _cook_nosql(
-    database: str, collection: str
+    database: str, collection: str, db_config: Optional[Dict[str, Any]] = None
 ) -> Generator[Dict[str, Any], None, None]:
     """
     Query a NoSQL database and yield results as dictionaries.
 
     :param database: Database name
     :param collection: Collection name
+    :param db_config: Optional database configuration. If not provided, uses default from local.yaml
     :return: Generator yielding documents from the NoSQL collection as dictionaries.
     :raises ValueError: If the collection is not found or if an error occurs.
     """
@@ -83,8 +179,13 @@ def _cook_nosql(
     if not collection or collection.strip() == "":
         raise ValueError("NoSQL collection name is empty or not provided")
 
-    service = DatabaseService().get_nosql()
-    db = service[database]
+    # Use custom database config if provided, otherwise use default
+    if db_config:
+        client = _create_custom_nosql_client(db_config)
+    else:
+        client = DatabaseService().get_nosql()
+
+    db = client[database]
     coln = db[collection]
 
     if not coln:
@@ -112,6 +213,9 @@ def _cook_nosql(
         raise ValueError(
             f"An error occurred while querying the NoSQL database: {e}"
         ) from e
+    finally:
+        if db_config:
+            client.close()
 
 
 def _cook_csv(path: str) -> Generator[Dict[str, Any], None, None]:
@@ -400,10 +504,12 @@ def _cook_raw_data_source(
     :param kwargs: Arguments specific to each data source type
     :return: Generator yielding dictionaries from any data source
     """
+    db_config = kwargs.get("db_config", None)
+
     if source_type == "sql":
-        yield from _cook_sql(kwargs["query"])
+        yield from _cook_sql(kwargs["query"], db_config)
     elif source_type == "nosql":
-        yield from _cook_nosql(kwargs["database"], kwargs["collection"])
+        yield from _cook_nosql(kwargs["database"], kwargs["collection"], db_config)
     elif source_type == "csv":
         yield from _cook_csv(kwargs["path"])
     elif source_type == "api":
@@ -424,6 +530,49 @@ def _cook_raw_data_source(
         )
     else:
         raise ValueError(f"Unsupported source type: {source_type}")
+
+
+def _mask_sensitive_value(value: str, show_chars: int = 3) -> str:
+    """
+    Mask a sensitive value, showing only the first N characters.
+
+    :param value: The value to mask
+    :param show_chars: Number of characters to show from the beginning
+    :return: Masked value
+    """
+    if not value or len(value) <= show_chars:
+        return "*" * len(value) if value else ""
+    return value[:show_chars] + "*" * (len(value) - show_chars)
+
+
+def _mask_db_config(db_config: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Mask sensitive fields in database configuration.
+
+    :param db_config: Database configuration dictionary
+    :return: Masked database configuration
+    """
+    if not db_config:
+        return {}
+
+    masked_config = db_config.copy()
+
+    # Mask password
+    if "password" in masked_config:
+        masked_config["password"] = _mask_sensitive_value(masked_config["password"], 3)
+
+    # Mask hostname (show first 3 chars)
+    if "host" in masked_config:
+        masked_config["host"] = _mask_sensitive_value(masked_config["host"], 3)
+
+    # Mask username (show first 3 chars)
+    if "username" in masked_config:
+        masked_config["username"] = _mask_sensitive_value(masked_config["username"], 3)
+
+    if "user" in masked_config:
+        masked_config["user"] = _mask_sensitive_value(masked_config["user"], 3)
+
+    return masked_config
 
 
 class DataChefService:
@@ -508,13 +657,14 @@ class DataChefService:
         }
         self._merge_config(name, new_data)
 
-    def create_data_chef_sql(self, name: str, query: str, rename_columns: str) -> None:
+    def create_data_chef_sql(self, name: str, query: str, rename_columns: str, db_config: Optional[Dict[str, Any]] = None) -> None:
         """
         Create an SQL data chef configuration.
 
         :param name:
         :param query:
         :param rename_columns:
+        :param db_config: Optional database configuration for this data chef
         :return:
         """
         new_data = {
@@ -522,10 +672,14 @@ class DataChefService:
             "query": query,
             "rename_columns": rename_columns,
         }
+
+        if db_config:
+            new_data["db_config"] = db_config
+
         self._merge_config(name, new_data)
 
     def create_data_chef_nosql(
-        self, name: str, database: str, collection: str, rename_columns: str
+        self, name: str, database: str, collection: str, rename_columns: str, db_config: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Create a NoSQL data chef configuration.
@@ -534,6 +688,7 @@ class DataChefService:
         :param database:
         :param collection:
         :param rename_columns:
+        :param db_config: Optional database configuration for this data chef
         :return:
         """
         new_data = {
@@ -542,6 +697,10 @@ class DataChefService:
             "collection": collection,
             "rename_columns": rename_columns,
         }
+
+        if db_config:
+            new_data["db_config"] = db_config
+
         self._merge_config(name, new_data)
 
     def create_data_chef_api(
@@ -606,16 +765,30 @@ class DataChefService:
         }
         self._merge_config(name, new_data)
 
-    def list_data_chefs(self) -> dict:
+    def list_data_chefs(self, mask_sensitive: bool = True) -> dict:
         """
         List all data chef configurations.
 
+        :param mask_sensitive: Whether to mask sensitive information like passwords
         :return: Dictionary of all data chef configurations.
         """
         cfg = Config().get_config_safe("restaurant_data")
         if isinstance(cfg, DictConfig):
-            return OmegaConf.to_object(cfg)
-        return cfg if cfg else {}
+            config_dict = OmegaConf.to_object(cfg)
+        else:
+            config_dict = cfg if cfg else {}
+
+        # Mask sensitive information if requested
+        if mask_sensitive:
+            masked_dict = {}
+            for name, chef_config in config_dict.items():
+                masked_chef = chef_config.copy()
+                if "db_config" in masked_chef:
+                    masked_chef["db_config"] = _mask_db_config(masked_chef["db_config"])
+                masked_dict[name] = masked_chef
+            return masked_dict
+
+        return config_dict
 
     def edit_data_chef(self, name: str, config_dict: dict) -> None:
         """
@@ -667,11 +840,12 @@ class DataChefService:
         # Save the updated configuration
         Config().set_config_with_dict("restaurant_data", existing_dict)
 
-    def get_data_chef(self, name: str) -> Dict[str, Any]:
+    def get_data_chef(self, name: str, mask_sensitive: bool = True) -> Dict[str, Any]:
         """
         Get a specific data chef configuration.
 
-        :param name:
+        :param name: Name of the data chef
+        :param mask_sensitive: Whether to mask sensitive information like passwords
         :return: Dictionary of the specified data chef configuration.
         :raises ValueError: If the configuration does not exist.
         """
@@ -686,7 +860,13 @@ class DataChefService:
         if name not in config_dict:
             raise ValueError(f"Configuration for {name} not found in DataChefService")
 
-        return config_dict[name]
+        data_chef = config_dict[name].copy()
+
+        # Mask sensitive information if requested
+        if mask_sensitive and "db_config" in data_chef:
+            data_chef["db_config"] = _mask_db_config(data_chef["db_config"])
+
+        return data_chef
 
     def get_total_data_chefs(self) -> int:
         """
