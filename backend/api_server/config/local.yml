@@ -5,8 +5,8 @@ server:
     port: 2030
     ai_server_url: "http://localhost:9999"
     # Frontend URL - Can be overridden by FRONTEND_URL environment variable
-    # For LAN access, set FRONTEND_URL=http://YOUR_IP:5173
-    frontend_url: "http://localhost:5173"
+    # For DDNS access, set FRONTEND_URL=http://vennv.ddns.net:5173
+    frontend_url: "http://vennv.ddns.net:5173"
 
 # Logger configuration
 logger:
