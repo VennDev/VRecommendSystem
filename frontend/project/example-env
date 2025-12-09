@@ -1,12 +1,21 @@
 # API Configuration
-# Development URLs (default)
+# Choose ONE of the following configurations by commenting/uncommenting
+
+# === Localhost (default for development) ===
 VITE_AI_SERVER_URL=http://localhost:9999
 VITE_API_SERVER_URL=http://localhost:2030
 
-# Production URLs (uncomment and modify for production)
+# === DDNS (for remote access via domain) ===
+# Uncomment these and comment out localhost
+# VITE_AI_SERVER_URL=http://vennv.ddns.net:9999
+# VITE_API_SERVER_URL=http://vennv.ddns.net:2030
+
+# === LAN (for local network access) ===
+# Uncomment these and comment out localhost
+# Replace with your machine's local IP
+# VITE_AI_SERVER_URL=http://192.168.1.100:9999
+# VITE_API_SERVER_URL=http://192.168.1.100:2030
+
+# === Production (HTTPS) ===
 # VITE_AI_SERVER_URL=https://your-ai-server.com
 # VITE_API_SERVER_URL=https://your-api-server.com
-
-# Staging URLs (uncomment and modify for staging)
-# VITE_AI_SERVER_URL=https://staging-ai-server.com
-# VITE_API_SERVER_URL=https://staging-api-server.com

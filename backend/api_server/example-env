@@ -6,16 +6,32 @@ HOST_READ_TIMEOUT=60
 
 # Custom allowed CORS origins (comma-separated, optional)
 # Add your DDNS domain, ngrok URL, or other custom domains here
-# Examples: http://yourdomain.ddns.net:5173,https://abc123.ngrok.io
+# For DDNS: ALLOWED_ORIGINS=http://vennv.ddns.net:5173,https://vennv.ddns.net:5173
+# For LAN: ALLOWED_ORIGINS=http://192.168.1.100:5173
 ALLOWED_ORIGINS=
 
 # Frontend URL (optional, defaults to http://localhost:5173)
-FRONTEND_URL=http://localhost:5173
+# For localhost (default): leave empty or FRONTEND_URL=http://localhost:5173
+# For DDNS: FRONTEND_URL=http://vennv.ddns.net:5173
+# For LAN: FRONTEND_URL=http://192.168.1.100:5173
+FRONTEND_URL=
 
-# Google OAuth2 credentials
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-GOOGLE_CALLBACK_URL=http://127.0.0.1:2030/api/v1/auth/google/callback
+# Google OAuth2 credentials - REQUIRED!
+# Get from: https://console.cloud.google.com/apis/credentials
+# IMPORTANT: Add these to "Authorized JavaScript origins":
+#   - http://localhost:5173 (for local dev)
+#   - http://vennv.ddns.net:5173 (for DDNS)
+# IMPORTANT: Add these to "Authorized redirect URIs":
+#   - http://localhost:2030/api/v1/auth/google/callback (for local)
+#   - http://vennv.ddns.net:2030/api/v1/auth/google/callback (for DDNS)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Google OAuth Callback URL
+# For localhost: http://localhost:2030/api/v1/auth/google/callback
+# For DDNS: http://vennv.ddns.net:2030/api/v1/auth/google/callback
+# For LAN: http://192.168.1.100:2030/api/v1/auth/google/callback
+GOOGLE_CALLBACK_URL=
 SESSION_SECRET=your_strong_session_secret
 
 # AI Server Configuration
