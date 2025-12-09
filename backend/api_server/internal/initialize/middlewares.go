@@ -66,6 +66,17 @@ func InitMiddlewares(app *fiber.App) {
 		"http://10.*:9999",
 	)
 
+	// Add custom allowed origins from environment variable
+	// Format: ALLOWED_ORIGINS=http://example.com:5173,https://app.example.com
+	if customOrigins := os.Getenv("ALLOWED_ORIGINS"); customOrigins != "" {
+		for _, origin := range strings.Split(customOrigins, ",") {
+			origin = strings.TrimSpace(origin)
+			if origin != "" {
+				allowedOrigins = append(allowedOrigins, origin)
+			}
+		}
+	}
+
 	global.Logger.Info(fmt.Sprintf("CORS Allowed Origins: %v", allowedOrigins))
 
 	// Configure CORS with dynamic origin validation
@@ -106,10 +117,28 @@ func InitMiddlewares(app *fiber.App) {
 				}
 			}
 
-			// Check against static allowed origins
+			// Check against static allowed origins (exact match)
 			for _, allowed := range allowedOrigins {
 				if origin == allowed {
 					return true
+				}
+			}
+
+			// Check if origin matches any custom domain patterns
+			// This allows for DDNS domains like vennv.ddns.net
+			if customOrigins := os.Getenv("ALLOWED_ORIGINS"); customOrigins != "" {
+				for _, allowed := range strings.Split(customOrigins, ",") {
+					allowed = strings.TrimSpace(allowed)
+					if allowed != "" {
+						// Extract domain from allowed origin (remove protocol and port)
+						allowedDomain := strings.Split(strings.TrimPrefix(strings.TrimPrefix(allowed, "https://"), "http://"), ":")[0]
+						// Extract domain from request origin
+						originDomain := strings.Split(strings.TrimPrefix(strings.TrimPrefix(origin, "https://"), "http://"), ":")[0]
+
+						if allowedDomain == originDomain {
+							return true
+						}
+					}
 				}
 			}
 

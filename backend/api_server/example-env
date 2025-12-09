@@ -4,6 +4,14 @@ HOST_ADDRESS=0.0.0.0
 HOST_PORT=2030
 HOST_READ_TIMEOUT=60
 
+# Custom allowed CORS origins (comma-separated, optional)
+# Add your DDNS domain, ngrok URL, or other custom domains here
+# Examples: http://yourdomain.ddns.net:5173,https://abc123.ngrok.io
+ALLOWED_ORIGINS=
+
+# Frontend URL (optional, defaults to http://localhost:5173)
+FRONTEND_URL=http://localhost:5173
+
 # Google OAuth2 credentials
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
