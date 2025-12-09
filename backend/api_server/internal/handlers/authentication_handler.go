@@ -326,7 +326,7 @@ func CallbackHandler(c fiber.Ctx) error {
 		fmt.Printf("AUTH_TOKEN_MAX_AGE_SECONDS not set or invalid, defaulting to %d seconds\n", timeExpire)
 	}
 
-	jwtToken, err := generateJWTToken(user.UserID, user.Email, user.Name)
+	jwtToken, err := generateJWTToken(user.UserID, user.Email, user.Name, timeExpire)
 	if err != nil {
 		fmt.Printf("Failed to generate JWT token: %v\n", err)
 	} else {
@@ -526,7 +526,7 @@ func (w *fiberResponseWriter) WriteHeader(statusCode int) {
 	w.statusCode = statusCode
 }
 
-func generateJWTToken(userID, email, name string) (string, error) {
+func generateJWTToken(userID, email, name string, expiresInSeconds int) (string, error) {
 	secretKey := os.Getenv("JWT_SECRET_KEY")
 	if secretKey == "" {
 		secretKey = os.Getenv("SESSION_SECRET")
@@ -535,11 +535,14 @@ func generateJWTToken(userID, email, name string) (string, error) {
 		secretKey = "default-development-secret-key-change-in-production"
 	}
 
+	// Use the provided expiration time in seconds
+	expirationTime := time.Now().Add(time.Duration(expiresInSeconds) * time.Second)
+
 	claims := jwt.MapClaims{
 		"user_id": userID,
 		"email":   email,
 		"name":    name,
-		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+		"exp":     expirationTime.Unix(),
 		"iat":     time.Now().Unix(),
 	}
 
