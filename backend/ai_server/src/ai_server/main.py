@@ -7,19 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from ai_server.initialize import config, logger, prometheus, routers, scheduler
 from ai_server.middlewares import verify_authentication
 
-# Allowed origins for CORS with credentials
-ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://192.168.2.12:5173",
-    "http://localhost:3456",
-    "http://127.0.0.1:3456",
-    "http://192.168.2.12:3456",
-    "http://localhost:9999",
-    "http://127.0.0.1:9999",
-    "http://192.168.2.12:9999",
-]
-
 
 def main():
     """
@@ -61,22 +48,30 @@ def main():
         version=cfg.version if hasattr(cfg, "version") else "1.0.0",
     )
 
+    # Get CORS configuration from config file
+    cors_config = cfg.middleware.cors if hasattr(cfg, "middleware") and hasattr(cfg.middleware, "cors") else {}
+
+    # Default CORS settings if not provided in config
+    default_origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    default_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+    default_headers = ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin", "Cookie"]
+
+    allow_credentials = cors_config.get("allow_credentials", True) if cors_config else True
+    allow_origins = cors_config.get("allow_origins", default_origins) if cors_config else default_origins
+    allow_methods = cors_config.get("allow_methods", default_methods) if cors_config else default_methods
+    allow_headers = cors_config.get("allow_headers", default_headers) if cors_config else default_headers
+    expose_headers = cors_config.get("expose_headers", ["*"]) if cors_config else ["*"]
+
+    loguru.logger.info(f"CORS Configuration - Origins: {allow_origins}")
+
     # Set all CORS enabled origins
-    # Always use explicit origins list for credentials support
     app.add_middleware(
         CORSMiddleware,
-        allow_credentials=True,
-        allow_origins=ALLOWED_ORIGINS,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-        allow_headers=[
-            "Content-Type",
-            "Authorization",
-            "X-Requested-With",
-            "Accept",
-            "Origin",
-            "Cookie",
-        ],
-        expose_headers=["*"],
+        allow_credentials=allow_credentials,
+        allow_origins=allow_origins,
+        allow_methods=allow_methods,
+        allow_headers=allow_headers,
+        expose_headers=expose_headers,
     )
 
     # Add authentication middleware

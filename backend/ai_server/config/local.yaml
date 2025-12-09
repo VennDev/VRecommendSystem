@@ -9,16 +9,33 @@ port: 9999
 # Middleware configuration
 middleware:
     cors:
-        credentials: true
-        origins:
+        allow_credentials: true
+        allow_origins:
             - "http://localhost:5173"
             - "http://127.0.0.1:5173"
             - "http://192.168.2.12:5173"
             - "http://localhost:3456"
             - "http://127.0.0.1:3456"
             - "http://192.168.2.12:3456"
-        methods: ["*"]
-        headers: ["*"]
+            - "http://localhost:9999"
+            - "http://127.0.0.1:9999"
+            - "http://192.168.2.12:9999"
+        allow_methods:
+            - "GET"
+            - "POST"
+            - "PUT"
+            - "DELETE"
+            - "OPTIONS"
+            - "PATCH"
+        allow_headers:
+            - "Content-Type"
+            - "Authorization"
+            - "X-Requested-With"
+            - "Accept"
+            - "Origin"
+            - "Cookie"
+        expose_headers:
+            - "*"
 
 # Logger configuration
 logger:
