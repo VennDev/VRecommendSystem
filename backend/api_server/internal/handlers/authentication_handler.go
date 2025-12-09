@@ -27,6 +27,15 @@ var (
 	callbackURLPublic  string
 )
 
+// getSessionMaxAge returns the session max age from environment variable or default value
+func getSessionMaxAge() int {
+	timeExpire, err := strconv.Atoi(os.Getenv("AUTH_TOKEN_MAX_AGE_SECONDS"))
+	if err != nil || timeExpire <= 0 {
+		timeExpire = 24 * 60 * 60 // Default to 1 day
+	}
+	return timeExpire
+}
+
 func NewAuth() {
 	// Load .env file
 	err := godotenv.Load()
@@ -70,12 +79,13 @@ func NewAuth() {
 		secretKey = "default-development-secret-key-change-in-production"
 	}
 
+	sessionMaxAge := getSessionMaxAge()
 	store := sessions.NewCookieStore([]byte(secretKey))
-	store.MaxAge(24 * 60 * 60)
+	store.MaxAge(sessionMaxAge)
 	store.Options.Path = "/"
 	store.Options.HttpOnly = true
 	store.Options.Secure = false
-	store.Options.MaxAge = 24 * 60 * 60
+	store.Options.MaxAge = sessionMaxAge
 	store.Options.SameSite = http.SameSiteLaxMode
 	store.Options.Domain = ""
 
@@ -287,9 +297,10 @@ func CallbackHandler(c fiber.Ctx) error {
 		session.IsNew = true
 	}
 
+	sessionMaxAge := getSessionMaxAge()
 	session.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   24 * 60 * 60,
+		MaxAge:   sessionMaxAge,
 		HttpOnly: true,
 		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
@@ -320,11 +331,7 @@ func CallbackHandler(c fiber.Ctx) error {
 	}
 
 	// Generate JWT token
-	timeExpire, err := strconv.Atoi(os.Getenv("AUTH_TOKEN_MAX_AGE_SECONDS"))
-	if err != nil || timeExpire <= 0 {
-		timeExpire = 24 * 60 * 60 // Default to 1 day
-		fmt.Printf("AUTH_TOKEN_MAX_AGE_SECONDS not set or invalid, defaulting to %d seconds\n", timeExpire)
-	}
+	timeExpire := getSessionMaxAge()
 
 	jwtToken, err := generateJWTToken(user.UserID, user.Email, user.Name, timeExpire)
 	if err != nil {
