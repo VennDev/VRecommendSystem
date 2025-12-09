@@ -80,86 +80,57 @@ if errorlevel 1 (
 )
 
 echo.
-echo [2/8] Setting up environment files...
+echo [2/8] Checking environment files...
 echo.
 
-:: Setup main .env file
+:: Check for .env files
+set ENV_MISSING=false
+
 if not exist ".env" (
-    echo Creating main .env file...
-    if exist ".env.example" (
-        copy .env.example .env >nul
-        echo SUCCESS: Main .env file created
-    ) else (
-        echo Creating default .env file...
-        (
-            echo # VRecommendation System Configuration
-            echo.
-            echo # API Server
-            echo API_SERVER_PORT=2030
-            echo API_SERVER_HOST=0.0.0.0
-            echo.
-            echo # AI Server
-            echo AI_SERVER_PORT=9999
-            echo AI_SERVER_HOST=0.0.0.0
-            echo.
-            echo # Frontend
-            echo FRONTEND_PORT=5173
-            echo.
-            echo # Redis
-            echo REDIS_PORT=6379
-            echo.
-            echo # Prometheus
-            echo PROMETHEUS_PORT=9090
-        ) > .env
-        echo SUCCESS: Default .env file created
-    )
+    echo WARNING: Main .env file not found
+    echo          Please create .env file from .env.example
+    set ENV_MISSING=true
 ) else (
-    echo SUCCESS: Main .env file already exists
+    echo SUCCESS: Main .env file exists
 )
 
-:: Setup AI Server .env
 if not exist "backend\ai_server\.env" (
-    echo Creating AI Server .env file...
-    if exist "backend\ai_server\example-env" (
-        copy backend\ai_server\example-env backend\ai_server\.env >nul
-        echo SUCCESS: AI Server .env file created
-    ) else (
-        echo WARNING: AI Server example-env not found
-    )
+    echo WARNING: AI Server .env file not found
+    echo          Please create it from backend\ai_server\example-env
+    set ENV_MISSING=true
 ) else (
-    echo SUCCESS: AI Server .env file already exists
+    echo SUCCESS: AI Server .env file exists
 )
 
-:: Setup API Server .env
 if not exist "backend\api_server\.env" (
-    echo Creating API Server .env file...
-    if exist "backend\api_server\example-env" (
-        copy backend\api_server\example-env backend\api_server\.env >nul
-        echo SUCCESS: API Server .env file created
-    ) else (
-        echo WARNING: API Server example-env not found
-    )
+    echo WARNING: API Server .env file not found
+    echo          Please create it from backend\api_server\example-env
+    set ENV_MISSING=true
 ) else (
-    echo SUCCESS: API Server .env file already exists
+    echo SUCCESS: API Server .env file exists
 )
 
-:: Setup Frontend .env
 if not exist "frontend\project\.env" (
-    echo Creating Frontend .env file...
-    if exist "frontend\project\.env.example" (
-        copy frontend\project\.env.example frontend\project\.env >nul
-        echo SUCCESS: Frontend .env file created
-    ) else (
-        echo Creating default Frontend .env file...
-        (
-            echo # Frontend Configuration
-            echo VITE_API_SERVER_URL=http://localhost:2030
-            echo VITE_AI_SERVER_URL=http://localhost:9999
-        ) > frontend\project\.env
-        echo SUCCESS: Default Frontend .env file created
-    )
+    echo WARNING: Frontend .env file not found
+    echo          Please create it from frontend\project\.env.example
+    set ENV_MISSING=true
 ) else (
-    echo SUCCESS: Frontend .env file already exists
+    echo SUCCESS: Frontend .env file exists
+)
+
+if "%ENV_MISSING%"=="true" (
+    echo.
+    echo IMPORTANT: Some .env files are missing!
+    echo Please create them manually from the example files before continuing.
+    echo.
+    echo To create .env files:
+    echo   - Copy .env.example to .env
+    echo   - Copy backend\ai_server\example-env to backend\ai_server\.env
+    echo   - Copy backend\api_server\example-env to backend\api_server\.env
+    echo   - Copy frontend\project\.env.example to frontend\project\.env
+    echo.
+    pause
+    exit /b 1
 )
 
 echo.
