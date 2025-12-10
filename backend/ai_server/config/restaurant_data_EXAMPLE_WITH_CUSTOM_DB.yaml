@@ -1,0 +1,72 @@
+# Example: restaurant_data.yaml with Custom Database configurations
+
+# Data Chef WITHOUT custom database (uses default from local.yaml)
+data_chef_default:
+  type: sql
+  query: SELECT user_id, item_id, rating FROM interactions
+  rename_columns: user_id->user_id,item_id->item_id,rating->rating
+
+# Data Chef WITH custom MySQL database
+data_chef_custom_mysql:
+  type: sql
+  query: SELECT user_id, product_id, score FROM user_interactions WHERE score > 0
+  rename_columns: user_id->user_id,product_id->item_id,score->rating
+  db_config:                          # ← Custom database config được lưu ở đây!
+    type: mysql
+    host: 192.168.2.12                # ← Host address
+    port: 3306                        # ← MySQL port
+    user: admin                       # ← Username
+    password: pokiwar0981             # ← Password (plain text)
+    database: shop                    # ← Database name
+    ssl: false                        # ← SSL enabled/disabled
+
+# Data Chef WITH custom PostgreSQL database
+data_chef_custom_postgresql:
+  type: sql
+  query: SELECT u_id as user_id, i_id as item_id, rating FROM ratings
+  rename_columns: ''
+  db_config:
+    type: postgresql
+    host: postgres.example.com
+    port: 5432
+    user: postgres_user
+    password: postgres_pass
+    database: analytics
+    ssl: true
+
+# Data Chef WITH custom MongoDB database
+data_chef_custom_mongodb:
+  type: nosql
+  database: ecommerce
+  collection: user_clicks
+  rename_columns: userId->user_id,productId->item_id,clicks->rating
+  db_config:                          # ← Custom NoSQL config
+    type: mongodb
+    host: mongodb.internal.com
+    port: 27017
+    username: mongo_admin             # ← MongoDB uses 'username' not 'user'
+    password: mongo_secret
+    database: ecommerce
+    ssl: true
+    auth_source: admin                # ← MongoDB auth database
+
+# Data Chef from API (no custom database needed)
+data_chef_api:
+  type: api
+  url: https://api.example.com/interactions
+  paginated: false
+  rename_columns: user->user_id,item->item_id,score->rating
+
+# Data Chef from Kafka (no custom database needed)
+data_chef_kafka:
+  type: messaging_queue
+  brokers: kafka1:9092,kafka2:9092
+  topic: user_interactions
+  group_id: recommendation_consumer
+  rename_columns: uid->user_id,iid->item_id,rating->rating
+
+# Data Chef from CSV file (no custom database needed)
+data_chef_csv:
+  type: csv
+  path: /app/data/interactions.csv
+  rename_columns: userId->user_id,itemId->item_id,score->rating

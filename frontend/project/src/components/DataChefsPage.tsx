@@ -534,23 +534,15 @@ const DataChefsPage: React.FC = () => {
             <label className="label-text text-xs">Use SSL Connection</label>
           </div>
 
-          <div className="alert alert-success text-xs">
-            <div className="flex flex-col gap-1">
-              <span>✅ This feature is FULLY FUNCTIONAL - not a fake/demo!</span>
-              <span>🔒 Your database credentials are stored securely</span>
-              <span>👁️ Only first 3 characters are shown when viewing (security)</span>
-              <span>🌐 You can connect to ANY MySQL/PostgreSQL/MongoDB database</span>
-            </div>
+          <div className="alert alert-warning text-xs">
+            <span>⚠️ Database configuration will be stored securely. Sensitive information will be masked when viewing.</span>
           </div>
         </div>
       )}
 
       {!useCustomDb && (
         <div className="alert alert-info text-xs">
-          <div className="flex flex-col gap-1">
-            <span>ℹ️ Will use default database configuration from local.yaml</span>
-            <span className="font-semibold">💡 Enable "Use Custom Database" to connect to your own database!</span>
-          </div>
+          <span>ℹ️ Using default database configuration from local.yaml</span>
         </div>
       )}
     </div>
