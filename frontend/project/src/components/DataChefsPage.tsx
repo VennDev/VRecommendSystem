@@ -136,6 +136,33 @@ const DataChefsPage: React.FC = () => {
       groupId: dataChef.group_id || "",
       renameColumns: dataChef.rename_columns || "",
     });
+
+    if (dataChef.db_config) {
+      setUseCustomDb(true);
+      setDbConfig({
+        type: dataChef.db_config.type || "mysql",
+        host: dataChef.db_config.host || "",
+        port: dataChef.db_config.port || 3306,
+        user: dataChef.db_config.user || dataChef.db_config.username || "",
+        password: dataChef.db_config.password || "",
+        database: dataChef.db_config.database || "",
+        ssl: dataChef.db_config.ssl || false,
+        auth_source: dataChef.db_config.auth_source || "admin",
+      });
+    } else {
+      setUseCustomDb(false);
+      setDbConfig({
+        type: "mysql",
+        host: "",
+        port: 3306,
+        user: "",
+        password: "",
+        database: "",
+        ssl: false,
+        auth_source: "admin",
+      });
+    }
+
     setShowEditModal(true);
   };
 
@@ -157,10 +184,45 @@ const DataChefsPage: React.FC = () => {
           break;
         case "sql":
           updateData.query = formData.query;
+          if (useCustomDb) {
+            const cleanDbConfig: any = {
+              type: dbConfig.type,
+              host: dbConfig.host,
+              port: dbConfig.port,
+              password: dbConfig.password,
+              database: dbConfig.database,
+              ssl: dbConfig.ssl,
+            };
+
+            if (dbConfig.type === "mongodb") {
+              cleanDbConfig.username = dbConfig.user;
+              cleanDbConfig.auth_source = dbConfig.auth_source;
+            } else {
+              cleanDbConfig.user = dbConfig.user;
+            }
+
+            updateData.db_config = cleanDbConfig;
+          } else {
+            updateData.db_config = null;
+          }
           break;
         case "nosql":
           updateData.database = formData.database;
           updateData.collection = formData.collection;
+          if (useCustomDb) {
+            updateData.db_config = {
+              type: dbConfig.type,
+              host: dbConfig.host,
+              port: dbConfig.port,
+              username: dbConfig.user,
+              password: dbConfig.password,
+              database: dbConfig.database,
+              ssl: dbConfig.ssl,
+              auth_source: dbConfig.auth_source,
+            };
+          } else {
+            updateData.db_config = null;
+          }
           break;
         case "api":
           updateData.url = formData.apiEndpoint;

@@ -811,7 +811,12 @@ class DataChefService:
             raise ValueError(f"Configuration for {name} not found in DataChefService")
 
         # Update the existing entry with new values
-        existing_dict[name].update(config_dict)
+        for key, value in config_dict.items():
+            if value is None:
+                # Remove the key if value is None
+                existing_dict[name].pop(key, None)
+            else:
+                existing_dict[name][key] = value
 
         # Save the updated configuration
         Config().set_config_with_dict("restaurant_data", existing_dict)
