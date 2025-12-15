@@ -597,14 +597,14 @@ const DataChefsPage: React.FC = () => {
           </div>
 
           <div className="alert alert-warning text-xs">
-            <span>⚠️ Database configuration will be stored securely. Sensitive information will be masked when viewing.</span>
+            <span>Database configuration will be stored securely. Sensitive information will be masked when viewing.</span>
           </div>
         </div>
       )}
 
       {!useCustomDb && (
         <div className="alert alert-info text-xs">
-          <span>ℹ️ Using default database configuration from local.yaml</span>
+          <span>Using default database configuration from local.yaml</span>
         </div>
       )}
     </div>
@@ -626,19 +626,19 @@ const DataChefsPage: React.FC = () => {
       />
       <div className="alert alert-info mt-2 text-xs">
         <div className="w-full">
-          <div className="font-semibold mb-1">📋 Required Columns for Model Training:</div>
+          <div className="font-semibold mb-1">Required Columns for Model Training:</div>
           <ul className="list-disc list-inside space-y-1 ml-2">
             <li><strong>user_id</strong>: User identifier (string/number)</li>
             <li><strong>item_id</strong>: Item/Product identifier (string/number)</li>
             <li><strong>rating</strong>: Interaction score (number, optional - defaults to 1.0)</li>
           </ul>
           <div className="mt-2 pt-2 border-t border-info/30">
-            <div className="font-semibold mb-1">🔄 Mapping Format:</div>
+            <div className="font-semibold mb-1">Mapping Format:</div>
             <code className="bg-base-200 px-2 py-1 rounded">original_name-&gt;new_name,another_col-&gt;target_col</code>
             <div className="mt-1">Example: <code className="bg-base-200 px-2 py-1 rounded">userId-&gt;user_id,productId-&gt;item_id,clicks-&gt;rating</code></div>
           </div>
           <div className="mt-2 pt-2 border-t border-info/30">
-            <div className="font-semibold mb-1">💡 Tips for Different Sources:</div>
+            <div className="font-semibold mb-1">Tips for Different Sources:</div>
             <ul className="list-disc list-inside space-y-1 ml-2">
               <li><strong>CSV/Excel:</strong> Map your column names to required format</li>
               <li><strong>JSON API:</strong> Map JSON keys (e.g., "id-&gt;user_id,product-&gt;item_id")</li>
@@ -1160,10 +1160,10 @@ const DataChefsPage: React.FC = () => {
                     </div>
                     <div>
                       <strong>SSL:</strong>{" "}
-                      {selectedDataChef.db_config.ssl ? "✓ Enabled" : "✗ Disabled"}
+                      {selectedDataChef.db_config.ssl ? "Enabled" : "Disabled"}
                     </div>
                     <div className="alert alert-warning text-xs mt-2">
-                      <span>🔒 Sensitive values (host, username, password) are masked for security</span>
+                      <span>Sensitive values (host, username, password) are masked for security</span>
                     </div>
                   </div>
                 </div>
