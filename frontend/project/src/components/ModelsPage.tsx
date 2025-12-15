@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { activityLogger } from "../services/activityLogger";
+import { ConfirmDialog } from "./common/ConfirmDialog";
 
 interface Model {
   model_id: string;
@@ -56,6 +57,15 @@ const ModelsPage: React.FC = () => {
   });
   const [isCreating, setIsCreating] = useState(false);
   const [isSavingHyperparameters, setIsSavingHyperparameters] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    modelId: string;
+    modelName: string;
+  }>({
+    isOpen: false,
+    modelId: "",
+    modelName: "",
+  });
 
   useEffect(() => {
     fetchModels();
@@ -141,9 +151,19 @@ const ModelsPage: React.FC = () => {
     }
   };
 
-  const handleDeleteModel = async (modelId: string) => {
-    if (window.confirm(`Are you sure you want to delete model "${modelId}"?`)) {
-      try {
+  const handleDeleteModelConfirm = (modelId: string) => {
+    setConfirmDialog({
+      isOpen: true,
+      modelId: modelId,
+      modelName: modelId,
+    });
+  };
+
+  const handleDeleteModel = async () => {
+    const modelId = confirmDialog.modelId;
+    if (!modelId) return;
+
+    try {
         const response = await apiService.deleteModel(modelId);
         if (response.error) {
           alert("Error: " + response.error);
@@ -421,7 +441,7 @@ const ModelsPage: React.FC = () => {
                   <span>Settings</span>
                 </button>
                 <button
-                  onClick={() => handleDeleteModel(model.model_id)}
+                  onClick={() => handleDeleteModelConfirm(model.model_id)}
                   className="btn btn-error btn-sm"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -779,6 +799,17 @@ const ModelsPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ isOpen: false, modelId: "", modelName: "" })}
+        onConfirm={handleDeleteModel}
+        title="Confirm Delete"
+        message={`Are you sure you want to delete model "${confirmDialog.modelId}"? This action cannot be undone.`}
+        type="delete"
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 };

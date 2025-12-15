@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { activityLogger } from "../services/activityLogger";
+import { ConfirmDialog } from "./common/ConfirmDialog";
 
 interface DatabaseConfig {
   type: string;
@@ -82,6 +83,17 @@ const DataChefsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    type: 'delete' | 'update';
+    dataChef: DataChef | null;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    type: 'delete',
+    dataChef: null,
+    onConfirm: () => {},
+  });
 
   useEffect(() => {
     fetchDataChefs();
@@ -166,8 +178,19 @@ const DataChefsPage: React.FC = () => {
     setShowEditModal(true);
   };
 
-  const handleUpdateDataChef = async (e: React.FormEvent) => {
+  const handleUpdateDataChefSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedDataChef) return;
+
+    setConfirmDialog({
+      isOpen: true,
+      type: 'update',
+      dataChef: selectedDataChef,
+      onConfirm: handleUpdateDataChef,
+    });
+  };
+
+  const handleUpdateDataChef = async () => {
     if (!selectedDataChef) return;
 
     setIsUpdating(true);
@@ -267,13 +290,17 @@ const DataChefsPage: React.FC = () => {
     }
   };
 
+  const handleDeleteDataChefConfirm = (dataChef: DataChef) => {
+    setConfirmDialog({
+      isOpen: true,
+      type: 'delete',
+      dataChef: dataChef,
+      onConfirm: () => handleDeleteDataChef(dataChef),
+    });
+  };
+
   const handleDeleteDataChef = async (dataChef: DataChef) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete data chef "${dataChef.name}"?`
-      )
-    ) {
-      try {
+    try {
         const response = await apiService.deleteDataChef(dataChef.id);
         if (response.error) {
           alert("Error: " + response.error);
@@ -948,7 +975,7 @@ const DataChefsPage: React.FC = () => {
                   <span>Edit</span>
                 </button>
                 <button
-                  onClick={() => handleDeleteDataChef(chef)}
+                  onClick={() => handleDeleteDataChefConfirm(chef)}
                   className="btn btn-error btn-sm"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -1189,7 +1216,7 @@ const DataChefsPage: React.FC = () => {
             <h2 className="text-xl font-bold text-base-content mb-4">
               Edit Data Chef: {selectedDataChef.name}
             </h2>
-            <form onSubmit={handleUpdateDataChef} className="space-y-4">
+            <form onSubmit={handleUpdateDataChefSubmit} className="space-y-4">
               <div>
                 <label className="label">
                   <span className="label-text">Data Chef ID</span>
@@ -1316,6 +1343,25 @@ const DataChefsPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+        onConfirm={confirmDialog.onConfirm}
+        title={
+          confirmDialog.type === 'delete'
+            ? 'Confirm Delete'
+            : 'Confirm Update'
+        }
+        message={
+          confirmDialog.type === 'delete'
+            ? `Are you sure you want to delete data chef "${confirmDialog.dataChef?.name}"? This action cannot be undone.`
+            : `Are you sure you want to update data chef "${confirmDialog.dataChef?.name}"?`
+        }
+        type={confirmDialog.type}
+        confirmText={confirmDialog.type === 'delete' ? 'Delete' : 'Update'}
+        cancelText="Cancel"
+      />
     </div>
   );
 };
