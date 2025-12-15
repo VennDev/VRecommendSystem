@@ -301,26 +301,25 @@ const DataChefsPage: React.FC = () => {
 
   const handleDeleteDataChef = async (dataChef: DataChef) => {
     try {
-        const response = await apiService.deleteDataChef(dataChef.id);
-        if (response.error) {
-          alert("Error: " + response.error);
-        } else {
-          alert("Data chef deleted successfully!");
+      const response = await apiService.deleteDataChef(dataChef.id);
+      if (response.error) {
+        alert("Error: " + response.error);
+      } else {
+        alert("Data chef deleted successfully!");
 
-          if (user) {
-            await activityLogger.log(user.id, user.email, {
-              action: "delete",
-              resourceType: "data_chef",
-              resourceId: dataChef.id,
-              details: {},
-            });
-          }
-
-          fetchDataChefs();
+        if (user) {
+          await activityLogger.log(user.id, user.email, {
+            action: "delete",
+            resourceType: "data_chef",
+            resourceId: dataChef.id,
+            details: {},
+          });
         }
-      } catch (error) {
-        alert("Failed to delete data chef");
+
+        fetchDataChefs();
       }
+    } catch (error) {
+      alert("Failed to delete data chef");
     }
   };
 

@@ -302,26 +302,25 @@ const TasksPage: React.FC = () => {
     const handleRemoveTask = async (task: Task) => {
         const taskName = task.name || task.model_id;
         try {
-                const response = await apiService.removeModelTask(taskName);
-                if (response.error) {
-                    alert("Error: " + response.error);
-                } else {
-                    alert("Task removed successfully!");
+            const response = await apiService.removeModelTask(taskName);
+            if (response.error) {
+                alert("Error: " + response.error);
+            } else {
+                alert("Task removed successfully!");
 
-                    if (user) {
-                        await activityLogger.log(user.id, user.email, {
-                            action: "delete",
-                            resourceType: "task",
-                            resourceId: taskName,
-                            details: {},
-                        });
-                    }
-
-                    fetchTasks();
+                if (user) {
+                    await activityLogger.log(user.id, user.email, {
+                        action: "delete",
+                        resourceType: "task",
+                        resourceId: taskName,
+                        details: {},
+                    });
                 }
-            } catch {
-                alert("Failed to remove task");
+
+                fetchTasks();
             }
+        } catch {
+            alert("Failed to remove task");
         }
     };
 

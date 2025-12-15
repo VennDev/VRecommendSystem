@@ -164,26 +164,25 @@ const ModelsPage: React.FC = () => {
     if (!modelId) return;
 
     try {
-        const response = await apiService.deleteModel(modelId);
-        if (response.error) {
-          alert("Error: " + response.error);
-        } else {
-          alert("Model deleted successfully!");
+      const response = await apiService.deleteModel(modelId);
+      if (response.error) {
+        alert("Error: " + response.error);
+      } else {
+        alert("Model deleted successfully!");
 
-          if (user) {
-            await activityLogger.log(user.id, user.email, {
-              action: "delete",
-              resourceType: "model",
-              resourceId: modelId,
-              details: {},
-            });
-          }
-
-          fetchModels();
+        if (user) {
+          await activityLogger.log(user.id, user.email, {
+            action: "delete",
+            resourceType: "model",
+            resourceId: modelId,
+            details: {},
+          });
         }
-      } catch (error) {
-        alert("Failed to delete model");
+
+        fetchModels();
       }
+    } catch (error) {
+      alert("Failed to delete model");
     }
   };
 
