@@ -8,7 +8,7 @@ const products = [
         brand: "Sony",
         stock: 45,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product1/400/300"
     },
     {
         id: 2,
@@ -19,7 +19,7 @@ const products = [
         brand: "Apple",
         stock: 28,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/18105/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product2/400/300"
     },
     {
         id: 3,
@@ -30,7 +30,7 @@ const products = [
         brand: "Samsung",
         stock: 15,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/1201996/pexels-photo-1201996.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product3/400/300"
     },
     {
         id: 4,
@@ -41,7 +41,7 @@ const products = [
         brand: "Canon",
         stock: 12,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product4/400/300"
     },
     {
         id: 5,
@@ -52,7 +52,7 @@ const products = [
         brand: "Apple",
         stock: 18,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/1334597/pexels-photo-1334597.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product5/400/300"
     },
     {
         id: 6,
@@ -63,7 +63,7 @@ const products = [
         brand: "Bose",
         stock: 67,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3394651/pexels-photo-3394651.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product6/400/300"
     },
     {
         id: 7,
@@ -74,7 +74,7 @@ const products = [
         brand: "Dell",
         stock: 22,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/238118/pexels-photo-238118.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product7/400/300"
     },
     {
         id: 8,
@@ -85,7 +85,7 @@ const products = [
         brand: "LG",
         stock: 34,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/777001/pexels-photo-777001.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product8/400/300"
     },
     {
         id: 9,
@@ -96,7 +96,7 @@ const products = [
         brand: "Logitech",
         stock: 156,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/2115256/pexels-photo-2115256.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product9/400/300"
     },
     {
         id: 10,
@@ -107,7 +107,7 @@ const products = [
         brand: "Amazon",
         stock: 89,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/1334565/pexels-photo-1334565.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product10/400/300"
     },
     {
         id: 11,
@@ -118,7 +118,7 @@ const products = [
         brand: "GoPro",
         stock: 41,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product11/400/300"
     },
     {
         id: 12,
@@ -129,7 +129,7 @@ const products = [
         brand: "Nintendo",
         stock: 53,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/371924/pexels-photo-371924.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product12/400/300"
     },
     {
         id: 13,
@@ -140,7 +140,7 @@ const products = [
         brand: "Sony",
         stock: 27,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/371924/pexels-photo-371924.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product13/400/300"
     },
     {
         id: 14,
@@ -151,7 +151,7 @@ const products = [
         brand: "Razer",
         stock: 78,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/1194713/pexels-photo-1194713.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product14/400/300"
     },
     {
         id: 15,
@@ -162,7 +162,7 @@ const products = [
         brand: "Anker",
         stock: 234,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4219861/pexels-photo-4219861.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product15/400/300"
     },
     {
         id: 16,
@@ -173,7 +173,7 @@ const products = [
         brand: "Samsung",
         stock: 43,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product16/400/300"
     },
     {
         id: 17,
@@ -184,7 +184,7 @@ const products = [
         brand: "Apple",
         stock: 61,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product17/400/300"
     },
     {
         id: 18,
@@ -195,7 +195,7 @@ const products = [
         brand: "DJI",
         stock: 19,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/442587/pexels-photo-442587.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product18/400/300"
     },
     {
         id: 19,
@@ -206,7 +206,7 @@ const products = [
         brand: "Beats",
         stock: 72,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product19/400/300"
     },
     {
         id: 20,
@@ -217,7 +217,7 @@ const products = [
         brand: "Western Digital",
         stock: 145,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/2582935/pexels-photo-2582935.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product20/400/300"
     },
     {
         id: 21,
@@ -228,7 +228,7 @@ const products = [
         brand: "TP-Link",
         stock: 112,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/2881229/pexels-photo-2881229.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product21/400/300"
     },
     {
         id: 22,
@@ -239,7 +239,7 @@ const products = [
         brand: "Nikon",
         stock: 15,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/243757/pexels-photo-243757.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product22/400/300"
     },
     {
         id: 23,
@@ -250,7 +250,7 @@ const products = [
         brand: "Fitbit",
         stock: 98,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/3766119/pexels-photo-3766119.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product23/400/300"
     },
     {
         id: 24,
@@ -261,7 +261,7 @@ const products = [
         brand: "Blue",
         stock: 87,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/1279362/pexels-photo-1279362.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product24/400/300"
     },
     {
         id: 25,
@@ -272,7 +272,7 @@ const products = [
         brand: "Elgato",
         stock: 64,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/1194233/pexels-photo-1194233.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product25/400/300"
     },
     {
         id: 26,
@@ -283,7 +283,7 @@ const products = [
         brand: "Sonos",
         stock: 76,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/5082579/pexels-photo-5082579.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product26/400/300"
     },
     {
         id: 27,
@@ -294,7 +294,7 @@ const products = [
         brand: "Philips",
         stock: 54,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/1112598/pexels-photo-1112598.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product27/400/300"
     },
     {
         id: 28,
@@ -305,7 +305,7 @@ const products = [
         brand: "Ring",
         stock: 83,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/8129904/pexels-photo-8129904.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product28/400/300"
     },
     {
         id: 29,
@@ -316,7 +316,7 @@ const products = [
         brand: "Microsoft",
         stock: 31,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/2081186/pexels-photo-2081186.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product29/400/300"
     },
     {
         id: 30,
@@ -327,7 +327,7 @@ const products = [
         brand: "Google",
         stock: 67,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4009599/pexels-photo-4009599.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product30/400/300"
     },
     {
         id: 31,
@@ -338,7 +338,7 @@ const products = [
         brand: "Asus",
         stock: 18,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product31/400/300"
     },
     {
         id: 32,
@@ -349,7 +349,7 @@ const products = [
         brand: "Wacom",
         stock: 45,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/6476587/pexels-photo-6476587.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product32/400/300"
     },
     {
         id: 33,
@@ -360,7 +360,7 @@ const products = [
         brand: "Meta",
         stock: 38,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/7241427/pexels-photo-7241427.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product33/400/300"
     },
     {
         id: 34,
@@ -371,7 +371,7 @@ const products = [
         brand: "SanDisk",
         stock: 189,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product34/400/300"
     },
     {
         id: 35,
@@ -382,7 +382,7 @@ const products = [
         brand: "JBL",
         stock: 142,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product35/400/300"
     },
     {
         id: 36,
@@ -393,7 +393,7 @@ const products = [
         brand: "Seagate",
         stock: 96,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/2588757/pexels-photo-2588757.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product36/400/300"
     },
     {
         id: 37,
@@ -404,7 +404,7 @@ const products = [
         brand: "Corsair",
         stock: 71,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product37/400/300"
     },
     {
         id: 38,
@@ -415,7 +415,7 @@ const products = [
         brand: "HyperX",
         stock: 118,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3945683/pexels-photo-3945683.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product38/400/300"
     },
     {
         id: 39,
@@ -426,7 +426,7 @@ const products = [
         brand: "BenQ",
         stock: 29,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/1714208/pexels-photo-1714208.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product39/400/300"
     },
     {
         id: 40,
@@ -437,7 +437,7 @@ const products = [
         brand: "Apple",
         stock: 156,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/7289716/pexels-photo-7289716.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product40/400/300"
     },
     {
         id: 41,
@@ -448,7 +448,7 @@ const products = [
         brand: "Yamaha",
         stock: 42,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product41/400/300"
     },
     {
         id: 42,
@@ -459,7 +459,7 @@ const products = [
         brand: "Netgear",
         stock: 68,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/2881232/pexels-photo-2881232.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product42/400/300"
     },
     {
         id: 43,
@@ -470,7 +470,7 @@ const products = [
         brand: "Garmin",
         stock: 34,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/393047/pexels-photo-393047.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product43/400/300"
     },
     {
         id: 44,
@@ -481,7 +481,7 @@ const products = [
         brand: "Rode",
         stock: 52,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/8191460/pexels-photo-8191460.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product44/400/300"
     },
     {
         id: 45,
@@ -492,7 +492,7 @@ const products = [
         brand: "Crucial",
         stock: 203,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/2399840/pexels-photo-2399840.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product45/400/300"
     },
     {
         id: 46,
@@ -503,7 +503,7 @@ const products = [
         brand: "Acer",
         stock: 47,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product46/400/300"
     },
     {
         id: 47,
@@ -514,7 +514,7 @@ const products = [
         brand: "Sony",
         stock: 21,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/279906/pexels-photo-279906.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product47/400/300"
     },
     {
         id: 48,
@@ -525,7 +525,7 @@ const products = [
         brand: "Logitech",
         stock: 187,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4219654/pexels-photo-4219654.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product48/400/300"
     },
     {
         id: 49,
@@ -536,7 +536,7 @@ const products = [
         brand: "Amazon",
         stock: 312,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/8088495/pexels-photo-8088495.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product49/400/300"
     },
     {
         id: 50,
@@ -547,7 +547,7 @@ const products = [
         brand: "Roku",
         stock: 234,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product50/400/300"
     },
     {
         id: 51,
@@ -558,7 +558,7 @@ const products = [
         brand: "Levi's",
         stock: 120,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/1082526/pexels-photo-1082526.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product51/400/300"
     },
     {
         id: 52,
@@ -569,7 +569,7 @@ const products = [
         brand: "Nike",
         stock: 80,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product52/400/300"
     },
     {
         id: 53,
@@ -580,7 +580,7 @@ const products = [
         brand: "Adidas",
         stock: 65,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product53/400/300"
     },
     {
         id: 54,
@@ -591,7 +591,7 @@ const products = [
         brand: "The North Face",
         stock: 55,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/1050244/pexels-photo-1050244.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product54/400/300"
     },
     {
         id: 55,
@@ -602,7 +602,7 @@ const products = [
         brand: "Patagonia",
         stock: 72,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/842947/pexels-photo-842947.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product55/400/300"
     },
     {
         id: 56,
@@ -613,7 +613,7 @@ const products = [
         brand: "Columbia",
         stock: 48,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/1478442/pexels-photo-1478442.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product56/400/300"
     },
     {
         id: 57,
@@ -624,7 +624,7 @@ const products = [
         brand: "Under Armour",
         stock: 215,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product57/400/300"
     },
     {
         id: 58,
@@ -635,7 +635,7 @@ const products = [
         brand: "Carhartt",
         stock: 94,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/1082526/pexels-photo-1082526.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product58/400/300"
     },
     {
         id: 59,
@@ -646,7 +646,7 @@ const products = [
         brand: "Ray-Ban",
         stock: 132,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product59/400/300"
     },
     {
         id: 60,
@@ -657,7 +657,7 @@ const products = [
         brand: "Tommy Hilfiger",
         stock: 178,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/1055691/pexels-photo-1055691.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product60/400/300"
     },
     {
         id: 61,
@@ -668,7 +668,7 @@ const products = [
         brand: "Puma",
         stock: 87,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/1755385/pexels-photo-1755385.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product61/400/300"
     },
     {
         id: 62,
@@ -679,7 +679,7 @@ const products = [
         brand: "Hanes",
         stock: 267,
         rating: 4.3,
-        image: "https://images.pexels.com/photos/2220312/pexels-photo-2220312.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product62/400/300"
     },
     {
         id: 63,
@@ -690,7 +690,7 @@ const products = [
         brand: "Reebok",
         stock: 154,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/2294342/pexels-photo-2294342.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product63/400/300"
     },
     {
         id: 64,
@@ -701,7 +701,7 @@ const products = [
         brand: "Vans",
         stock: 198,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product64/400/300"
     },
     {
         id: 65,
@@ -712,7 +712,7 @@ const products = [
         brand: "Champion",
         stock: 112,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/2220311/pexels-photo-2220311.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product65/400/300"
     },
     {
         id: 66,
@@ -723,7 +723,7 @@ const products = [
         brand: "Dockers",
         stock: 143,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/1082526/pexels-photo-1082526.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product66/400/300"
     },
     {
         id: 67,
@@ -734,7 +734,7 @@ const products = [
         brand: "Calvin Klein",
         stock: 289,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/428340/pexels-photo-428340.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product67/400/300"
     },
     {
         id: 68,
@@ -745,7 +745,7 @@ const products = [
         brand: "New Balance",
         stock: 76,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/2385477/pexels-photo-2385477.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product68/400/300"
     },
     {
         id: 69,
@@ -756,7 +756,7 @@ const products = [
         brand: "Timberland",
         stock: 62,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/1478442/pexels-photo-1478442.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product69/400/300"
     },
     {
         id: 70,
@@ -767,7 +767,7 @@ const products = [
         brand: "Ralph Lauren",
         stock: 94,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/297933/pexels-photo-297933.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product70/400/300"
     },
     {
         id: 71,
@@ -778,7 +778,7 @@ const products = [
         brand: "Converse",
         stock: 234,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/1598508/pexels-photo-1598508.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product71/400/300"
     },
     {
         id: 72,
@@ -789,7 +789,7 @@ const products = [
         brand: "Uniqlo",
         stock: 412,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product72/400/300"
     },
     {
         id: 73,
@@ -800,7 +800,7 @@ const products = [
         brand: "Skechers",
         stock: 167,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product73/400/300"
     },
     {
         id: 74,
@@ -811,7 +811,7 @@ const products = [
         brand: "Fossil",
         stock: 198,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/428340/pexels-photo-428340.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product74/400/300"
     },
     {
         id: 75,
@@ -822,7 +822,7 @@ const products = [
         brand: "Canada Goose",
         stock: 23,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/1050244/pexels-photo-1050244.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product75/400/300"
     },
     {
         id: 76,
@@ -833,7 +833,7 @@ const products = [
         brand: "Everlane",
         stock: 67,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/6311392/pexels-photo-6311392.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product76/400/300"
     },
     {
         id: 77,
@@ -844,7 +844,7 @@ const products = [
         brand: "Arc'teryx",
         stock: 34,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/1755385/pexels-photo-1755385.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product77/400/300"
     },
     {
         id: 78,
@@ -855,7 +855,7 @@ const products = [
         brand: "Banana Republic",
         stock: 102,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/1082526/pexels-photo-1082526.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product78/400/300"
     },
     {
         id: 79,
@@ -866,7 +866,7 @@ const products = [
         brand: "J.Crew",
         stock: 88,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/6311392/pexels-photo-6311392.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product79/400/300"
     },
     {
         id: 80,
@@ -877,7 +877,7 @@ const products = [
         brand: "Herschel",
         stock: 145,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/2905238/pexels-photo-2905238.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product80/400/300"
     },
     {
         id: 81,
@@ -888,7 +888,7 @@ const products = [
         brand: "Sperry",
         stock: 117,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product81/400/300"
     },
     {
         id: 82,
@@ -899,7 +899,7 @@ const products = [
         brand: "Lululemon",
         stock: 187,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/4498152/pexels-photo-4498152.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product82/400/300"
     },
     {
         id: 83,
@@ -910,7 +910,7 @@ const products = [
         brand: "The North Face",
         stock: 71,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/842947/pexels-photo-842947.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product83/400/300"
     },
     {
         id: 84,
@@ -921,7 +921,7 @@ const products = [
         brand: "Oakley",
         stock: 98,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product84/400/300"
     },
     {
         id: 85,
@@ -932,7 +932,7 @@ const products = [
         brand: "Patagonia",
         stock: 84,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/1050244/pexels-photo-1050244.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product85/400/300"
     },
     {
         id: 86,
@@ -943,7 +943,7 @@ const products = [
         brand: "Gildan",
         stock: 587,
         rating: 4.2,
-        image: "https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product86/400/300"
     },
     {
         id: 87,
@@ -954,7 +954,7 @@ const products = [
         brand: "Crocs",
         stock: 312,
         rating: 4.3,
-        image: "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product87/400/300"
     },
     {
         id: 88,
@@ -965,7 +965,7 @@ const products = [
         brand: "Columbia",
         stock: 134,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/297933/pexels-photo-297933.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product88/400/300"
     },
     {
         id: 89,
@@ -976,7 +976,7 @@ const products = [
         brand: "Birkenstock",
         stock: 156,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product89/400/300"
     },
     {
         id: 90,
@@ -987,7 +987,7 @@ const products = [
         brand: "Fjallraven",
         stock: 123,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/2905238/pexels-photo-2905238.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product90/400/300"
     },
     {
         id: 91,
@@ -998,7 +998,7 @@ const products = [
         brand: "Dickies",
         stock: 198,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/297933/pexels-photo-297933.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product91/400/300"
     },
     {
         id: 92,
@@ -1009,7 +1009,7 @@ const products = [
         brand: "Asics",
         stock: 91,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/2385477/pexels-photo-2385477.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product92/400/300"
     },
     {
         id: 93,
@@ -1020,7 +1020,7 @@ const products = [
         brand: "Brooks",
         stock: 103,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product93/400/300"
     },
     {
         id: 94,
@@ -1031,7 +1031,7 @@ const products = [
         brand: "Merrell",
         stock: 78,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/1478442/pexels-photo-1478442.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product94/400/300"
     },
     {
         id: 95,
@@ -1042,7 +1042,7 @@ const products = [
         brand: "Smartwool",
         stock: 267,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/7679454/pexels-photo-7679454.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product95/400/300"
     },
     {
         id: 96,
@@ -1053,7 +1053,7 @@ const products = [
         brand: "Marmot",
         stock: 67,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/1755385/pexels-photo-1755385.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product96/400/300"
     },
     {
         id: 97,
@@ -1064,7 +1064,7 @@ const products = [
         brand: "Outdoor Research",
         stock: 142,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/35185/hats-fedora-hat-manufacture-stack.jpg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product97/400/300"
     },
     {
         id: 98,
@@ -1075,7 +1075,7 @@ const products = [
         brand: "Kuhl",
         stock: 73,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/1082526/pexels-photo-1082526.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product98/400/300"
     },
     {
         id: 99,
@@ -1086,7 +1086,7 @@ const products = [
         brand: "prAna",
         stock: 96,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/1082526/pexels-photo-1082526.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product99/400/300"
     },
     {
         id: 100,
@@ -1097,7 +1097,7 @@ const products = [
         brand: "Darn Tough",
         stock: 234,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/7679454/pexels-photo-7679454.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product100/400/300"
     },
     {
         id: 101,
@@ -1108,7 +1108,7 @@ const products = [
         brand: "Penguin Random House",
         stock: 250,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product101/400/300"
     },
     {
         id: 102,
@@ -1119,7 +1119,7 @@ const products = [
         brand: "Harriman House",
         stock: 180,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product102/400/300"
     },
     {
         id: 103,
@@ -1130,7 +1130,7 @@ const products = [
         brand: "Random House",
         stock: 140,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product103/400/300"
     },
     {
         id: 104,
@@ -1141,7 +1141,7 @@ const products = [
         brand: "Harper",
         stock: 167,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product104/400/300"
     },
     {
         id: 105,
@@ -1152,7 +1152,7 @@ const products = [
         brand: "Viking",
         stock: 203,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product105/400/300"
     },
     {
         id: 106,
@@ -1163,7 +1163,7 @@ const products = [
         brand: "Simon & Schuster",
         stock: 187,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product106/400/300"
     },
     {
         id: 107,
@@ -1174,7 +1174,7 @@ const products = [
         brand: "Putnam",
         stock: 234,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product107/400/300"
     },
     {
         id: 108,
@@ -1185,7 +1185,7 @@ const products = [
         brand: "HarperOne",
         stock: 198,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product108/400/300"
     },
     {
         id: 109,
@@ -1196,7 +1196,7 @@ const products = [
         brand: "Signet Classic",
         stock: 312,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product109/400/300"
     },
     {
         id: 110,
@@ -1207,7 +1207,7 @@ const products = [
         brand: "Ballantine Books",
         stock: 156,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product110/400/300"
     },
     {
         id: 111,
@@ -1218,7 +1218,7 @@ const products = [
         brand: "Farrar, Straus and Giroux",
         stock: 143,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product111/400/300"
     },
     {
         id: 112,
@@ -1229,7 +1229,7 @@ const products = [
         brand: "HarperOne",
         stock: 267,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product112/400/300"
     },
     {
         id: 113,
@@ -1240,7 +1240,7 @@ const products = [
         brand: "Ace",
         stock: 189,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product113/400/300"
     },
     {
         id: 114,
@@ -1251,7 +1251,7 @@ const products = [
         brand: "Amber-Allen Publishing",
         stock: 223,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product114/400/300"
     },
     {
         id: 115,
@@ -1262,7 +1262,7 @@ const products = [
         brand: "Scribner",
         stock: 345,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product115/400/300"
     },
     {
         id: 116,
@@ -1273,7 +1273,7 @@ const products = [
         brand: "Lioncrest Publishing",
         stock: 178,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product116/400/300"
     },
     {
         id: 117,
@@ -1284,7 +1284,7 @@ const products = [
         brand: "Celadon Books",
         stock: 201,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product117/400/300"
     },
     {
         id: 118,
@@ -1295,7 +1295,7 @@ const products = [
         brand: "Crown",
         stock: 167,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product118/400/300"
     },
     {
         id: 119,
@@ -1306,7 +1306,7 @@ const products = [
         brand: "New World Library",
         stock: 189,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product119/400/300"
     },
     {
         id: 120,
@@ -1317,7 +1317,7 @@ const products = [
         brand: "Mariner Books",
         stock: 234,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product120/400/300"
     },
     {
         id: 121,
@@ -1328,7 +1328,7 @@ const products = [
         brand: "Pocket Books",
         stock: 198,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product121/400/300"
     },
     {
         id: 122,
@@ -1339,7 +1339,7 @@ const products = [
         brand: "Spiegel & Grau",
         stock: 156,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product122/400/300"
     },
     {
         id: 123,
@@ -1350,7 +1350,7 @@ const products = [
         brand: "Plata Publishing",
         stock: 223,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product123/400/300"
     },
     {
         id: 124,
@@ -1361,7 +1361,7 @@ const products = [
         brand: "Knopf",
         stock: 178,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product124/400/300"
     },
     {
         id: 125,
@@ -1372,7 +1372,7 @@ const products = [
         brand: "Beacon Press",
         stock: 267,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product125/400/300"
     },
     {
         id: 126,
@@ -1383,7 +1383,7 @@ const products = [
         brand: "Currency",
         stock: 143,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product126/400/300"
     },
     {
         id: 127,
@@ -1394,7 +1394,7 @@ const products = [
         brand: "Vintage",
         stock: 134,
         rating: 4.3,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product127/400/300"
     },
     {
         id: 128,
@@ -1405,7 +1405,7 @@ const products = [
         brand: "HarperCollins",
         stock: 189,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product128/400/300"
     },
     {
         id: 129,
@@ -1416,7 +1416,7 @@ const products = [
         brand: "Scholastic",
         stock: 412,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product129/400/300"
     },
     {
         id: 130,
@@ -1427,7 +1427,7 @@ const products = [
         brand: "Grand Central Publishing",
         stock: 167,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product130/400/300"
     },
     {
         id: 131,
@@ -1438,7 +1438,7 @@ const products = [
         brand: "Little, Brown",
         stock: 256,
         rating: 4.3,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product131/400/300"
     },
     {
         id: 132,
@@ -1449,7 +1449,7 @@ const products = [
         brand: "HarperBusiness",
         stock: 134,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product132/400/300"
     },
     {
         id: 133,
@@ -1460,7 +1460,7 @@ const products = [
         brand: "Scholastic",
         stock: 298,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product133/400/300"
     },
     {
         id: 134,
@@ -1471,7 +1471,7 @@ const products = [
         brand: "Penguin Books",
         stock: 178,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product134/400/300"
     },
     {
         id: 135,
@@ -1482,7 +1482,7 @@ const products = [
         brand: "Simon & Schuster",
         stock: 123,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product135/400/300"
     },
     {
         id: 136,
@@ -1493,7 +1493,7 @@ const products = [
         brand: "Harper Perennial",
         stock: 289,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product136/400/300"
     },
     {
         id: 137,
@@ -1504,7 +1504,7 @@ const products = [
         brand: "Penguin Books",
         stock: 234,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product137/400/300"
     },
     {
         id: 138,
@@ -1515,7 +1515,7 @@ const products = [
         brand: "Scribner",
         stock: 156,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product138/400/300"
     },
     {
         id: 139,
@@ -1526,7 +1526,7 @@ const products = [
         brand: "Anchor",
         stock: 201,
         rating: 4.2,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product139/400/300"
     },
     {
         id: 140,
@@ -1537,7 +1537,7 @@ const products = [
         brand: "Farrar, Straus and Giroux",
         stock: 89,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product140/400/300"
     },
     {
         id: 141,
@@ -1548,7 +1548,7 @@ const products = [
         brand: "Penguin Books",
         stock: 267,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product141/400/300"
     },
     {
         id: 142,
@@ -1559,7 +1559,7 @@ const products = [
         brand: "Harper Business",
         stock: 112,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product142/400/300"
     },
     {
         id: 143,
@@ -1570,7 +1570,7 @@ const products = [
         brand: "Penguin Classics",
         stock: 312,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product143/400/300"
     },
     {
         id: 144,
@@ -1581,7 +1581,7 @@ const products = [
         brand: "Houghton Mifflin Harcourt",
         stock: 289,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product144/400/300"
     },
     {
         id: 145,
@@ -1592,7 +1592,7 @@ const products = [
         brand: "William Morrow",
         stock: 143,
         rating: 4.3,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product145/400/300"
     },
     {
         id: 146,
@@ -1603,7 +1603,7 @@ const products = [
         brand: "Back Bay Books",
         stock: 167,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product146/400/300"
     },
     {
         id: 147,
@@ -1614,7 +1614,7 @@ const products = [
         brand: "Dutton Books",
         stock: 234,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product147/400/300"
     },
     {
         id: 148,
@@ -1625,7 +1625,7 @@ const products = [
         brand: "Mariner Books",
         stock: 98,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product148/400/300"
     },
     {
         id: 149,
@@ -1636,7 +1636,7 @@ const products = [
         brand: "Ballantine Books",
         stock: 178,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product149/400/300"
     },
     {
         id: 150,
@@ -1647,7 +1647,7 @@ const products = [
         brand: "Dover Publications",
         stock: 198,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/3747435/pexels-photo-3747435.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product150/400/300"
     },
     {
         id: 151,
@@ -1658,7 +1658,7 @@ const products = [
         brand: "KitchenAid",
         stock: 35,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product151/400/300"
     },
     {
         id: 152,
@@ -1669,7 +1669,7 @@ const products = [
         brand: "Instant Pot",
         stock: 95,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product152/400/300"
     },
     {
         id: 153,
@@ -1680,7 +1680,7 @@ const products = [
         brand: "Dyson",
         stock: 22,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/4239091/pexels-photo-4239091.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product153/400/300"
     },
     {
         id: 154,
@@ -1691,7 +1691,7 @@ const products = [
         brand: "Nespresso",
         stock: 67,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/373639/pexels-photo-373639.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product154/400/300"
     },
     {
         id: 155,
@@ -1702,7 +1702,7 @@ const products = [
         brand: "Cuisinart",
         stock: 48,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product155/400/300"
     },
     {
         id: 156,
@@ -1713,7 +1713,7 @@ const products = [
         brand: "iRobot",
         stock: 31,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4239091/pexels-photo-4239091.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product156/400/300"
     },
     {
         id: 157,
@@ -1724,7 +1724,7 @@ const products = [
         brand: "Vitamix",
         stock: 43,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product157/400/300"
     },
     {
         id: 158,
@@ -1735,7 +1735,7 @@ const products = [
         brand: "Ninja",
         stock: 56,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product158/400/300"
     },
     {
         id: 159,
@@ -1746,7 +1746,7 @@ const products = [
         brand: "Breville",
         stock: 28,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/373639/pexels-photo-373639.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product159/400/300"
     },
     {
         id: 160,
@@ -1757,7 +1757,7 @@ const products = [
         brand: "Keurig",
         stock: 89,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/373639/pexels-photo-373639.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product160/400/300"
     },
     {
         id: 161,
@@ -1768,7 +1768,7 @@ const products = [
         brand: "Lodge",
         stock: 234,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product161/400/300"
     },
     {
         id: 162,
@@ -1779,7 +1779,7 @@ const products = [
         brand: "All-Clad",
         stock: 19,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product162/400/300"
     },
     {
         id: 163,
@@ -1790,7 +1790,7 @@ const products = [
         brand: "Shark",
         stock: 72,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4239091/pexels-photo-4239091.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product163/400/300"
     },
     {
         id: 164,
@@ -1801,7 +1801,7 @@ const products = [
         brand: "Hamilton Beach",
         stock: 143,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product164/400/300"
     },
     {
         id: 165,
@@ -1812,7 +1812,7 @@ const products = [
         brand: "OXO",
         stock: 187,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product165/400/300"
     },
     {
         id: 166,
@@ -1823,7 +1823,7 @@ const products = [
         brand: "Pyrex",
         stock: 267,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product166/400/300"
     },
     {
         id: 167,
@@ -1834,7 +1834,7 @@ const products = [
         brand: "Bed Bath Beyond",
         stock: 156,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/2678301/pexels-photo-2678301.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product167/400/300"
     },
     {
         id: 168,
@@ -1845,7 +1845,7 @@ const products = [
         brand: "Casper",
         stock: 98,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/1545215/pexels-photo-1545215.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product168/400/300"
     },
     {
         id: 169,
@@ -1856,7 +1856,7 @@ const products = [
         brand: "Brooklinen",
         stock: 87,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/1545215/pexels-photo-1545215.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product169/400/300"
     },
     {
         id: 170,
@@ -1867,7 +1867,7 @@ const products = [
         brand: "Purple",
         stock: 15,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/1545215/pexels-photo-1545215.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product170/400/300"
     },
     {
         id: 171,
@@ -1878,7 +1878,7 @@ const products = [
         brand: "Honeywell",
         stock: 63,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/7008177/pexels-photo-7008177.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product171/400/300"
     },
     {
         id: 172,
@@ -1889,7 +1889,7 @@ const products = [
         brand: "Bissell",
         stock: 48,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/4239091/pexels-photo-4239091.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product172/400/300"
     },
     {
         id: 173,
@@ -1900,7 +1900,7 @@ const products = [
         brand: "Calphalon",
         stock: 54,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product173/400/300"
     },
     {
         id: 174,
@@ -1911,7 +1911,7 @@ const products = [
         brand: "Wusthof",
         stock: 32,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product174/400/300"
     },
     {
         id: 175,
@@ -1922,7 +1922,7 @@ const products = [
         brand: "Rubbermaid",
         stock: 178,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product175/400/300"
     },
     {
         id: 176,
@@ -1933,7 +1933,7 @@ const products = [
         brand: "Thermos",
         stock: 298,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/373639/pexels-photo-373639.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product176/400/300"
     },
     {
         id: 177,
@@ -1944,7 +1944,7 @@ const products = [
         brand: "Simplehuman",
         stock: 67,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4239120/pexels-photo-4239120.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product177/400/300"
     },
     {
         id: 178,
@@ -1955,7 +1955,7 @@ const products = [
         brand: "Lasko",
         stock: 123,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/6588595/pexels-photo-6588595.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product178/400/300"
     },
     {
         id: 179,
@@ -1966,7 +1966,7 @@ const products = [
         brand: "Black+Decker",
         stock: 187,
         rating: 4.3,
-        image: "https://images.pexels.com/photos/4239091/pexels-photo-4239091.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product179/400/300"
     },
     {
         id: 180,
@@ -1977,7 +1977,7 @@ const products = [
         brand: "Vornado",
         stock: 94,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/6588595/pexels-photo-6588595.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product180/400/300"
     },
     {
         id: 181,
@@ -1988,7 +1988,7 @@ const products = [
         brand: "Ruggable",
         stock: 43,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/1648771/pexels-photo-1648771.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product181/400/300"
     },
     {
         id: 182,
@@ -1999,7 +1999,7 @@ const products = [
         brand: "Umbra",
         stock: 156,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/1023828/pexels-photo-1023828.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product182/400/300"
     },
     {
         id: 183,
@@ -2010,7 +2010,7 @@ const products = [
         brand: "Threshold",
         stock: 198,
         rating: 4.3,
-        image: "https://images.pexels.com/photos/1148955/pexels-photo-1148955.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product183/400/300"
     },
     {
         id: 184,
@@ -2021,7 +2021,7 @@ const products = [
         brand: "mDesign",
         stock: 234,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/4239120/pexels-photo-4239120.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product184/400/300"
     },
     {
         id: 185,
@@ -2032,7 +2032,7 @@ const products = [
         brand: "Brightroom",
         stock: 112,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/4239120/pexels-photo-4239120.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product185/400/300"
     },
     {
         id: 186,
@@ -2043,7 +2043,7 @@ const products = [
         brand: "Levoit",
         stock: 134,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/7008177/pexels-photo-7008177.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product186/400/300"
     },
     {
         id: 187,
@@ -2054,7 +2054,7 @@ const products = [
         brand: "Cuisinart",
         stock: 76,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product187/400/300"
     },
     {
         id: 188,
@@ -2065,7 +2065,7 @@ const products = [
         brand: "Zojirushi",
         stock: 48,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product188/400/300"
     },
     {
         id: 189,
@@ -2076,7 +2076,7 @@ const products = [
         brand: "Anova",
         stock: 87,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product189/400/300"
     },
     {
         id: 190,
@@ -2087,7 +2087,7 @@ const products = [
         brand: "Cosori",
         stock: 167,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/373639/pexels-photo-373639.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product190/400/300"
     },
     {
         id: 191,
@@ -2098,7 +2098,7 @@ const products = [
         brand: "Bodum",
         stock: 198,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/373639/pexels-photo-373639.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product191/400/300"
     },
     {
         id: 192,
@@ -2109,7 +2109,7 @@ const products = [
         brand: "Thermoworks",
         stock: 143,
         rating: 4.9,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product192/400/300"
     },
     {
         id: 193,
@@ -2120,7 +2120,7 @@ const products = [
         brand: "Tovolo",
         stock: 234,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product193/400/300"
     },
     {
         id: 194,
@@ -2131,7 +2131,7 @@ const products = [
         brand: "Joseph Joseph",
         stock: 187,
         rating: 4.7,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product194/400/300"
     },
     {
         id: 195,
@@ -2142,7 +2142,7 @@ const products = [
         brand: "Nordic Ware",
         stock: 156,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product195/400/300"
     },
     {
         id: 196,
@@ -2153,7 +2153,7 @@ const products = [
         brand: "Microplane",
         stock: 289,
         rating: 4.8,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product196/400/300"
     },
     {
         id: 197,
@@ -2164,7 +2164,7 @@ const products = [
         brand: "Anchor Hocking",
         stock: 178,
         rating: 4.5,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product197/400/300"
     },
     {
         id: 198,
@@ -2175,7 +2175,7 @@ const products = [
         brand: "Rubbermaid",
         stock: 143,
         rating: 4.4,
-        image: "https://images.pexels.com/photos/4239091/pexels-photo-4239091.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product198/400/300"
     },
     {
         id: 199,
@@ -2186,7 +2186,7 @@ const products = [
         brand: "Swiffer",
         stock: 198,
         rating: 4.3,
-        image: "https://images.pexels.com/photos/4239091/pexels-photo-4239091.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product199/400/300"
     },
     {
         id: 200,
@@ -2197,7 +2197,7 @@ const products = [
         brand: "Scotch-Brite",
         stock: 412,
         rating: 4.6,
-        image: "https://images.pexels.com/photos/4226805/pexels-photo-4226805.jpeg?auto=compress&cs=tinysrgb&w=400"
+        image: "https://picsum.photos/seed/product200/400/300"
     }
 ];
 
