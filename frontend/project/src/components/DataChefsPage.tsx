@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { activityLogger } from "../services/activityLogger";
+import { ConfirmDialog } from "./common/ConfirmDialog";
 
 interface DatabaseConfig {
   type: string;
@@ -82,6 +83,17 @@ const DataChefsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    type: 'delete' | 'update';
+    dataChef: DataChef | null;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    type: 'delete',
+    dataChef: null,
+    onConfirm: () => {},
+  });
 
   useEffect(() => {
     fetchDataChefs();
@@ -136,11 +148,49 @@ const DataChefsPage: React.FC = () => {
       groupId: dataChef.group_id || "",
       renameColumns: dataChef.rename_columns || "",
     });
+
+    if (dataChef.db_config) {
+      setUseCustomDb(true);
+      setDbConfig({
+        type: dataChef.db_config.type || "mysql",
+        host: dataChef.db_config.host || "",
+        port: dataChef.db_config.port || 3306,
+        user: dataChef.db_config.user || dataChef.db_config.username || "",
+        password: dataChef.db_config.password || "",
+        database: dataChef.db_config.database || "",
+        ssl: dataChef.db_config.ssl || false,
+        auth_source: dataChef.db_config.auth_source || "admin",
+      });
+    } else {
+      setUseCustomDb(false);
+      setDbConfig({
+        type: "mysql",
+        host: "",
+        port: 3306,
+        user: "",
+        password: "",
+        database: "",
+        ssl: false,
+        auth_source: "admin",
+      });
+    }
+
     setShowEditModal(true);
   };
 
-  const handleUpdateDataChef = async (e: React.FormEvent) => {
+  const handleUpdateDataChefSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedDataChef) return;
+
+    setConfirmDialog({
+      isOpen: true,
+      type: 'update',
+      dataChef: selectedDataChef,
+      onConfirm: handleUpdateDataChef,
+    });
+  };
+
+  const handleUpdateDataChef = async () => {
     if (!selectedDataChef) return;
 
     setIsUpdating(true);
@@ -157,10 +207,45 @@ const DataChefsPage: React.FC = () => {
           break;
         case "sql":
           updateData.query = formData.query;
+          if (useCustomDb) {
+            const cleanDbConfig: any = {
+              type: dbConfig.type,
+              host: dbConfig.host,
+              port: dbConfig.port,
+              password: dbConfig.password,
+              database: dbConfig.database,
+              ssl: dbConfig.ssl,
+            };
+
+            if (dbConfig.type === "mongodb") {
+              cleanDbConfig.username = dbConfig.user;
+              cleanDbConfig.auth_source = dbConfig.auth_source;
+            } else {
+              cleanDbConfig.user = dbConfig.user;
+            }
+
+            updateData.db_config = cleanDbConfig;
+          } else {
+            updateData.db_config = null;
+          }
           break;
         case "nosql":
           updateData.database = formData.database;
           updateData.collection = formData.collection;
+          if (useCustomDb) {
+            updateData.db_config = {
+              type: dbConfig.type,
+              host: dbConfig.host,
+              port: dbConfig.port,
+              username: dbConfig.user,
+              password: dbConfig.password,
+              database: dbConfig.database,
+              ssl: dbConfig.ssl,
+              auth_source: dbConfig.auth_source,
+            };
+          } else {
+            updateData.db_config = null;
+          }
           break;
         case "api":
           updateData.url = formData.apiEndpoint;
@@ -205,33 +290,36 @@ const DataChefsPage: React.FC = () => {
     }
   };
 
+  const handleDeleteDataChefConfirm = (dataChef: DataChef) => {
+    setConfirmDialog({
+      isOpen: true,
+      type: 'delete',
+      dataChef: dataChef,
+      onConfirm: () => handleDeleteDataChef(dataChef),
+    });
+  };
+
   const handleDeleteDataChef = async (dataChef: DataChef) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete data chef "${dataChef.name}"?`
-      )
-    ) {
-      try {
-        const response = await apiService.deleteDataChef(dataChef.id);
-        if (response.error) {
-          alert("Error: " + response.error);
-        } else {
-          alert("Data chef deleted successfully!");
+    try {
+      const response = await apiService.deleteDataChef(dataChef.id);
+      if (response.error) {
+        alert("Error: " + response.error);
+      } else {
+        alert("Data chef deleted successfully!");
 
-          if (user) {
-            await activityLogger.log(user.id, user.email, {
-              action: "delete",
-              resourceType: "data_chef",
-              resourceId: dataChef.id,
-              details: {},
-            });
-          }
-
-          fetchDataChefs();
+        if (user) {
+          await activityLogger.log(user.id, user.email, {
+            action: "delete",
+            resourceType: "data_chef",
+            resourceId: dataChef.id,
+            details: {},
+          });
         }
-      } catch (error) {
-        alert("Failed to delete data chef");
+
+        fetchDataChefs();
       }
+    } catch (error) {
+      alert("Failed to delete data chef");
     }
   };
 
@@ -535,14 +623,14 @@ const DataChefsPage: React.FC = () => {
           </div>
 
           <div className="alert alert-warning text-xs">
-            <span>⚠️ Database configuration will be stored securely and only first 3 characters will be shown when viewing.</span>
+            <span>Database configuration will be stored securely. Sensitive information will be masked when viewing.</span>
           </div>
         </div>
       )}
 
       {!useCustomDb && (
         <div className="alert alert-info text-xs">
-          <span>ℹ️ Will use default database configuration from local.yaml</span>
+          <span>Using default database configuration from local.yaml</span>
         </div>
       )}
     </div>
@@ -564,19 +652,19 @@ const DataChefsPage: React.FC = () => {
       />
       <div className="alert alert-info mt-2 text-xs">
         <div className="w-full">
-          <div className="font-semibold mb-1">📋 Required Columns for Model Training:</div>
+          <div className="font-semibold mb-1">Required Columns for Model Training:</div>
           <ul className="list-disc list-inside space-y-1 ml-2">
             <li><strong>user_id</strong>: User identifier (string/number)</li>
             <li><strong>item_id</strong>: Item/Product identifier (string/number)</li>
             <li><strong>rating</strong>: Interaction score (number, optional - defaults to 1.0)</li>
           </ul>
           <div className="mt-2 pt-2 border-t border-info/30">
-            <div className="font-semibold mb-1">🔄 Mapping Format:</div>
+            <div className="font-semibold mb-1">Mapping Format:</div>
             <code className="bg-base-200 px-2 py-1 rounded">original_name-&gt;new_name,another_col-&gt;target_col</code>
             <div className="mt-1">Example: <code className="bg-base-200 px-2 py-1 rounded">userId-&gt;user_id,productId-&gt;item_id,clicks-&gt;rating</code></div>
           </div>
           <div className="mt-2 pt-2 border-t border-info/30">
-            <div className="font-semibold mb-1">💡 Tips for Different Sources:</div>
+            <div className="font-semibold mb-1">Tips for Different Sources:</div>
             <ul className="list-disc list-inside space-y-1 ml-2">
               <li><strong>CSV/Excel:</strong> Map your column names to required format</li>
               <li><strong>JSON API:</strong> Map JSON keys (e.g., "id-&gt;user_id,product-&gt;item_id")</li>
@@ -886,7 +974,7 @@ const DataChefsPage: React.FC = () => {
                   <span>Edit</span>
                 </button>
                 <button
-                  onClick={() => handleDeleteDataChef(chef)}
+                  onClick={() => handleDeleteDataChefConfirm(chef)}
                   className="btn btn-error btn-sm"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -1098,10 +1186,10 @@ const DataChefsPage: React.FC = () => {
                     </div>
                     <div>
                       <strong>SSL:</strong>{" "}
-                      {selectedDataChef.db_config.ssl ? "✓ Enabled" : "✗ Disabled"}
+                      {selectedDataChef.db_config.ssl ? "Enabled" : "Disabled"}
                     </div>
                     <div className="alert alert-warning text-xs mt-2">
-                      <span>🔒 Sensitive values (host, username, password) are masked for security</span>
+                      <span>Sensitive values (host, username, password) are masked for security</span>
                     </div>
                   </div>
                 </div>
@@ -1127,7 +1215,7 @@ const DataChefsPage: React.FC = () => {
             <h2 className="text-xl font-bold text-base-content mb-4">
               Edit Data Chef: {selectedDataChef.name}
             </h2>
-            <form onSubmit={handleUpdateDataChef} className="space-y-4">
+            <form onSubmit={handleUpdateDataChefSubmit} className="space-y-4">
               <div>
                 <label className="label">
                   <span className="label-text">Data Chef ID</span>
@@ -1254,6 +1342,25 @@ const DataChefsPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+        onConfirm={confirmDialog.onConfirm}
+        title={
+          confirmDialog.type === 'delete'
+            ? 'Confirm Delete'
+            : 'Confirm Update'
+        }
+        message={
+          confirmDialog.type === 'delete'
+            ? `Are you sure you want to delete data chef "${confirmDialog.dataChef?.name}"? This action cannot be undone.`
+            : `Are you sure you want to update data chef "${confirmDialog.dataChef?.name}"?`
+        }
+        type={confirmDialog.type}
+        confirmText={confirmDialog.type === 'delete' ? 'Delete' : 'Update'}
+        cancelText="Cancel"
+      />
     </div>
   );
 };

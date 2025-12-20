@@ -83,11 +83,12 @@
         }
 
         .product-card {
-            border: 2px solid #e0e0e0;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            padding: 20px;
+            overflow: hidden;
             transition: all 0.3s;
             cursor: pointer;
+            background: white;
         }
 
         .product-card:hover {
@@ -96,17 +97,46 @@
             transform: translateY(-2px);
         }
 
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f5f5f5;
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
         .product-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #333;
             margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .product-description {
             color: #666;
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-meta {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .product-meta span {
+            margin-right: 10px;
         }
 
         .product-footer {
@@ -204,7 +234,7 @@
 <body>
     <div class="header">
         <div class="header-content">
-            <h1>🎯 VRecom Dashboard</h1>
+            <h1>VRecom Store</h1>
             <div class="user-info">
                 <span>Welcome, <strong><%= user.username %></strong></span>
                 <a href="/logout" class="logout-btn">Logout</a>
@@ -229,19 +259,26 @@
         </div>
 
         <div class="section">
-            <h2>🎁 All Products</h2>
+            <h2>All Products</h2>
             <div class="products-grid">
                 <% products.forEach(product => { %>
                     <div class="product-card" data-product-id="<%= product.id %>" onclick="viewProduct(<%= product.id %>)">
-                        <span class="category-badge"><%= product.category %></span>
-                        <div class="product-name"><%= product.name %></div>
-                        <div class="product-description"><%= product.description %></div>
-                        <div class="product-footer">
-                            <div class="product-price">$<%= product.price %></div>
-                            <button class="like-btn <%= likedProductIds.includes(product.id) ? 'liked' : '' %>"
-                                    onclick="event.stopPropagation(); toggleLike(<%= product.id %>, this)">
-                                <%= likedProductIds.includes(product.id) ? '❤️' : '🤍' %>
-                            </button>
+                        <img src="<%= product.image %>" alt="<%= product.name %>" class="product-image" onerror="this.src='https://via.placeholder.com/250x200?text=No+Image'">
+                        <div class="product-info">
+                            <span class="category-badge"><%= product.category %></span>
+                            <div class="product-name"><%= product.name %></div>
+                            <div class="product-meta">
+                                <span>⭐ <%= product.rating %></span>
+                                <span>Brand: <%= product.brand %></span>
+                            </div>
+                            <div class="product-description"><%= product.description %></div>
+                            <div class="product-footer">
+                                <div class="product-price">$<%= product.price %></div>
+                                <button class="like-btn <%= likedProductIds.includes(product.id) ? 'liked' : '' %>"
+                                        onclick="event.stopPropagation(); toggleLike(<%= product.id %>, this)">
+                                    <%= likedProductIds.includes(product.id) ? '♥' : '♡' %>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 <% }); %>
@@ -249,7 +286,7 @@
         </div>
 
         <div class="section">
-            <h2>✨ AI Recommendations</h2>
+            <h2>Recommended For You</h2>
             <div id="recommendations-container">
                 <div class="loading">Loading recommendations...</div>
             </div>
@@ -267,7 +304,7 @@
 
                 if (response.ok) {
                     button.classList.toggle('liked');
-                    button.textContent = button.classList.contains('liked') ? '❤️' : '🤍';
+                    button.textContent = button.classList.contains('liked') ? '♥' : '♡';
 
                     if (!isLiked) {
                         button.classList.add('liked');
@@ -330,29 +367,38 @@
                                 if (!product) {
                                     return `
                                         <div class="product-card">
-                                            <div class="product-name">Product #${item.item_id}</div>
-                                            <div class="product-description">
-                                                AI Score: ${item.score.toFixed(3)}
-                                            </div>
-                                            <div class="product-footer">
-                                                <div class="product-price">Rank #${item.rank || index + 1}</div>
+                                            <div class="product-info">
+                                                <div class="product-name">Product #${item.item_id}</div>
+                                                <div class="product-description">
+                                                    AI Score: ${item.score.toFixed(3)}
+                                                </div>
+                                                <div class="product-footer">
+                                                    <div class="product-price">Rank #${item.rank || index + 1}</div>
+                                                </div>
                                             </div>
                                         </div>
                                     `;
                                 }
                                 return `
                                     <div class="product-card" onclick="viewProduct(${product.id})">
-                                        <span class="category-badge">${product.category}</span>
-                                        <div class="product-name">${product.name}</div>
-                                        <div class="product-description">${product.description}</div>
-                                        <div style="margin: 8px 0; padding: 6px; background: #f0f0f0; border-radius: 4px; font-size: 12px;">
-                                            <strong>AI Score:</strong> ${item.score.toFixed(3)} | <strong>Rank:</strong> #${item.rank || index + 1}
-                                        </div>
-                                        <div class="product-footer">
-                                            <div class="product-price">$${product.price}</div>
-                                            <button class="like-btn" onclick="event.stopPropagation(); toggleLike(${product.id}, this)">
-                                                🤍
-                                            </button>
+                                        <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/250x200?text=No+Image'">
+                                        <div class="product-info">
+                                            <span class="category-badge">${product.category}</span>
+                                            <div class="product-name">${product.name}</div>
+                                            <div class="product-meta">
+                                                <span>⭐ ${product.rating}</span>
+                                                <span>Brand: ${product.brand}</span>
+                                            </div>
+                                            <div class="product-description">${product.description}</div>
+                                            <div style="margin: 8px 0; padding: 6px; background: #f0f0f0; border-radius: 4px; font-size: 12px;">
+                                                <strong>AI Score:</strong> ${item.score.toFixed(3)} | <strong>Rank:</strong> #${item.rank || index + 1}
+                                            </div>
+                                            <div class="product-footer">
+                                                <div class="product-price">$${product.price}</div>
+                                                <button class="like-btn" onclick="event.stopPropagation(); toggleLike(${product.id}, this)">
+                                                    ♡
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 `;
@@ -362,7 +408,7 @@
                 } else {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p>⚠️ No recommendations available yet</p>
+                            <p>No recommendations available yet</p>
                             <p style="font-size: 14px; margin-top: 10px;">
                                 ${data.message || 'Try liking some products to get personalized recommendations!'}
                             </p>

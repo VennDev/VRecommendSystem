@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const axios = require("axios");
 const fs = require("fs").promises;
 const path = require("path");
+const productsData = require("./products_data");
 
 const app = express();
 const PORT = process.env.PORT || 3500;
@@ -49,46 +50,9 @@ async function ensureDataFiles() {
         try {
             await fs.access(PRODUCTS_FILE);
         } catch {
-            const sampleProducts = [
-                {
-                    id: 1,
-                    name: "Product A",
-                    description: "Description A",
-                    price: 100,
-                    category: "electronics",
-                },
-                {
-                    id: 2,
-                    name: "Product B",
-                    description: "Description B",
-                    price: 200,
-                    category: "clothing",
-                },
-                {
-                    id: 3,
-                    name: "Product C",
-                    description: "Description C",
-                    price: 150,
-                    category: "electronics",
-                },
-                {
-                    id: 4,
-                    name: "Product D",
-                    description: "Description D",
-                    price: 80,
-                    category: "books",
-                },
-                {
-                    id: 5,
-                    name: "Product E",
-                    description: "Description E",
-                    price: 250,
-                    category: "electronics",
-                },
-            ];
             await fs.writeFile(
                 PRODUCTS_FILE,
-                JSON.stringify(sampleProducts, null, 2),
+                JSON.stringify(productsData, null, 2),
             );
         }
 

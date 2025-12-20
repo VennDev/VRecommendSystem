@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { activityLogger } from "../services/activityLogger";
+import { ConfirmDialog } from "./common/ConfirmDialog";
 
 const SchedulerPage: React.FC = () => {
   const { user } = useAuth();
@@ -12,6 +13,15 @@ const SchedulerPage: React.FC = () => {
   const [runtimeScheduler, setRuntimeScheduler] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    type: 'stop' | 'restart';
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    type: 'stop',
+    onConfirm: () => {},
+  });
 
   useEffect(() => {
     fetchSchedulers();
@@ -51,6 +61,14 @@ const SchedulerPage: React.FC = () => {
     }
   };
 
+  const handleStopSchedulerConfirm = () => {
+    setConfirmDialog({
+      isOpen: true,
+      type: 'stop',
+      onConfirm: handleStopScheduler,
+    });
+  };
+
   const handleStopScheduler = async () => {
     setActionLoading("stop");
     try {
@@ -76,6 +94,14 @@ const SchedulerPage: React.FC = () => {
     } finally {
       setActionLoading(null);
     }
+  };
+
+  const handleRestartSchedulerConfirm = () => {
+    setConfirmDialog({
+      isOpen: true,
+      type: 'restart',
+      onConfirm: handleRestartScheduler,
+    });
   };
 
   const handleRestartScheduler = async () => {
@@ -133,7 +159,7 @@ const SchedulerPage: React.FC = () => {
           </h2>
           <div className="flex items-center space-x-4">
             <button
-              onClick={handleRestartScheduler}
+              onClick={handleRestartSchedulerConfirm}
               disabled={actionLoading === "restart"}
               className="btn btn-success gap-2"
             >
@@ -148,7 +174,7 @@ const SchedulerPage: React.FC = () => {
             </button>
 
             <button
-              onClick={handleStopScheduler}
+              onClick={handleStopSchedulerConfirm}
               disabled={actionLoading === "stop"}
               className="btn btn-error gap-2"
             >
@@ -203,6 +229,25 @@ const SchedulerPage: React.FC = () => {
           </div>
         </div>
       </div> */}
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+        onConfirm={confirmDialog.onConfirm}
+        title={
+          confirmDialog.type === 'stop'
+            ? 'Confirm Stop Scheduler'
+            : 'Confirm Restart Scheduler'
+        }
+        message={
+          confirmDialog.type === 'stop'
+            ? 'Are you sure you want to stop the scheduler? All scheduled tasks will be paused.'
+            : 'Are you sure you want to restart the scheduler? This will reload all tasks.'
+        }
+        type={confirmDialog.type === 'stop' ? 'delete' : 'warning'}
+        confirmText={confirmDialog.type === 'stop' ? 'Stop' : 'Restart'}
+        cancelText="Cancel"
+      />
     </div>
   );
 };

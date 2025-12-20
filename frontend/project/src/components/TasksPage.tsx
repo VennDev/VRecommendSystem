@@ -12,6 +12,7 @@ import { apiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { activityLogger } from "../services/activityLogger";
 import { API_CONFIG } from "../config/api";
+import { ConfirmDialog } from "./common/ConfirmDialog";
 
 interface Task {
     model_id: string;
@@ -57,6 +58,17 @@ const TasksPage: React.FC = () => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [loading, setLoading] = useState(true);
     const [loadingResources, setLoadingResources] = useState(false);
+    const [confirmDialog, setConfirmDialog] = useState<{
+        isOpen: boolean;
+        type: 'delete' | 'update';
+        task: Task | null;
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        type: 'delete',
+        task: null,
+        onConfirm: () => {},
+    });
 
     useEffect(() => {
         fetchTasks();
@@ -170,8 +182,19 @@ const TasksPage: React.FC = () => {
         setShowEditModal(true);
     };
 
-    const handleUpdateTask = async (e: React.FormEvent) => {
+    const handleUpdateTaskSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!selectedTask) return;
+
+        setConfirmDialog({
+            isOpen: true,
+            type: 'update',
+            task: selectedTask,
+            onConfirm: handleUpdateTask,
+        });
+    };
+
+    const handleUpdateTask = async () => {
         if (!selectedTask) return;
 
         setIsUpdating(true);
@@ -267,34 +290,37 @@ const TasksPage: React.FC = () => {
         }
     };
 
+    const handleRemoveTaskConfirm = (task: Task) => {
+        setConfirmDialog({
+            isOpen: true,
+            type: 'delete',
+            task: task,
+            onConfirm: () => handleRemoveTask(task),
+        });
+    };
+
     const handleRemoveTask = async (task: Task) => {
         const taskName = task.name || task.model_id;
-        if (
-            window.confirm(
-                `Are you sure you want to remove task "${taskName}"?`,
-            )
-        ) {
-            try {
-                const response = await apiService.removeModelTask(taskName);
-                if (response.error) {
-                    alert("Error: " + response.error);
-                } else {
-                    alert("Task removed successfully!");
+        try {
+            const response = await apiService.removeModelTask(taskName);
+            if (response.error) {
+                alert("Error: " + response.error);
+            } else {
+                alert("Task removed successfully!");
 
-                    if (user) {
-                        await activityLogger.log(user.id, user.email, {
-                            action: "delete",
-                            resourceType: "task",
-                            resourceId: taskName,
-                            details: {},
-                        });
-                    }
-
-                    fetchTasks();
+                if (user) {
+                    await activityLogger.log(user.id, user.email, {
+                        action: "delete",
+                        resourceType: "task",
+                        resourceId: taskName,
+                        details: {},
+                    });
                 }
-            } catch {
-                alert("Failed to remove task");
+
+                fetchTasks();
             }
+        } catch {
+            alert("Failed to remove task");
         }
     };
 
@@ -483,7 +509,7 @@ const TasksPage: React.FC = () => {
                                     <span>Edit</span>
                                 </button>
                                 <button
-                                    onClick={() => handleRemoveTask(task)}
+                                    onClick={() => handleRemoveTaskConfirm(task)}
                                     className="btn btn-error btn-sm"
                                 >
                                     <Trash2 className="h-4 w-4" />
@@ -514,7 +540,7 @@ const TasksPage: React.FC = () => {
                             Edit Task:{" "}
                             {selectedTask.name || selectedTask.model_id}
                         </h2>
-                        <form onSubmit={handleUpdateTask} className="space-y-4">
+                        <form onSubmit={handleUpdateTaskSubmit} className="space-y-4">
                             <div>
                                 <label className="label">
                                     <span className="label-text">
@@ -1006,6 +1032,25 @@ const TasksPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmDialog
+                isOpen={confirmDialog.isOpen}
+                onClose={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+                onConfirm={confirmDialog.onConfirm}
+                title={
+                    confirmDialog.type === 'delete'
+                        ? 'Confirm Delete'
+                        : 'Confirm Update'
+                }
+                message={
+                    confirmDialog.type === 'delete'
+                        ? `Are you sure you want to delete task "${confirmDialog.task?.name || confirmDialog.task?.model_id}"? This action cannot be undone.`
+                        : `Are you sure you want to update task "${confirmDialog.task?.name || confirmDialog.task?.model_id}"?`
+                }
+                type={confirmDialog.type}
+                confirmText={confirmDialog.type === 'delete' ? 'Delete' : 'Update'}
+                cancelText="Cancel"
+            />
         </div>
     );
 };
